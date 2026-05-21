@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}{{ store.name }} — Ofertes Andorra{% endblock %}
+
+{% block head %}
+<style>
+  /* ── Store hero ──────────────────── */
+  .store-hero {
+    padding: 48px 24px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .store-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(ellipse, {{ store.color }}33 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb-sep { opacity: 0.4; }
+
+  .store-hero-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .store-logo-xl {
+    width: 80px; height: 80px;
+    background: var(--bg3);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .store-hero-info { flex: 1; min-width: 0; }
+
+  .store-hero-cat {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .store-hero-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: -1px;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .store-hero-desc {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 500px;
+    margin-bottom: 20px;
+  }
+
+  .store-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .store-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ── Offers section ──────────────── */
+  .offers-section { padding: 0 24px 64px; }
+
+  .cat-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+
+  .cat-tab {
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .cat-tab:hover { color: var(--text); background: var(--bg3); }
+  .cat-tab.active { background: var(--accent); color: #0F0F0F; border-color: var(--accent); }
+
+  .offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .offer-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .offer-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .offer-emoji { font-size: 38px; line-height: 1; }
+  .offer-category { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .offer-name { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.4; flex: 1; }
+
+  .offer-prices {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .offer-price-new {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--accent);
+  }
+
+  .offer-price-old { font-size: 13px; color: var(--muted); text-decoration: line-through; }
+
+  .offer-unit { font-size: 11px; color: var(--muted); }
+
+  .offer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .offer-valid { font-size: 11px; color: var(--muted); }
+  .offer-valid strong { color: var(--accent); }
+
+  .discount {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 50px;
+  }
+
+  /* ── Other stores ────────────────── */
+  .other-stores-section {
+    padding: 0 24px 64px;
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+  }
+
+  .other-stores-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .other-stores-scroll::-webkit-scrollbar { display: none; }
+
+  .other-store-chip {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 16px;
+    text-decoration: none;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .other-store-chip:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="store-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Inici</a>
+      <span class="breadcrumb-sep">›</span>
+      <span>{{ store.name }}</span>
+    </div>
+    <div class="store-hero-inner">
+      <div class="store-logo-xl">{{ store.logo }}</div>
+      <div class="store-hero-info">
+        <div class="store-hero-cat">{{ store.category }}</div>
+        <h1 class="store-hero-name">{{ store.name }}</h1>
+        <p class="store-hero-desc">{{ store.description }}</p>
+        <div class="store-meta">
+          <div class="store-meta-item">📍 {{ store.location }}</div>
+          <div class="store-meta-item">📞 {{ store.phone }}</div>
+          <div class="store-meta-item">🏷️ {{ offers|length }} ofertes actives</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Offers -->
+<section class="offers-section">
+  <div class="container">
+    <div class="section-heading" style="margin-bottom:20px">Ofertes de la setmana</div>
+
+    {% if categories %}
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-tab active" data-cat="">Totes</button>
+      {% for cat in categories %}
+      <button class="cat-tab" data-cat="{{ cat }}">{{ cat }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="offers-grid" id="offersGrid">
+      {% for offer in offers %}
+      {% set disc = ((1 - offer.offer_price / offer.original_price) * 100) | int %}
+      <div class="offer-card" data-cat="{{ offer.category }}">
+        <span class="offer-emoji">{{ offer.emoji }}</span>
+        <div class="offer-category">{{ offer.category }}</div>
+        <div class="offer-name">{{ offer.name }}</div>
+        <div class="offer-prices">
+          <span class="offer-price-new">{{ "%.2f"|format(offer.offer_price) }}€</span>
+          <span class="offer-price-old">{{ "%.2f"|format(offer.original_price) }}€</span>
+          <span class="discount">−{{ disc }}%</span>
+        </div>
+        <div class="offer-unit">{{ offer.unit }}</div>
+        <div class="offer-footer">
+          <span class="offer-valid">Fins el <strong>{{ offer.valid_until }}</strong></span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Other stores -->
+<section class="other-stores-section">
+  <div class="container">
+    <div class="section-heading" style="margin-bottom:16px">Altres botigues</div>
+    <div class="other-stores-scroll">
+      {% for s in stores %}
+      {% if s.id != store.id %}
+      <a href="/tienda/{{ s.id }}" class="other-store-chip">
+        {{ s.logo }} {{ s.name }}
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const tabs = document.getElementById('catTabs');
+  const cards = document.querySelectorAll('.offer-card[data-cat]');
+
+  if (tabs) {
+    tabs.addEventListener('click', e => {
+      const tab = e.target.closest('.cat-tab');
+      if (!tab) return;
+      tabs.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const cat = tab.dataset.cat;
+      cards.forEach(card => {
+        card.style.display = (!cat || card.dataset.cat === cat) ? '' : 'none';
+      });
+    });
+  }
+</script>
+{% endblock %}
