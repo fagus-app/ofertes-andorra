@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Panel — {{b.name}}{% endblock %}
+{% block head %}
+<style>
+.panel-wrap{max-width:960px;margin:0 auto;padding:36px 24px 80px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:36px}
+.panel-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--text)}
+.panel-title span{color:var(--accent)}
+.panel-actions{display:flex;gap:10px;flex-wrap:wrap}
+.section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:28px;overflow:hidden}
+.section-card-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.section-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.table{width:100%;border-collapse:collapse}
+.table th{padding:10px 22px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+.table td{padding:14px 22px;font-size:13px;color:var(--text);border-bottom:1px solid var(--border)}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:var(--bg3)}
+.badge-active{display:inline-block;background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2);border-radius:50px;font-size:11px;padding:2px 9px}
+.empty-state{padding:44px;text-align:center;color:var(--muted);font-size:14px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="panel-wrap">
+  {% with msgs=get_flashed_messages() %}{% if msgs %}
+    {% for m in msgs %}<div class="flash">{{m}}</div>{% endfor %}
+  {% endif %}{% endwith %}
+
+  <div class="panel-header">
+    <div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Panel de gestió</div>
+      <div class="panel-title">{{b.logo}} <span>{{b.name}}</span></div>
+    </div>
+    <div class="panel-actions">
+      <a href="/panel/oferta/nova" class="btn btn-accent">+ Nova oferta</a>
+      <a href="/panel/folleto/nou" class="btn btn-ghost">+ Nou folleto</a>
+      <a href="/negoci/{{b.id}}" class="btn btn-ghost">👁 Veure pàgina</a>
+    </div>
+  </div>
+
+  <!-- Ofertes actives -->
+  <div class="section-card">
+    <div class="section-card-head">
+      <div class="section-card-title">🏷️ Ofertes actives ({{ofertes|length}})</div>
+    </div>
+    {% if ofertes %}
+    <table class="table">
+      <thead><tr>
+        <th>Producte</th><th>Preu oferta</th><th>Preu original</th><th>Vàlid fins</th><th>Destacat</th><th></th>
+      </tr></thead>
+      <tbody>
+        {% for o in ofertes %}
+        <tr>
+          <td><span style="font-size:18px;margin-right:8px">{{o.emoji}}</span>{{o.name}}</td>
+          <td style="color:var(--accent);font-family:'Syne',sans-serif;font-weight:700">{{"%.2f"|format(o.offer_price)}}€</td>
+          <td style="color:var(--muted);text-decoration:line-through">{{"%.2f"|format(o.original_price)}}€</td>
+          <td><span class="badge-active">{{o.valid_until}}</span></td>
+          <td>{% if o.featured %}⭐{% else %}—{% endif %}</td>
+          <td>
+            <form method="POST" action="/panel/oferta/eliminar/{{o.id}}" onsubmit="return confirm('Eliminar aquesta oferta?')">
+              <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">Cap oferta activa. <a href="/panel/oferta/nova" style="color:var(--accent)">Afegeix la primera →</a></div>
+    {% endif %}
+  </div>
+
+  <!-- Folletos actius -->
+  <div class="section-card">
+    <div class="section-card-head">
+      <div class="section-card-title">📋 Folletos actius ({{folletos|length}})</div>
+    </div>
+    {% if folletos %}
+    <table class="table">
+      <thead><tr><th>Títol</th><th>Tipus</th><th>Vàlid fins</th><th></th></tr></thead>
+      <tbody>
+        {% for f in folletos %}
+        <tr>
+          <td>{{f.title}}</td>
+          <td>{% if f.filetype=='pdf' %}📄 PDF{% else %}🖼️ Imatge{% endif %}</td>
+          <td><span class="badge-active">{{f.valid_until}}</span></td>
+          <td style="display:flex;gap:8px;align-items:center">
+            <a href="/static/uploads/folletos/{{f.filename}}" target="_blank" class="btn btn-ghost btn-sm">Veure</a>
+            <form method="POST" action="/panel/folleto/eliminar/{{f.id}}" onsubmit="return confirm('Eliminar aquest folleto?')">
+              <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">Cap folleto publicat. <a href="/panel/folleto/nou" style="color:var(--accent)">Puja el primer →</a></div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

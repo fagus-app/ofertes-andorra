@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}{{b.name}} — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.biz-hero{padding:44px 24px 36px;position:relative;overflow:hidden}
+.biz-hero::before{content:'';position:absolute;top:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(ellipse,{{b.color}}33 0%,transparent 65%);pointer-events:none}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:28px}
+.breadcrumb a{color:var(--muted);text-decoration:none;transition:color .2s}
+.breadcrumb a:hover{color:var(--accent)}
+.hero-inner{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.logo-xl{width:76px;height:76px;background:var(--bg3);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;border:1px solid var(--border)}
+.biz-cat2{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.biz-name2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,5vw,42px);letter-spacing:-1px;line-height:1.1;color:var(--text);margin-bottom:10px}
+.biz-desc2{font-size:15px;color:var(--muted);font-weight:300;max-width:500px;margin-bottom:18px}
+.biz-meta{display:flex;gap:18px;flex-wrap:wrap}
+.biz-meta-item{font-size:13px;color:var(--muted)}
+/* tabs */
+.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:50px;padding:4px;width:fit-content;margin-bottom:28px}
+.tab{padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+.tab.active{background:var(--accent);color:#0F0F0F}
+/* folletos */
+.folleto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.folleto-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s,border-color .2s}
+.folleto-card:hover{transform:translateY(-2px);border-color:var(--border2)}
+.folleto-preview{width:100%;height:180px;object-fit:cover;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--muted)}
+.folleto-preview img{width:100%;height:100%;object-fit:cover}
+.folleto-pdf-thumb{width:100%;height:180px;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.folleto-body{padding:16px}
+.folleto-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px}
+.folleto-valid{font-size:12px;color:var(--muted)}
+.folleto-valid strong{color:var(--accent)}
+.folleto-actions{display:flex;gap:8px;margin-top:12px}
+/* offers */
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.cat-chip{padding:7px 16px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+.cat-chip:hover{color:var(--text);background:var(--bg3)}
+.cat-chip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:14px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s,transform .2s}
+.offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.o-emoji{font-size:34px;line-height:1}
+.o-cat{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.o-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1}
+.o-prices{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.o-new{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;color:var(--accent)}
+.o-old{font-size:12px;color:var(--muted);text-decoration:line-through}
+.o-unit{font-size:11px;color:var(--muted)}
+.o-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border)}
+.o-valid{font-size:11px;color:var(--muted)}
+.o-valid strong{color:var(--accent)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:48px;font-size:14px}
+/* other businesses */
+.others-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.others-scroll::-webkit-scrollbar{display:none}
+.other-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 16px;text-decoration:none;font-size:13px;color:var(--muted);transition:all .2s;white-space:nowrap}
+.other-chip:hover{color:var(--text);background:var(--bg3);border-color:var(--border2)}
+</style>
+{% endblock %}
+{% block content %}
+<section class="biz-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="/">Inici</a><span>›</span><span>{{b.name}}</span></div>
+    <div class="hero-inner">
+      <div class="logo-xl">{{b.logo}}</div>
+      <div>
+        <div class="biz-cat2">{{b.category}}</div>
+        <h1 class="biz-name2">{{b.name}}</h1>
+        <p class="biz-desc2">{{b.description}}</p>
+        <div class="biz-meta">
+          {% if b.location %}<div class="biz-meta-item">📍 {{b.location}}</div>{% endif %}
+          {% if b.phone %}<div class="biz-meta-item">📞 {{b.phone}}</div>{% endif %}
+          <div class="biz-meta-item">🏷️ {{ofertes|length}} ofertes · 📋 {{folletos|length}} folletos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="padding-bottom:64px">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('ofertes',this)">🏷️ Ofertes ({{ofertes|length}})</button>
+    <button class="tab" onclick="showTab('folletos',this)">📋 Folletos ({{folletos|length}})</button>
+  </div>
+
+  <!-- Ofertes -->
+  <div id="tab-ofertes">
+    {% if categories %}
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-chip active" data-cat="">Totes</button>
+      {% for cat in categories %}<button class="cat-chip" data-cat="{{cat}}">{{cat}}</button>{% endfor %}
+    </div>
+    {% endif %}
+    <div class="offers-grid" id="offersGrid">
+      {% if ofertes %}
+        {% for o in ofertes %}
+        {% set d=((1-o.offer_price/o.original_price)*100)|int %}
+        <div class="offer-card" data-cat="{{o.category}}">
+          <span class="o-emoji">{{o.emoji}}</span>
+          <div class="o-cat">{{o.category}}</div>
+          <div class="o-name">{{o.name}}</div>
+          <div class="o-prices">
+            <span class="o-new">{{"%.2f"|format(o.offer_price)}}€</span>
+            <span class="o-old">{{"%.2f"|format(o.original_price)}}€</span>
+            <span class="discount">−{{d}}%</span>
+          </div>
+          <div class="o-unit">{{o.unit}}</div>
+          <div class="o-footer"><span class="o-valid">Fins el <strong>{{o.valid_until}}</strong></span></div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">Cap oferta activa en aquest moment</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Folletos -->
+  <div id="tab-folletos" style="display:none">
+    {% if folletos %}
+    <div class="folleto-grid">
+      {% for f in folletos %}
+      <div class="folleto-card">
+        {% if f.filetype == 'image' %}
+          <div class="folleto-preview"><img src="/static/uploads/folletos/{{f.filename}}" alt="{{f.title}}"></div>
+        {% else %}
+          <div class="folleto-pdf-thumb">
+            <span style="font-size:48px">📄</span>
+            <span style="font-size:12px;color:var(--muted)">Document PDF</span>
+          </div>
+        {% endif %}
+        <div class="folleto-body">
+          <div class="folleto-title">{{f.title}}</div>
+          <div class="folleto-valid">Vàlid fins el <strong>{{f.valid_until}}</strong></div>
+          <div class="folleto-actions">
+            <a href="/static/uploads/folletos/{{f.filename}}" target="_blank" class="btn btn-accent btn-sm">
+              {% if f.filetype == 'pdf' %}📄 Obrir PDF{% else %}🔍 Veure{% endif %}
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <div style="text-align:center;color:var(--muted);padding:48px;font-size:14px">Cap folleto publicat en aquest moment</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Other businesses -->
+<div style="border-top:1px solid var(--border);padding:36px 24px 56px">
+  <div class="container">
+    <div class="section-heading" style="margin-bottom:14px">Altres botigues</div>
+    <div class="others-scroll">
+      {% for ob in all_businesses %}{% if ob.id != b.id %}
+      <a href="/negoci/{{ob.id}}" class="other-chip">{{ob.logo}} {{ob.name}}</a>
+      {% endif %}{% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function showTab(name,btn){
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  document.getElementById('tab-'+name).style.display='';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+const catTabs=document.getElementById('catTabs');
+if(catTabs){
+  catTabs.addEventListener('click',e=>{
+    const c=e.target.closest('.cat-chip');if(!c)return;
+    catTabs.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    const cat=c.dataset.cat;
+    document.querySelectorAll('.offer-card[data-cat]').forEach(card=>{
+      card.style.display=(!cat||card.dataset.cat===cat)?'':'none';
+    });
+  });
+}
+</script>
+{% endblock %}

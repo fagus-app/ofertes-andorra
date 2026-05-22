@@ -3,341 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Ofertes Andorra{% endblock %}</title>
+  <title>{% block title %}Ofertes.ad{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0F0F0F;
-      --bg2: #181818;
-      --bg3: #222222;
-      --card: #1C1C1C;
-      --border: rgba(255,255,255,0.08);
-      --border2: rgba(255,255,255,0.14);
-      --text: #F0EDE8;
-      --muted: rgba(240,237,232,0.45);
-      --accent: #E8C547;
-      --accent2: #F0D870;
-      --red: #E85454;
-      --green: #52C97A;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.4);
-      --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0F0F0F;--bg2:#181818;--bg3:#222;--card:#1C1C1C;
+      --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
+      --text:#F0EDE8;--muted:rgba(240,237,232,.45);
+      --accent:#E8C547;--red:#E85454;--green:#52C97A;
+      --radius:16px;--radius-sm:10px;
+      --shadow:0 4px 24px rgba(0,0,0,.4);--shadow-lg:0 8px 48px rgba(0,0,0,.6);
     }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    /* ── Nav ─────────────────────────── */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(15,15,15,0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .nav-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 22px;
-      color: var(--accent);
-      text-decoration: none;
-      letter-spacing: -0.5px;
-      flex-shrink: 0;
-    }
-
-    .nav-logo span { color: var(--text); }
-
-    .search-wrap {
-      flex: 1;
-      max-width: 480px;
-      position: relative;
-    }
-
-    .search-wrap input {
-      width: 100%;
-      background: var(--bg3);
-      border: 1px solid var(--border2);
-      border-radius: 50px;
-      padding: 9px 20px 9px 44px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-    }
-
-    .search-wrap input::placeholder { color: var(--muted); }
-    .search-wrap input:focus { border-color: var(--accent); background: var(--bg2); }
-
-    .search-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-size: 16px;
-      pointer-events: none;
-    }
-
-    .search-results-dropdown {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0; right: 0;
-      background: var(--bg2);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-lg);
-      max-height: 380px;
-      overflow-y: auto;
-      display: none;
-      z-index: 200;
-    }
-
-    .search-results-dropdown.open { display: block; }
-
-    .search-result-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-
-    .search-result-item:last-child { border-bottom: none; }
-    .search-result-item:hover { background: var(--bg3); }
-
-    .search-result-emoji { font-size: 22px; }
-
-    .search-result-info { flex: 1; min-width: 0; }
-    .search-result-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .search-result-store { font-size: 11px; color: var(--muted); }
-
-    .search-result-price { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--accent); white-space: nowrap; }
-
-    /* ── Layout ──────────────────────── */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-
-    /* ── Buttons ─────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      border: none;
-      transition: all 0.2s;
-    }
-
-    .btn-accent { background: var(--accent); color: #0F0F0F; }
-    .btn-accent:hover { background: var(--accent2); transform: translateY(-1px); }
-    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border2); }
-    .btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
-
-    /* ── Discount badge ──────────────── */
-    .discount {
-      display: inline-block;
-      background: var(--red);
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 50px;
-    }
-
-    /* ── Offer card ──────────────────── */
-    .offer-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-      cursor: default;
-    }
-
-    .offer-card:hover {
-      border-color: var(--border2);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .offer-emoji {
-      font-size: 36px;
-      line-height: 1;
-      display: block;
-    }
-
-    .offer-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.4;
-      flex: 1;
-    }
-
-    .offer-prices {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .offer-price-new {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 22px;
-      color: var(--accent);
-    }
-
-    .offer-price-old {
-      font-size: 13px;
-      color: var(--muted);
-      text-decoration: line-through;
-    }
-
-    .offer-unit { font-size: 11px; color: var(--muted); margin-top: -4px; }
-
-    .offer-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-    }
-
-    .offer-valid { font-size: 11px; color: var(--muted); }
-    .offer-valid strong { color: var(--accent); }
-
-    /* ── Store chip ──────────────────── */
-    .store-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    /* ── Section heading ─────────────── */
-    .section-heading {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    /* ── Footer ──────────────────────── */
-    footer {
-      margin-top: 80px;
-      border-top: 1px solid var(--border);
-      padding: 32px 24px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    footer strong { color: var(--accent); font-family: 'Syne', sans-serif; }
-
-    /* ── Scrollbar ───────────────────── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
+    nav{position:sticky;top:0;z-index:100;background:rgba(15,15,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--accent);text-decoration:none;letter-spacing:-.5px;flex-shrink:0}
+    .nav-logo span{color:var(--text)}
+    .search-wrap{flex:1;max-width:480px;position:relative}
+    .search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:9px 20px 9px 44px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s,background .2s}
+    .search-wrap input::placeholder{color:var(--muted)}
+    .search-wrap input:focus{border-color:var(--accent);background:var(--bg2)}
+    .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none}
+    .dropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);max-height:380px;overflow-y:auto;display:none;z-index:200}
+    .dropdown.open{display:block}
+    .dr-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+    .dr-item:last-child{border-bottom:none}
+    .dr-item:hover{background:var(--bg3)}
+    .dr-emoji{font-size:22px}
+    .dr-info{flex:1;min-width:0}
+    .dr-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .dr-store{font-size:11px;color:var(--muted)}
+    .dr-price{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--accent);white-space:nowrap}
+    .nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;border:none;transition:all .2s}
+    .btn-accent{background:var(--accent);color:#0F0F0F}
+    .btn-accent:hover{background:#F0D870;transform:translateY(-1px)}
+    .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+    .btn-ghost:hover{color:var(--text);background:var(--bg3)}
+    .btn-danger{background:rgba(232,84,84,.12);color:var(--red);border:1px solid rgba(232,84,84,.2)}
+    .btn-danger:hover{background:rgba(232,84,84,.22)}
+    .btn-sm{padding:6px 14px;font-size:12px}
+    .discount{display:inline-block;background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:2px 8px;border-radius:50px}
+    .flash{padding:12px 20px;border-radius:var(--radius-sm);margin:16px 0;font-size:14px;background:rgba(82,201,122,.1);border:1px solid rgba(82,201,122,.2);color:var(--green)}
+    .section-heading{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+    footer{margin-top:80px;border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:13px;color:var(--muted)}
+    footer strong{color:var(--accent);font-family:'Syne',sans-serif}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
   </style>
   {% block head %}{% endblock %}
 </head>
 <body>
-  <nav>
-    <a href="/" class="nav-logo">Ofertes<span>AD</span></a>
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" id="globalSearch" placeholder="Cerca productes, botigues..." autocomplete="off">
-      <div class="search-results-dropdown" id="searchDropdown"></div>
-    </div>
-  </nav>
+<nav>
+  <a href="/" class="nav-logo">Ofertes<span>.ad</span></a>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="gSearch" placeholder="Cerca productes o botigues..." autocomplete="off">
+    <div class="dropdown" id="gDrop"></div>
+  </div>
+  <div class="nav-actions">
+    {% if session.business_id %}
+      <a href="/panel" class="btn btn-accent btn-sm">⚙ Panel</a>
+      <a href="/logout" class="btn btn-ghost btn-sm">Sortir</a>
+    {% else %}
+      <a href="/login" class="btn btn-ghost btn-sm">Accés botigues</a>
+    {% endif %}
+  </div>
+</nav>
 
-  {% block content %}{% endblock %}
+{% block content %}{% endblock %}
 
-  <footer>
-    <div>Fet amb ❤️ per a les botigues d'<strong>Andorra</strong> · Ofertes actualitzades cada setmana</div>
-  </footer>
+<footer>
+  <div>Fet amb ❤️ per a les botigues d'<strong>Andorra</strong> · Ofertes actualitzades cada setmana</div>
+</footer>
 
-  <script>
-    // ── Global search ─────────────────────────────────────────────────────────
-    const searchInput = document.getElementById('globalSearch');
-    const dropdown = document.getElementById('searchDropdown');
-    let searchTimer;
-
-    searchInput.addEventListener('input', () => {
-      clearTimeout(searchTimer);
-      const q = searchInput.value.trim();
-      if (!q) { dropdown.classList.remove('open'); dropdown.innerHTML = ''; return; }
-      searchTimer = setTimeout(() => fetchSearch(q), 200);
-    });
-
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.search-wrap')) {
-        dropdown.classList.remove('open');
-      }
-    });
-
-    async function fetchSearch(q) {
-      const res = await fetch('/api/search?q=' + encodeURIComponent(q));
-      const items = await res.json();
-      if (!items.length) {
-        dropdown.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">No s\'han trobat resultats</div>';
-        dropdown.classList.add('open');
-        return;
-      }
-      dropdown.innerHTML = items.map(o => {
-        const disc = Math.round((1 - o.offer_price / o.original_price) * 100);
-        return `<div class="search-result-item" onclick="window.location='/tienda/${o.store_id}'">
-          <span class="search-result-emoji">${o.emoji}</span>
-          <div class="search-result-info">
-            <div class="search-result-name">${o.name}</div>
-            <div class="search-result-store">${o.store.name} · −${disc}%</div>
-          </div>
-          <div class="search-result-price">${o.offer_price.toFixed(2)}€</div>
-        </div>`;
-      }).join('');
-      dropdown.classList.add('open');
-    }
-  </script>
-
-  {% block scripts %}{% endblock %}
+<script>
+const inp=document.getElementById('gSearch'),drop=document.getElementById('gDrop');
+let t;
+inp.addEventListener('input',()=>{
+  clearTimeout(t);
+  const q=inp.value.trim();
+  if(!q){drop.classList.remove('open');drop.innerHTML='';return}
+  t=setTimeout(()=>doSearch(q),220);
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))drop.classList.remove('open')});
+async function doSearch(q){
+  const r=await fetch('/api/search?q='+encodeURIComponent(q));
+  const items=await r.json();
+  if(!items.length){drop.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Sense resultats</div>';drop.classList.add('open');return}
+  drop.innerHTML=items.map(o=>{
+    const d=Math.round((1-o.offer_price/o.original_price)*100);
+    return`<div class="dr-item" onclick="location='/negoci/${o.bid}'">
+      <span class="dr-emoji">${o.emoji}</span>
+      <div class="dr-info"><div class="dr-name">${o.name}</div><div class="dr-store">${o.bname} · −${d}%</div></div>
+      <div class="dr-price">${o.offer_price.toFixed(2)}€</div>
+    </div>`;
+  }).join('');
+  drop.classList.add('open');
+}
+</script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

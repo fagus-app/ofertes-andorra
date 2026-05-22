@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Nou Folleto — Panel{% endblock %}
+{% block head %}
+<style>
+.form-wrap{max-width:640px;margin:0 auto;padding:36px 24px 80px}
+.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);margin-bottom:28px}
+.form-title a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:400;margin-left:12px}
+.form-title a:hover{color:var(--accent)}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:36px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:36px;margin-bottom:10px}
+.upload-text{font-size:14px;color:var(--muted)}
+.upload-text strong{color:var(--accent)}
+.upload-formats{font-size:11px;color:var(--muted);margin-top:6px}
+.submit-row{display:flex;gap:12px;margin-top:8px}
+.submit-btn{flex:1;padding:13px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s}
+.submit-btn:hover{background:#F0D870}
+#filename-display{margin-top:10px;font-size:13px;color:var(--green)}
+</style>
+{% endblock %}
+{% block content %}
+<div class="form-wrap">
+  <div class="form-title">+ Nou folleto <a href="/panel">← Tornar al panel</a></div>
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="field">
+        <label>Títol del folleto *</label>
+        <input type="text" name="title" placeholder="Ex: Ofertes setmana del 20 al 26 de maig" required>
+      </div>
+      <div class="field">
+        <label>Arxiu (PDF o imatge) *</label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif" required id="fileInput">
+          <div class="upload-icon">📋</div>
+          <div class="upload-text">Arrossega aquí o <strong>fes clic per seleccionar</strong></div>
+          <div class="upload-formats">PDF, JPG, PNG, WebP — màx. 10MB</div>
+          <div id="filename-display"></div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Data d'inici *</label>
+          <input type="date" name="valid_from" required>
+        </div>
+        <div class="field">
+          <label>Data de fi (venciment) *</label>
+          <input type="date" name="valid_until" required>
+          <div class="hint">El folleto desapareixerà automàticament en aquesta data</div>
+        </div>
+      </div>
+      <div class="submit-row">
+        <button type="submit" class="submit-btn">Publicar folleto →</button>
+        <a href="/panel" class="btn btn-ghost">Cancel·lar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const today = new Date().toISOString().split('T')[0];
+document.querySelector('[name=valid_from]').value = today;
+document.getElementById('fileInput').addEventListener('change', function(){
+  const name = this.files[0]?.name || '';
+  document.getElementById('filename-display').textContent = name ? '✅ ' + name : '';
+});
+</script>
+{% endblock %}

@@ -1,356 +1,106 @@
 {% extends "base.html" %}
-{% block title %}Ofertes Andorra — Les millors ofertes de la setmana{% endblock %}
-
+{% block title %}Ofertes.ad — Les millors ofertes d'Andorra{% endblock %}
 {% block head %}
 <style>
-  /* ── Hero ─────────────────────────── */
-  .hero {
-    padding: 64px 24px 48px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -80px; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 400px;
-    background: radial-gradient(ellipse, rgba(232,197,71,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(232,197,71,0.1);
-    border: 1px solid rgba(232,197,71,0.2);
-    border-radius: 50px;
-    padding: 5px 14px;
-    margin-bottom: 24px;
-  }
-
-  .hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: clamp(36px, 6vw, 64px);
-    line-height: 1.05;
-    letter-spacing: -1.5px;
-    color: var(--text);
-    margin-bottom: 16px;
-  }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-
-  .hero-sub {
-    font-size: 16px;
-    color: var(--muted);
-    max-width: 440px;
-    margin: 0 auto 40px;
-    font-weight: 300;
-  }
-
-  .hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-  }
-
-  .hero-stat { text-align: center; }
-
-  .hero-stat-num {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    color: var(--text);
-    display: block;
-  }
-
-  .hero-stat-label { font-size: 12px; color: var(--muted); }
-
-  /* ── Featured strip ──────────────── */
-  .featured-section {
-    padding: 0 0 48px;
-  }
-
-  .featured-scroll {
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding: 4px 24px 16px;
-    scroll-snap-type: x mandatory;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .featured-scroll::-webkit-scrollbar { display: none; }
-
-  .featured-card {
-    flex: 0 0 260px;
-    scroll-snap-align: start;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .featured-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(232,197,71,0.06) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .featured-card:hover { transform: translateY(-3px); border-color: rgba(232,197,71,0.3); }
-
-  .featured-badge {
-    position: absolute;
-    top: 16px; right: 16px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    background: var(--accent);
-    color: #0F0F0F;
-    padding: 3px 10px;
-    border-radius: 50px;
-  }
-
-  .featured-emoji { font-size: 48px; line-height: 1; }
-
-  .featured-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.4;
-  }
-
-  .featured-store { font-size: 12px; color: var(--muted); }
-
-  .featured-price-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-top: auto;
-  }
-
-  .featured-price-new {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 26px;
-    color: var(--accent);
-  }
-
-  .featured-price-old {
-    font-size: 13px;
-    color: var(--muted);
-    text-decoration: line-through;
-  }
-
-  /* ── Stores grid ─────────────────── */
-  .stores-section { padding: 0 0 64px; }
-
-  .stores-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
-  .store-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    text-decoration: none;
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .store-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--store-accent, var(--accent));
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .store-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: var(--border2); }
-  .store-card:hover::before { opacity: 1; }
-
-  .store-logo-big {
-    font-size: 36px;
-    width: 60px;
-    height: 60px;
-    background: var(--bg3);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .store-info { flex: 1; min-width: 0; }
-
-  .store-name {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-
-  .store-category {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .store-desc {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .store-offers-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 12px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--accent);
-    background: rgba(232,197,71,0.08);
-    border: 1px solid rgba(232,197,71,0.15);
-    border-radius: 50px;
-    padding: 3px 10px;
-  }
-
-  /* ── Offer section ───────────────── */
-  .all-offers-section { padding: 0 0 64px; }
-
-  .filter-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
-
-  .filter-chip {
-    padding: 7px 16px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid var(--border2);
-    background: transparent;
-    color: var(--muted);
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.2s;
-  }
-
-  .filter-chip:hover { color: var(--text); border-color: var(--border2); background: var(--bg3); }
-  .filter-chip.active { background: var(--accent); color: #0F0F0F; border-color: var(--accent); }
-
-  .offers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-  }
-
-  /* ── Section wrapper ─────────────── */
-  .section-wrap { padding: 0 24px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+.hero{padding:60px 24px 44px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(232,197,71,.12) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:5px 14px;margin-bottom:24px}
+.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(34px,6vw,62px);line-height:1.06;letter-spacing:-1.5px;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:16px;color:var(--muted);max-width:420px;margin:0 auto 36px;font-weight:300}
+.stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--text);display:block}
+.stat-lbl{font-size:12px;color:var(--muted)}
+/* featured */
+.feat-scroll{display:flex;gap:16px;overflow-x:auto;padding:4px 24px 16px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.feat-scroll::-webkit-scrollbar{display:none}
+.feat-card{flex:0 0 248px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,.06) 0%,transparent 60%);pointer-events:none}
+.feat-card:hover{transform:translateY(-3px);border-color:rgba(232,197,71,.3)}
+.feat-badge{position:absolute;top:14px;right:14px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;background:var(--accent);color:#0F0F0F;padding:3px 9px;border-radius:50px}
+.feat-emoji{font-size:44px;line-height:1}
+.feat-name{font-size:14px;font-weight:500;color:var(--text);line-height:1.4}
+.feat-store{font-size:11px;color:var(--muted)}
+.feat-prices{display:flex;align-items:baseline;gap:8px;margin-top:auto}
+.feat-new{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--accent)}
+.feat-old{font-size:13px;color:var(--muted);text-decoration:line-through}
+/* businesses */
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:flex;gap:16px;text-decoration:none;transition:border-color .2s,transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
+.biz-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--border2)}
+.biz-card:hover::before{opacity:1}
+.biz-logo{width:56px;height:56px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;border:1px solid var(--border)}
+.biz-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:2px}
+.biz-cat{font-size:12px;color:var(--muted);margin-bottom:6px}
+.biz-desc{font-size:13px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.biz-cta{display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:12px;font-weight:500;color:var(--accent);background:rgba(232,197,71,.08);border:1px solid rgba(232,197,71,.15);border-radius:50px;padding:3px 10px}
+/* offers section */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.chip{padding:7px 16px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+.chip:hover{color:var(--text);background:var(--bg3)}
+.chip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:14px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s,transform .2s,box-shadow .2s}
+.offer-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.o-emoji{font-size:34px;line-height:1}
+.o-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1}
+.o-prices{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.o-new{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;color:var(--accent)}
+.o-old{font-size:12px;color:var(--muted);text-decoration:line-through}
+.o-unit{font-size:11px;color:var(--muted)}
+.o-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border)}
+.o-valid{font-size:11px;color:var(--muted)}
+.o-valid strong{color:var(--accent)}
+.o-store{font-size:11px;color:var(--muted)}
+.sw{padding:0 24px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 </style>
 {% endblock %}
-
 {% block content %}
-<!-- Hero -->
 <section class="hero">
-  <div class="hero-eyebrow">📣 Ofertes de la setmana</div>
+  <div class="hero-tag">📣 Ofertes de la setmana</div>
   <h1>Les millors<br>ofertes d'<em>Andorra</em></h1>
   <p class="hero-sub">Totes les promocions dels supermercats i botigues locals en un sol lloc.</p>
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <span class="hero-stat-num">{{ stores|length }}</span>
-      <span class="hero-stat-label">Botigues</span>
-    </div>
-    <div class="hero-stat">
-      <span class="hero-stat-num">{{ featured|length }}+</span>
-      <span class="hero-stat-label">Ofertes destacades</span>
-    </div>
-    <div class="hero-stat">
-      <span class="hero-stat-num">Avui</span>
-      <span class="hero-stat-label">Actualitzat</span>
-    </div>
+  <div class="stats">
+    <div><span class="stat-num">{{ businesses|length }}</span><span class="stat-lbl">Botigues</span></div>
+    <div><span class="stat-num">{{ featured|length }}+</span><span class="stat-lbl">Ofertes destacades</span></div>
+    <div><span class="stat-num">Avui</span><span class="stat-lbl">Actualitzat</span></div>
   </div>
 </section>
 
-<!-- Featured offers -->
-<section class="featured-section">
-  <div class="section-wrap">
-    <div class="section-heading">🔥 Destacats</div>
-  </div>
-  <div class="featured-scroll">
-    {% for offer in featured %}
-    {% set disc = ((1 - offer.offer_price / offer.original_price) * 100) | int %}
-    <div class="featured-card" onclick="window.location='/tienda/{{ offer.store_id }}'">
-      <div class="featured-badge">−{{ disc }}%</div>
-      <div class="featured-emoji">{{ offer.emoji }}</div>
-      <div class="featured-name">{{ offer.name }}</div>
-      <div class="featured-store">{{ offer.store.name }}</div>
-      <div class="featured-price-row">
-        <span class="featured-price-new">{{ "%.2f"|format(offer.offer_price) }}€</span>
-        <span class="featured-price-old">{{ "%.2f"|format(offer.original_price) }}€</span>
+{% if featured %}
+<section style="padding:0 0 44px">
+  <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
+  <div class="feat-scroll">
+    {% for o in featured %}
+    {% set d=((1-o.offer_price/o.original_price)*100)|int %}
+    <div class="feat-card" onclick="location='/negoci/{{o.bid}}'">
+      <div class="feat-badge">−{{d}}%</div>
+      <div class="feat-emoji">{{o.emoji}}</div>
+      <div class="feat-name">{{o.name}}</div>
+      <div class="feat-store">{{o.bname}}</div>
+      <div class="feat-prices">
+        <span class="feat-new">{{"%.2f"|format(o.offer_price)}}€</span>
+        <span class="feat-old">{{"%.2f"|format(o.original_price)}}€</span>
       </div>
     </div>
     {% endfor %}
   </div>
 </section>
+{% endif %}
 
-<!-- Stores -->
-<section class="stores-section">
-  <div class="section-wrap">
-    <div class="section-heading">🏪 Botigues</div>
-  </div>
+<section style="padding:0 0 56px">
+  <div class="sw"><div class="section-heading">🏪 Botigues</div></div>
   <div class="container">
-    <div class="stores-grid">
-      {% for store in stores %}
-      {% set count = namespace(n=0) %}
-      {% for o in [] %}{% endfor %}
-      <a href="/tienda/{{ store.id }}" class="store-card" style="--store-accent: {{ store.accent }};">
-        <div class="store-logo-big">{{ store.logo }}</div>
-        <div class="store-info">
-          <div class="store-name">{{ store.name }}</div>
-          <div class="store-category">{{ store.category }}</div>
-          <div class="store-desc">{{ store.description }}</div>
-          <div class="store-offers-count">Ver ofertes →</div>
+    <div class="biz-grid">
+      {% for b in businesses %}
+      <a href="/negoci/{{b.id}}" class="biz-card" style="--ba:{{b.accent}}">
+        <div class="biz-logo">{{b.logo}}</div>
+        <div>
+          <div class="biz-name">{{b.name}}</div>
+          <div class="biz-cat">{{b.category}}</div>
+          <div class="biz-desc">{{b.description}}</div>
+          <div class="biz-cta">Veure ofertes →</div>
         </div>
       </a>
       {% endfor %}
@@ -358,74 +108,46 @@
   </div>
 </section>
 
-<!-- All offers with filter -->
-<section class="all-offers-section">
-  <div class="section-wrap">
-    <div class="section-heading">🏷️ Totes les ofertes</div>
-  </div>
+<section style="padding:0 0 64px">
+  <div class="sw"><div class="section-heading">🏷️ Totes les ofertes</div></div>
   <div class="container">
     <div class="filter-row" id="filterRow">
-      <button class="filter-chip active" data-store="">Totes</button>
-      {% for store in stores %}
-      <button class="filter-chip" data-store="{{ store.id }}">{{ store.logo }} {{ store.name }}</button>
+      <button class="chip active" data-bid="">Totes</button>
+      {% for b in businesses %}
+      <button class="chip" data-bid="{{b.id}}">{{b.logo}} {{b.name}}</button>
       {% endfor %}
     </div>
-    <div class="offers-grid" id="offersGrid">
-      <!-- loaded via JS -->
-    </div>
+    <div class="offers-grid" id="offersGrid"></div>
   </div>
 </section>
 {% endblock %}
-
 {% block scripts %}
 <script>
-  const grid = document.getElementById('offersGrid');
-  const filterRow = document.getElementById('filterRow');
-  let activeStore = '';
-
-  function discount(o) {
-    return Math.round((1 - o.offer_price / o.original_price) * 100);
-  }
-
-  function renderOffers(offers) {
-    if (!offers.length) {
-      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;font-size:14px">No hi ha ofertes disponibles</div>';
-      return;
-    }
-    grid.innerHTML = offers.map(o => `
-      <div class="offer-card">
-        <span class="offer-emoji">${o.emoji}</span>
-        <div class="offer-name">${o.name}</div>
-        <div class="offer-prices">
-          <span class="offer-price-new">${o.offer_price.toFixed(2)}€</span>
-          <span class="offer-price-old">${o.original_price.toFixed(2)}€</span>
-          <span class="discount">−${discount(o)}%</span>
-        </div>
-        <div class="offer-unit">${o.unit}</div>
-        <div class="offer-footer">
-          <span class="offer-valid">Fins el <strong>${o.valid_until}</strong></span>
-          <span class="store-chip">${o.store.logo} ${o.store.name}</span>
-        </div>
+const grid=document.getElementById('offersGrid');
+const fr=document.getElementById('filterRow');
+async function load(bid){
+  const r=await fetch('/api/ofertes'+(bid?'?business_id='+bid:''));
+  const data=await r.json();
+  if(!data.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;font-size:14px">Cap oferta disponible</div>';return}
+  grid.innerHTML=data.map(o=>{
+    const d=Math.round((1-o.offer_price/o.original_price)*100);
+    return`<div class="offer-card">
+      <span class="o-emoji">${o.emoji}</span>
+      <div class="o-name">${o.name}</div>
+      <div class="o-prices"><span class="o-new">${o.offer_price.toFixed(2)}€</span><span class="o-old">${o.original_price.toFixed(2)}€</span><span class="discount">−${d}%</span></div>
+      <div class="o-unit">${o.unit}</div>
+      <div class="o-footer">
+        <span class="o-valid">Fins el <strong>${o.valid_until}</strong></span>
+        <span class="o-store">${o.blogo} ${o.bname}</span>
       </div>
-    `).join('');
-  }
-
-  async function loadOffers(storeId) {
-    const url = '/api/offers' + (storeId ? '?store_id=' + storeId : '');
-    const res = await fetch(url);
-    const data = await res.json();
-    renderOffers(data);
-  }
-
-  filterRow.addEventListener('click', e => {
-    const chip = e.target.closest('.filter-chip');
-    if (!chip) return;
-    filterRow.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activeStore = chip.dataset.store;
-    loadOffers(activeStore);
-  });
-
-  loadOffers('');
+    </div>`;
+  }).join('');
+}
+fr.addEventListener('click',e=>{
+  const c=e.target.closest('.chip');if(!c)return;
+  fr.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');load(c.dataset.bid);
+});
+load('');
 </script>
 {% endblock %}

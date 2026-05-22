@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Nova Oferta — Panel{% endblock %}
+{% block head %}
+<style>
+.form-wrap{max-width:640px;margin:0 auto;padding:36px 24px 80px}
+.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);margin-bottom:28px}
+.form-title a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:400;margin-left:12px}
+.form-title a:hover{color:var(--accent)}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px}
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.field select option{background:var(--bg2)}
+.field textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer}
+.checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.checkbox-row span{font-size:14px;color:var(--text)}
+.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.submit-row{display:flex;gap:12px;margin-top:8px}
+.submit-btn{flex:1;padding:13px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s}
+.submit-btn:hover{background:#F0D870}
+</style>
+{% endblock %}
+{% block content %}
+<div class="form-wrap">
+  <div class="form-title">+ Nova oferta <a href="/panel">← Tornar al panel</a></div>
+  <div class="form-card">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="field">
+        <label>Nom del producte *</label>
+        <input type="text" name="name" placeholder="Ex: Llet sencera 1L" required>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Emoji del producte</label>
+          <input type="text" name="emoji" placeholder="🛒" maxlength="4" value="🛒">
+          <div class="hint">Copia un emoji que representi el producte</div>
+        </div>
+        <div class="field">
+          <label>Categoria</label>
+          <input type="text" name="category" placeholder="Ex: Lactis, Fruita, Pa...">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Preu original (€) *</label>
+          <input type="number" name="original_price" step="0.01" min="0.01" placeholder="3.50" required>
+        </div>
+        <div class="field">
+          <label>Preu en oferta (€) *</label>
+          <input type="number" name="offer_price" step="0.01" min="0.01" placeholder="1.99" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Unitat</label>
+        <input type="text" name="unit" placeholder="Ex: el kg, l'ampolla, la peça...">
+      </div>
+      <div class="field">
+        <label>Foto del producte (opcional)</label>
+        <input type="file" name="image" accept="image/*">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Data d'inici *</label>
+          <input type="date" name="valid_from" required>
+        </div>
+        <div class="field">
+          <label>Data de fi (venciment) *</label>
+          <input type="date" name="valid_until" required>
+          <div class="hint">L'oferta desapareixerà automàticament en aquesta data</div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="checkbox-row">
+          <input type="checkbox" name="featured" value="1">
+          <span>⭐ Mostrar com a oferta destacada a la portada</span>
+        </label>
+      </div>
+      <div class="submit-row">
+        <button type="submit" class="submit-btn">Publicar oferta →</button>
+        <a href="/panel" class="btn btn-ghost">Cancel·lar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+// Set today as default start date
+const today = new Date().toISOString().split('T')[0];
+document.querySelector('[name=valid_from]').value = today;
+</script>
+{% endblock %}
