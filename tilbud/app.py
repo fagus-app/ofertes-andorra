@@ -148,6 +148,9 @@ def init_db():
             ("hours_fri", "TEXT DEFAULT ''"),
             ("hours_sat", "TEXT DEFAULT ''"),
             ("hours_sun", "TEXT DEFAULT ''"),
+            ("subscription_status", "TEXT DEFAULT 'trial'"),
+            ("subscription_start", "TEXT DEFAULT (date('now'))"),
+            ("subscription_end", "TEXT DEFAULT (date('now','+15 days'))"),
         ]:
             try: db.execute(f"ALTER TABLE businesses ADD COLUMN {col} {defn}")
             except Exception: pass
