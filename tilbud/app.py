@@ -258,21 +258,23 @@ def send_email(to, subject, html):
     except Exception as e: print(f"[EMAIL ERR] {e}"); return False
 
 def check_subscriptions():
-    db = get_db(); today = today_str()
-    warn_date = (date.today()+timedelta(days=WARNING_DAYS)).isoformat()
-    for b in db.execute("SELECT * FROM businesses WHERE active=1 AND warning_sent=0 AND subscription_end<=?", (warn_date,)).fetchall():
-        dl = days_left(b)
-        send_email(b['email'] or ADMIN_EMAIL,
-            f"⚠️ La teva subscripció a Ofertes.ad venç en {dl} dies",
-            f"""<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px;background:#0F0F0F;color:#F0EDE8">
-            <h2 style="color:#E8C547">Ofertes.ad</h2>
-            <p>Hola <strong>{b['name']}</strong>,</p>
-            <p>La teva subscripció venç el <strong>{b['subscription_end']}</strong> ({dl} dies restants).</p>
-            <p>Si no renoves, les teves ofertes deixaran d'apareixer a l'app automàticament.</p>
-            <a href="{STRIPE_PAYMENT_LINK}" style="display:inline-block;margin:24px 0;padding:14px 28px;background:#E8C547;color:#0F0F0F;border-radius:50px;text-decoration:none;font-weight:700">Renovar subscripció →</a>
-            <p style="font-size:12px;color:#888">Ofertes.ad · ofertes.ad@gmail.com</p></div>""")
-        db.execute("UPDATE businesses SET warning_sent=1 WHERE id=?", (b['id'],))
-    db.commit()
+    try:
+        db = get_db(); today = today_str()
+        warn_date = (date.today()+timedelta(days=WARNING_DAYS)).isoformat()
+        for b in db.execute("SELECT * FROM businesses WHERE active=1 AND warning_sent=0 AND subscription_end<=?", (warn_date,)).fetchall():
+            dl = days_left(b)
+            send_email(b['email'] or ADMIN_EMAIL,
+                f"⚠️ La teva subscripció a Ofertes.ad venç en {dl} dies",
+                f"""<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px;background:#0F0F0F;color:#F0EDE8">
+                <h2 style="color:#E8C547">Ofertes.ad</h2>
+                <p>Hola <strong>{b['name']}</strong>,</p>
+                <p>La teva subscripció venç el <strong>{b['subscription_end']}</strong> ({dl} dies restants).</p>
+                <p>Per renovar: <a href="mailto:{ADMIN_EMAIL}" style="color:#E8C547">{ADMIN_EMAIL}</a></p>
+                </div>""")
+            db.execute("UPDATE businesses SET warning_sent=1 WHERE id=?", (b['id'],))
+        db.commit()
+    except Exception as e:
+        print(f"[SUBSCRIPTIONS] {e}")
 
 def login_required(f):
     @wraps(f)
