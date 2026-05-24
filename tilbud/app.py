@@ -135,7 +135,40 @@ def init_db():
             viewed_at   TEXT DEFAULT (datetime('now'))
         );
         """)
-        if not db.execute("SELECT 1 FROM businesses LIMIT 1").fetchone():
+      try:
+            db.execute("ALTER TABLE businesses ADD COLUMN warning_sent INTEGER DEFAULT 0")
+        except: pass
+        try:
+            db.execute("ALTER TABLE businesses ADD COLUMN parroquia TEXT NOT NULL DEFAULT 'Andorra la Vella'")
+        except: pass
+        try:
+            db.execute("ALTER TABLE businesses ADD COLUMN email TEXT DEFAULT ''")
+        except: pass
+        try:
+            db.execute("ALTER TABLE businesses ADD COLUMN maps_url TEXT DEFAULT ''")
+        except: pass
+        try:
+            db.execute("ALTER TABLE businesses ADD COLUMN logo_image TEXT DEFAULT ''")
+        except: pass
+        try:
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_mon TEXT DEFAULT ''")
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_tue TEXT DEFAULT ''")
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_wed TEXT DEFAULT ''")
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_thu TEXT DEFAULT ''")
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_fri TEXT DEFAULT ''")
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_sat TEXT DEFAULT ''")
+            db.execute("ALTER TABLE businesses ADD COLUMN hours_sun TEXT DEFAULT ''")
+        except: pass
+        try:
+            db.execute("ALTER TABLE ofertes ADD COLUMN views INTEGER DEFAULT 0")
+        except: pass
+        try:
+            db.execute("ALTER TABLE folletos ADD COLUMN views INTEGER DEFAULT 0")
+        except: pass
+        try:
+            db.execute("CREATE TABLE IF NOT EXISTS page_views (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, viewed_at TEXT DEFAULT (datetime('now')))")
+        except: pass  
+       if not db.execute("SELECT 1 FROM businesses LIMIT 1").fetchone():
             seed_demo(db)
 
 def seed_demo(db):
