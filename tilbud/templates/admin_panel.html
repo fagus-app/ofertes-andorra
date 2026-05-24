@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Panel Admin — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.admin-wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+.admin-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);margin-bottom:24px}
+.admin-title span{color:var(--accent)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center}
+.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent)}
+.stat-lbl{font-size:12px;color:var(--muted)}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.table{width:100%;border-collapse:collapse}
+.table th{padding:10px 16px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.table td{padding:12px 16px;font-size:13px;color:var(--text);border-bottom:1px solid var(--border);vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;border-radius:50px;font-size:11px;padding:2px 8px;white-space:nowrap}
+.badge-ok{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
+.badge-warn{background:rgba(232,197,71,.1);color:var(--accent);border:1px solid rgba(232,197,71,.2)}
+.badge-exp{background:rgba(232,84,84,.1);color:var(--red);border:1px solid rgba(232,84,84,.2)}
+.badge-off{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+.td-actions{display:flex;gap:6px;flex-wrap:wrap}
+</style>
+{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+  {% with msgs=get_flashed_messages() %}{% if msgs %}{% for m in msgs %}<div class="flash">{{m}}</div>{% endfor %}{% endif %}{% endwith %}
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div class="admin-title">⚙ Panel <span>Admin</span></div>
+    <a href="/admin/logout" class="btn btn-ghost btn-sm">Sortir</a>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val">{{stats.total}}</div><div class="stat-lbl">Total comerços</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)">{{stats.active}}</div><div class="stat-lbl">Actius</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--red)">{{stats.expired}}</div><div class="stat-lbl">Vençuts</div></div>
+  </div>
+
+  <div class="table-card">
+    <table class="table">
+      <thead><tr><th>Negoci</th><th>Categoria</th><th>Parròquia</th><th>Subscripció</th><th>Ofertes</th><th>Visites</th><th>Accions</th></tr></thead>
+      <tbody>
+        {% for b in businesses %}
+        {% set expired = b.subscription_end < today %}
+        {% set warning = not expired and (b.subscription_end|string <= (today|string)) %}
+        <tr>
+          <td>
+            <div style="font-weight:500">{{b.logo_emoji}} {{b.name}}</div>
+            <div style="font-size:11px;color:var(--muted)">@{{b.username}} · {{b.email or '—'}}</div>
+          </td>
+          <td style="color:var(--muted)">{{b.category}}</td>
+          <td style="color:var(--muted)">{{b.parroquia}}</td>
+          <td>
+            {% if not b.active %}<span class="badge badge-off">Inactiu</span>
+            {% elif expired %}<span class="badge badge-exp">Vençut {{b.subscription_end}}</span>
+            {% else %}<span class="badge badge-ok">Fins {{b.subscription_end}}</span>{% endif %}
+          </td>
+          <td style="color:var(--muted)">{{b.oferta_count}} of. · {{b.folleto_count}} fol.</td>
+          <td style="color:var(--muted)">{{b.total_views}}</td>
+          <td>
+            <div class="td-actions">
+              <form method="POST" action="/admin/toggle/{{b.id}}">
+                <button type="submit" class="btn btn-sm {% if b.active %}btn-danger{% else %}btn-green{% endif %}">
+                  {% if b.active %}Desactivar{% else %}Activar{% endif %}
+                </button>
+              </form>
+              <form method="POST" action="/admin/renovar/{{b.id}}">
+                <button type="submit" class="btn btn-accent btn-sm">+30 dies</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

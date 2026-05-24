@@ -22,22 +22,23 @@
     nav{position:sticky;top:0;z-index:100;background:rgba(15,15,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
     .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--accent);text-decoration:none;letter-spacing:-.5px;flex-shrink:0}
     .nav-logo span{color:var(--text)}
-    .search-wrap{flex:1;max-width:480px;position:relative}
-    .search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:9px 20px 9px 44px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s,background .2s}
+    .nav-links{display:flex;align-items:center;gap:6px}
+    .nav-link{font-size:13px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:50px;transition:all .2s}
+    .nav-link:hover{color:var(--text);background:var(--bg3)}
+    .search-wrap{flex:1;max-width:420px;position:relative}
+    .search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:9px 20px 9px 44px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
     .search-wrap input::placeholder{color:var(--muted)}
-    .search-wrap input:focus{border-color:var(--accent);background:var(--bg2)}
+    .search-wrap input:focus{border-color:var(--accent)}
     .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none}
     .dropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);max-height:380px;overflow-y:auto;display:none;z-index:200}
     .dropdown.open{display:block}
     .dr-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
     .dr-item:last-child{border-bottom:none}
     .dr-item:hover{background:var(--bg3)}
-    .dr-emoji{font-size:22px}
-    .dr-info{flex:1;min-width:0}
-    .dr-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .dr-emoji{font-size:22px}.dr-info{flex:1;min-width:0}
+    .dr-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .dr-store{font-size:11px;color:var(--muted)}
     .dr-price{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--accent);white-space:nowrap}
-    .nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
     .container{max-width:1200px;margin:0 auto;padding:0 24px}
     .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;border:none;transition:all .2s}
     .btn-accent{background:var(--accent);color:#0F0F0F}
@@ -52,59 +53,67 @@
     .section-heading{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
     footer{margin-top:80px;border-top:1px solid var(--border);padding:32px 24px;text-align:center;font-size:13px;color:var(--muted)}
     footer strong{color:var(--accent);font-family:'Syne',sans-serif}
+    footer a{color:var(--muted);text-decoration:none}
+    footer a:hover{color:var(--accent)}
     ::-webkit-scrollbar{width:6px;height:6px}
     ::-webkit-scrollbar-track{background:transparent}
     ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+    @media(max-width:640px){
+      .hide-mobile{display:none!important}
+      nav{padding:0 16px;gap:10px}
+      .container{padding:0 16px}
+    }
   </style>
   {% block head %}{% endblock %}
 </head>
 <body>
 <nav>
   <a href="/" class="nav-logo">Ofertes<span>.ad</span></a>
-  <div class="search-wrap">
+  <div class="search-wrap hide-mobile">
     <span class="search-icon">⌕</span>
     <input type="text" id="gSearch" placeholder="Cerca productes o botigues..." autocomplete="off">
     <div class="dropdown" id="gDrop"></div>
   </div>
-  <div class="nav-actions">
-    {% if session.business_id %}
+  <div class="nav-links">
+    <a href="/sobre-nosaltres" class="nav-link hide-mobile">Sobre nosaltres</a>
+    {% if session.is_admin %}
+      <a href="/admin" class="btn btn-ghost btn-sm">⚙ Admin</a>
+      <a href="/admin/logout" class="btn btn-ghost btn-sm">Sortir</a>
+    {% elif session.business_id %}
       <a href="/panel" class="btn btn-accent btn-sm">⚙ Panel</a>
       <a href="/logout" class="btn btn-ghost btn-sm">Sortir</a>
     {% else %}
-      <a href="/login" class="btn btn-ghost btn-sm">Accés botigues</a>
+      <a href="/login" class="btn btn-ghost btn-sm hide-mobile">Accés botigues</a>
+      <a href="/registre" class="btn btn-accent btn-sm">+ Registre</a>
     {% endif %}
   </div>
 </nav>
-
 {% block content %}{% endblock %}
-
 <footer>
+  <div style="margin-bottom:10px">
+    <a href="/">Inici</a> · <a href="/sobre-nosaltres">Sobre nosaltres</a> · <a href="/registre">Registra el teu comerç</a> · <a href="/login">Accés botigues</a>
+  </div>
   <div>Fet amb ❤️ per a les botigues d'<strong>Andorra</strong> · Ofertes actualitzades cada setmana</div>
 </footer>
-
 <script>
 const inp=document.getElementById('gSearch'),drop=document.getElementById('gDrop');
-let t;
-inp.addEventListener('input',()=>{
-  clearTimeout(t);
-  const q=inp.value.trim();
-  if(!q){drop.classList.remove('open');drop.innerHTML='';return}
-  t=setTimeout(()=>doSearch(q),220);
-});
-document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))drop.classList.remove('open')});
-async function doSearch(q){
-  const r=await fetch('/api/search?q='+encodeURIComponent(q));
-  const items=await r.json();
-  if(!items.length){drop.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Sense resultats</div>';drop.classList.add('open');return}
-  drop.innerHTML=items.map(o=>{
-    const d=Math.round((1-o.offer_price/o.original_price)*100);
-    return`<div class="dr-item" onclick="location='/negoci/${o.bid}'">
-      <span class="dr-emoji">${o.emoji}</span>
-      <div class="dr-info"><div class="dr-name">${o.name}</div><div class="dr-store">${o.bname} · −${d}%</div></div>
-      <div class="dr-price">${o.offer_price.toFixed(2)}€</div>
-    </div>`;
-  }).join('');
-  drop.classList.add('open');
+if(inp){
+  let t;
+  inp.addEventListener('input',()=>{
+    clearTimeout(t);const q=inp.value.trim();
+    if(!q){drop.classList.remove('open');drop.innerHTML='';return}
+    t=setTimeout(async()=>{
+      const r=await fetch('/api/search?q='+encodeURIComponent(q));
+      const items=await r.json();
+      if(!items.length){drop.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Sense resultats</div>';drop.classList.add('open');return}
+      drop.innerHTML=items.map(o=>`<div class="dr-item" onclick="location='/negoci/${o.bid}'">
+        <span class="dr-emoji">${o.emoji}</span>
+        <div class="dr-info"><div class="dr-name">${o.name}</div><div class="dr-store">${o.bname}</div></div>
+        <div class="dr-price">${o.offer_price.toFixed(2)}€</div></div>`).join('');
+      drop.classList.add('open');
+    },220);
+  });
+  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))drop.classList.remove('open')});
 }
 </script>
 {% block scripts %}{% endblock %}

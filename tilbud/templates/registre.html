@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Registra el teu negoci — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.reg-wrap{max-width:680px;margin:0 auto;padding:36px 20px 80px}
+.reg-hero{text-align:center;margin-bottom:36px}
+.reg-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--text);margin-bottom:8px}
+.reg-hero p{font-size:14px;color:var(--muted)}
+.trial-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(82,201,122,.1);border:1px solid rgba(82,201,122,.2);color:var(--green);border-radius:50px;padding:6px 16px;font-size:13px;font-weight:500;margin-bottom:20px}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:16px}
+.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:17px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.field select option{background:var(--bg2)}
+.field textarea{resize:vertical;min-height:72px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.hours-grid{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;margin-bottom:6px}
+.hours-day{font-size:12px;color:var(--muted);font-weight:500}
+.hours-grid input{padding:7px 10px;font-size:13px}
+.submit-btn{width:100%;padding:14px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:background .2s;margin-top:8px}
+.submit-btn:hover{background:#F0D870}
+.login-link{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
+.login-link a{color:var(--accent);text-decoration:none}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+</style>
+{% endblock %}
+{% block content %}
+<div class="reg-wrap">
+  <div class="reg-hero">
+    <div class="trial-badge">✅ 15 dies de prova gratuïts</div>
+    <h1>Registra el teu negoci</h1>
+    <p>Comença a publicar les teves ofertes avui. Sense compromisos.</p>
+  </div>
+
+  {% with msgs=get_flashed_messages() %}{% if msgs %}
+    {% for m in msgs %}<div class="flash flash-err">{{m}}</div>{% endfor %}
+  {% endif %}{% endwith %}
+
+  <form method="POST" enctype="multipart/form-data">
+
+    <!-- Informació bàsica -->
+    <div class="form-card">
+      <div class="form-section-title">🏪 Informació del negoci</div>
+      <div class="row2">
+        <div class="field">
+          <label>Nom del negoci *</label>
+          <input type="text" name="name" required placeholder="Ex: Mercat Central" value="{{form.get('name','')}}">
+        </div>
+        <div class="field">
+          <label>Tipus de negoci *</label>
+          <select name="category" required>
+            <option value="">Selecciona...</option>
+            {% for t in business_types %}<option value="{{t}}" {% if form.get('category')==t %}selected{% endif %}>{{t}}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Parròquia *</label>
+          <select name="parroquia" required>
+            <option value="">Selecciona...</option>
+            {% for p in parroquies %}<option value="{{p}}" {% if form.get('parroquia')==p %}selected{% endif %}>{{p}}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Telèfon</label>
+          <input type="tel" name="phone" placeholder="+376 800 000" value="{{form.get('phone','')}}">
+        </div>
+      </div>
+      <div class="field">
+        <label>Adreça</label>
+        <input type="text" name="location" placeholder="Ex: Carrer Major 5, Andorra la Vella" value="{{form.get('location','')}}">
+      </div>
+      <div class="field">
+        <label>Enllaç Google Maps</label>
+        <input type="url" name="maps_url" placeholder="https://maps.google.com/..." value="{{form.get('maps_url','')}}">
+        <div class="hint">Copia l'enllaç des de Google Maps per mostrar la ubicació als clients</div>
+      </div>
+      <div class="field">
+        <label>Descripció</label>
+        <textarea name="description" placeholder="Descriu el teu negoci en unes poques frases...">{{form.get('description','')}}</textarea>
+      </div>
+      <div class="field">
+        <label>Logo o foto del negoci</label>
+        <div class="upload-zone">
+          <input type="file" name="logo" accept="image/*" id="logoInput">
+          <div style="font-size:28px;margin-bottom:6px">🖼️</div>
+          <div style="font-size:13px;color:var(--muted)">Fes clic o arrossega una imatge</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG, WebP — Recomanat: 200x200px</div>
+          <div id="logo-name" style="margin-top:8px;font-size:12px;color:var(--green)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horaris -->
+    <div class="form-card">
+      <div class="form-section-title">🕐 Horaris</div>
+      <div class="hint" style="margin-bottom:14px">Ex: 9:00-13:00 / 16:00-20:00 · Escriu "Tancat" si no obres</div>
+      {% set days = [('h_mon','Dilluns'),('h_tue','Dimarts'),('h_wed','Dimecres'),('h_thu','Dijous'),('h_fri','Divendres'),('h_sat','Dissabte'),('h_sun','Diumenge')] %}
+      {% for key, label in days %}
+      <div class="hours-grid">
+        <div class="hours-day">{{label}}</div>
+        <input type="text" name="{{key}}" placeholder="9:00-20:00" value="{{form.get(key,'')}}">
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Compte -->
+    <div class="form-card">
+      <div class="form-section-title">🔐 Dades d'accés</div>
+      <div class="field">
+        <label>Correu electrònic *</label>
+        <input type="email" name="email" required placeholder="el-teu@email.com" value="{{form.get('email','')}}">
+        <div class="hint">Rebràs avisos de la subscripció i novetats</div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Nom d'usuari *</label>
+          <input type="text" name="username" required placeholder="nomdusuari" value="{{form.get('username','')}}" autocomplete="off">
+          <div class="hint">Sense espais ni accents</div>
+        </div>
+        <div class="field">
+          <label>Contrasenya *</label>
+          <input type="password" name="password" required placeholder="mínim 6 caràcters" autocomplete="new-password">
+        </div>
+      </div>
+      <div class="field">
+        <label>Repeteix la contrasenya *</label>
+        <input type="password" name="password2" required placeholder="repeteix la contrasenya" autocomplete="new-password">
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Crear compte i començar →</button>
+  </form>
+  <div class="login-link">Ja tens compte? <a href="/login">Inicia sessió</a></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('logoInput').addEventListener('change',function(){
+  const n=this.files[0]?.name||'';
+  document.getElementById('logo-name').textContent=n?'✅ '+n:'';
+});
+</script>
+{% endblock %}

@@ -1,86 +1,65 @@
 {% extends "base.html" %}
-{% block title %}Nova Oferta — Panel{% endblock %}
+{% block title %}{% if oferta %}Editar{% else %}Nova{% endif %} Oferta — Panel{% endblock %}
 {% block head %}
 <style>
-.form-wrap{max-width:640px;margin:0 auto;padding:36px 24px 80px}
-.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);margin-bottom:28px}
-.form-title a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:400;margin-left:12px}
-.form-title a:hover{color:var(--accent)}
-.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px}
-.field{margin-bottom:20px}
-.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
-.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
-.field select option{background:var(--bg2)}
-.field textarea{resize:vertical;min-height:80px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer}
-.checkbox-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+.form-wrap{max-width:620px;margin:0 auto;padding:32px 20px 80px}
+.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);margin-bottom:24px}
+.form-title a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:400;margin-left:12px}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.checkbox-row{display:flex;align-items:center;gap:9px;cursor:pointer}
+.checkbox-row input{width:17px;height:17px;accent-color:var(--accent);cursor:pointer}
 .checkbox-row span{font-size:14px;color:var(--text)}
-.hint{font-size:11px;color:var(--muted);margin-top:5px}
-.submit-row{display:flex;gap:12px;margin-top:8px}
-.submit-btn{flex:1;padding:13px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s}
+.submit-row{display:flex;gap:10px;margin-top:6px}
+.submit-btn{flex:1;padding:12px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
 .submit-btn:hover{background:#F0D870}
+.emoji-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.emoji-btn{font-size:20px;cursor:pointer;padding:4px;border-radius:6px;border:1px solid transparent;background:var(--bg3);transition:all .15s;line-height:1}
+.emoji-btn:hover,.emoji-btn.sel{border-color:var(--accent);background:rgba(232,197,71,.1)}
 </style>
 {% endblock %}
 {% block content %}
 <div class="form-wrap">
-  <div class="form-title">+ Nova oferta <a href="/panel">← Tornar al panel</a></div>
+  <div class="form-title">{% if oferta %}✏️ Editar oferta{% else %}+ Nova oferta{% endif %} <a href="/panel">← Panel</a></div>
   <div class="form-card">
     <form method="POST" enctype="multipart/form-data">
       <div class="field">
         <label>Nom del producte *</label>
-        <input type="text" name="name" placeholder="Ex: Llet sencera 1L" required>
+        <input type="text" name="name" required placeholder="Ex: Llet sencera 1L" value="{% if oferta %}{{oferta.name}}{% endif %}">
       </div>
-      <div class="row2">
-        <div class="field">
-          <label>Emoji del producte</label>
-          <input type="text" name="emoji" placeholder="🛒" maxlength="4" value="🛒">
-          <div class="hint">Copia un emoji que representi el producte</div>
-        </div>
-        <div class="field">
-          <label>Categoria</label>
-          <input type="text" name="category" placeholder="Ex: Lactis, Fruita, Pa...">
+      <div class="field">
+        <label>Emoji</label>
+        <input type="text" name="emoji" id="emojiInput" maxlength="4" value="{% if oferta %}{{oferta.emoji}}{% else %}🛒{% endif %}">
+        <div class="emoji-grid">
+          {% for e in ['🛒','🥛','🍞','🥩','🍗','🐟','🧀','🥚','🥦','🍅','🍓','🍑','🥑','🍋','🍇','🌽','🥕','🫒','🍝','🍚','☕','🍺','🍷','🧃','🥫','🧁','🍰','🛁','🧺','🧻','🧴','🥐','🫓','🍫','🥗','🍕','🍔','🌮','🥩','🧆'] %}
+          <span class="emoji-btn {% if oferta and oferta.emoji==e %}sel{% endif %}" onclick="pickE('{{e}}')">{{e}}</span>
+          {% endfor %}
         </div>
       </div>
       <div class="row2">
-        <div class="field">
-          <label>Preu original (€) *</label>
-          <input type="number" name="original_price" step="0.01" min="0.01" placeholder="3.50" required>
-        </div>
-        <div class="field">
-          <label>Preu en oferta (€) *</label>
-          <input type="number" name="offer_price" step="0.01" min="0.01" placeholder="1.99" required>
-        </div>
-      </div>
-      <div class="field">
-        <label>Unitat</label>
-        <input type="text" name="unit" placeholder="Ex: el kg, l'ampolla, la peça...">
-      </div>
-      <div class="field">
-        <label>Foto del producte (opcional)</label>
-        <input type="file" name="image" accept="image/*">
+        <div class="field"><label>Preu original (€) *</label><input type="number" name="original_price" step="0.01" min="0.01" required placeholder="3.50" value="{% if oferta %}{{'%.2f'|format(oferta.original_price)}}{% endif %}"></div>
+        <div class="field"><label>Preu oferta (€) *</label><input type="number" name="offer_price" step="0.01" min="0.01" required placeholder="1.99" value="{% if oferta %}{{'%.2f'|format(oferta.offer_price)}}{% endif %}"></div>
       </div>
       <div class="row2">
-        <div class="field">
-          <label>Data d'inici *</label>
-          <input type="date" name="valid_from" required>
-        </div>
-        <div class="field">
-          <label>Data de fi (venciment) *</label>
-          <input type="date" name="valid_until" required>
-          <div class="hint">L'oferta desapareixerà automàticament en aquesta data</div>
-        </div>
+        <div class="field"><label>Unitat</label><input type="text" name="unit" placeholder="el kg, la peça..." value="{% if oferta %}{{oferta.unit}}{% endif %}"></div>
+        <div class="field"><label>Categoria</label><input type="text" name="category" placeholder="Lactis, Fruita..." value="{% if oferta %}{{oferta.category}}{% endif %}"></div>
+      </div>
+      <div class="field"><label>Foto (opcional)</label><input type="file" name="image" accept="image/*"></div>
+      <div class="row2">
+        <div class="field"><label>Data inici *</label><input type="date" name="valid_from" required value="{% if oferta %}{{oferta.valid_from}}{% endif %}"></div>
+        <div class="field"><label>Data fi *</label><input type="date" name="valid_until" required value="{% if oferta %}{{oferta.valid_until}}{% endif %}"><div class="hint">Desapareix automàticament</div></div>
       </div>
       <div class="field">
-        <label class="checkbox-row">
-          <input type="checkbox" name="featured" value="1">
-          <span>⭐ Mostrar com a oferta destacada a la portada</span>
-        </label>
+        <label class="checkbox-row"><input type="checkbox" name="featured" value="1" {% if oferta and oferta.featured %}checked{% endif %}><span>⭐ Mostrar com a destacat a la portada</span></label>
       </div>
       <div class="submit-row">
-        <button type="submit" class="submit-btn">Publicar oferta →</button>
+        <button type="submit" class="submit-btn">{% if oferta %}Guardar →{% else %}Publicar →{% endif %}</button>
         <a href="/panel" class="btn btn-ghost">Cancel·lar</a>
       </div>
     </form>
@@ -89,8 +68,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-// Set today as default start date
-const today = new Date().toISOString().split('T')[0];
-document.querySelector('[name=valid_from]').value = today;
+{% if not oferta %}document.querySelector('[name=valid_from]').value=new Date().toISOString().split('T')[0];{% endif %}
+function pickE(e){document.getElementById('emojiInput').value=e;document.querySelectorAll('.emoji-btn').forEach(b=>b.classList.remove('sel'));event.target.classList.add('sel');}
 </script>
 {% endblock %}

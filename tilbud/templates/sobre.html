@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Sobre Nosaltres — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.sobre-hero{padding:64px 20px 48px;text-align:center;position:relative;overflow:hidden}
+.sobre-hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(232,197,71,.1) 0%,transparent 70%);pointer-events:none}
+.sobre-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,5vw,52px);letter-spacing:-1px;line-height:1.1;margin-bottom:16px}
+.sobre-hero h1 em{font-style:normal;color:var(--accent)}
+.sobre-hero p{font-size:16px;color:var(--muted);max-width:520px;margin:0 auto;font-weight:300}
+.stats-row{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin:48px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-width:600px;margin-left:auto;margin-right:auto}
+.stat-box{flex:1;min-width:120px;padding:28px 20px;text-align:center;border-right:1px solid var(--border)}
+.stat-box:last-child{border-right:none}
+.stat-big{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:var(--accent);display:block}
+.stat-lbl{font-size:12px;color:var(--muted)}
+.section{padding:0 20px 56px}
+.section-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--muted);margin-bottom:32px;font-weight:300}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.step-num{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:var(--accent);margin-bottom:10px}
+.step-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.types-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:40px}
+.type-chip{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;font-size:13px;color:var(--muted)}
+.type-chip span{display:block;font-size:24px;margin-bottom:4px}
+.cta-box{background:var(--card);border:1px solid rgba(232,197,71,.2);border-radius:var(--radius);padding:40px;text-align:center;margin:0 20px 60px;position:relative;overflow:hidden}
+.cta-box::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:400px;height:300px;background:radial-gradient(ellipse,rgba(232,197,71,.08) 0%,transparent 70%);pointer-events:none}
+.cta-box h2{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;margin-bottom:10px}
+.cta-box p{color:var(--muted);font-size:15px;margin-bottom:24px;max-width:420px;margin-left:auto;margin-right:auto}
+.cta-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.price-box{display:inline-block;background:rgba(232,197,71,.08);border:1px solid rgba(232,197,71,.2);border-radius:var(--radius);padding:20px 32px;margin-bottom:24px}
+.price-trial{font-size:13px;color:var(--accent);margin-bottom:6px}
+.price-main{font-family:'Syne',sans-serif;font-weight:800;font-size:36px;color:var(--text)}
+.price-main span{font-size:16px;font-weight:400;color:var(--muted)}
+.price-normal{font-size:12px;color:var(--muted);margin-top:4px}
+</style>
+{% endblock %}
+{% block content %}
+<section class="sobre-hero">
+  <div class="container">
+    <div style="font-size:48px;margin-bottom:16px">🏪</div>
+    <h1>El lloc centrali-<br>tzat d'ofertes d'<em>Andorra</em></h1>
+    <p>Ofertes.ad connecta els comerços locals amb els seus clients, posant totes les promocions setmanals en un sol lloc.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-box"><span class="stat-big">{{stats.businesses}}</span><span class="stat-lbl">Comerços actius</span></div>
+    <div class="stat-box"><span class="stat-big">{{stats.ofertes}}</span><span class="stat-lbl">Ofertes actives</span></div>
+    <div class="stat-box"><span class="stat-big">{{stats.parroquies}}</span><span class="stat-lbl">Parròquies</span></div>
+  </div>
+</div>
+
+<!-- Per a clients -->
+<section class="section">
+  <div class="container">
+    <div class="section-title">Per als clients</div>
+    <div class="section-sub">Troba les millors ofertes dels comerços del teu barri</div>
+    <div class="steps">
+      <div class="step-card"><div class="step-num">01</div><div class="step-title">Navega per parròquia</div><div class="step-desc">Filtra els comerços per la teva parròquia i veu les ofertes més properes a tu.</div></div>
+      <div class="step-card"><div class="step-num">02</div><div class="step-title">Veu totes les ofertes</div><div class="step-desc">Productes amb descompte, menús del dia, especials de temporada... tot en un sol lloc.</div></div>
+      <div class="step-card"><div class="step-num">03</div><div class="step-title">Consulta els folletos</div><div class="step-desc">Fulleja els catàlegs setmanals dels teus supermercats i botigues preferides.</div></div>
+      <div class="step-card"><div class="step-num">04</div><div class="step-title">Sempre actualitzat</div><div class="step-desc">Les ofertes vençudes desapareixen automàticament. Sempre veus contingut vigent.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Per a comerciants -->
+<section class="section">
+  <div class="container">
+    <div class="section-title">Per als comerciants</div>
+    <div class="section-sub">Publica les teves ofertes en minuts i arriba a nous clients</div>
+    <div class="steps">
+      <div class="step-card"><div class="step-num">01</div><div class="step-title">Crea el teu compte</div><div class="step-desc">Registra el teu negoci en menys de 5 minuts. 15 dies de prova gratuïts.</div></div>
+      <div class="step-card"><div class="step-num">02</div><div class="step-title">Publica les teves ofertes</div><div class="step-desc">Afegeix productes amb preu, foto i data de venciment. O puja el teu folleto en PDF.</div></div>
+      <div class="step-card"><div class="step-num">03</div><div class="step-title">Arriba als teus clients</div><div class="step-desc">Les teves ofertes apareixen a la portada i els clients de la teva parròquia les veuen.</div></div>
+      <div class="step-card"><div class="step-num">04</div><div class="step-title">Veu les estadístiques</div><div class="step-desc">Consulta quantes persones han vist les teves ofertes i folletos cada setmana.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Tipus de negoci -->
+<section class="section">
+  <div class="container">
+    <div class="section-title">Obert a tot tipus de comerços</div>
+    <div class="section-sub">Supermercats, restaurants, fleques, carnisseries i molt més</div>
+    <div class="types-grid">
+      {% set emojis = {'Supermercat':'🏪','Bar':'🍺','Restaurant':'🍽️','Cafeteria':'☕','Fleca i Pastisseria':'🥖','Carnisseria':'🥩','Verduleria i Fruita':'🥬','Peixateria':'🐟','Formatgeria':'🧀','Colmado i Delicatessen':'🫙','Farmàcia':'💊','Altres':'🏬'} %}
+      {% for t in business_types %}
+      <div class="type-chip"><span>{{emojis.get(t,'🏬')}}</span>{{t}}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-box">
+  <h2>Uneix-te a Ofertes.ad</h2>
+  <p>Comença a publicar les teves ofertes avui mateix i fes arribar les teves promocions a milers de clients.</p>
+  <div class="price-box">
+    <div class="price-trial">✅ 15 dies de prova gratuïts</div>
+    <div class="price-main">49€ <span>/ mes</span></div>
+    <div class="price-normal">Després del període de prova</div>
+  </div>
+  <div class="cta-btns">
+    <a href="/registre" class="btn btn-accent" style="font-size:15px;padding:12px 28px">Crea el teu compte →</a>
+    <a href="mailto:ofertes.ad@gmail.com" class="btn btn-ghost">Contacta'ns</a>
+  </div>
+</div>
+{% endblock %}
