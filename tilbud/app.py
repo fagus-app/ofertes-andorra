@@ -26,6 +26,25 @@ SUPERADMIN_PASS = 'ofertesad2024'
 STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/your_link_here'
 TRIAL_DAYS      = 15
 WARNING_DAYS    = 7
+BRANCH_PRICE    = 12.0  # euros per extra branch per month
+
+# Pricing tiers
+SUPERMARKET_TYPES = {'Supermercat'}
+PRICE_TRIAL = {
+    'Supermercat': (49.0, 3),   # price, trial_months
+    'default':     (25.0, 1),
+}
+PRICE_NORMAL = {
+    'Supermercat': 99.0,
+    'default':     49.0,
+}
+
+def get_trial_price(category):
+    p = PRICE_TRIAL.get(category, PRICE_TRIAL['default'])
+    return p[0], p[1]
+
+def get_normal_price(category):
+    return PRICE_NORMAL.get(category, PRICE_NORMAL['default'])
 
 PARROQUIES = [
     'Andorra la Vella','Escaldes-Engordany','Encamp','Sant Julià de Lòria',
@@ -134,6 +153,24 @@ def init_db():
             business_id INTEGER NOT NULL,
             viewed_at   TEXT DEFAULT (datetime('now'))
         );
+
+        CREATE TABLE IF NOT EXISTS branches (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            name        TEXT NOT NULL DEFAULT 'Sucursal',
+            location    TEXT DEFAULT '',
+            maps_url    TEXT DEFAULT '',
+            phone       TEXT DEFAULT '',
+            hours_mon   TEXT DEFAULT '',
+            hours_tue   TEXT DEFAULT '',
+            hours_wed   TEXT DEFAULT '',
+            hours_thu   TEXT DEFAULT '',
+            hours_fri   TEXT DEFAULT '',
+            hours_sat   TEXT DEFAULT '',
+            hours_sun   TEXT DEFAULT '',
+            created     TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (business_id) REFERENCES businesses(id)
+        );
         """)
         for col, defn in [
             ("warning_sent", "INTEGER DEFAULT 0"),
@@ -148,9 +185,6 @@ def init_db():
             ("hours_fri", "TEXT DEFAULT ''"),
             ("hours_sat", "TEXT DEFAULT ''"),
             ("hours_sun", "TEXT DEFAULT ''"),
-            ("subscription_status", "TEXT DEFAULT 'trial'"),
-            ("subscription_start", "TEXT DEFAULT (date('now'))"),
-            ("subscription_end", "TEXT DEFAULT (date('now','+15 days'))"),
         ]:
             try: db.execute(f"ALTER TABLE businesses ADD COLUMN {col} {defn}")
             except Exception: pass
@@ -159,6 +193,8 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("CREATE TABLE IF NOT EXISTS branches (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, name TEXT NOT NULL DEFAULT 'Sucursal', location TEXT DEFAULT '', maps_url TEXT DEFAULT '', phone TEXT DEFAULT '', hours_mon TEXT DEFAULT '', hours_tue TEXT DEFAULT '', hours_wed TEXT DEFAULT '', hours_thu TEXT DEFAULT '', hours_fri TEXT DEFAULT '', hours_sat TEXT DEFAULT '', hours_sun TEXT DEFAULT '', created TEXT DEFAULT (datetime('now')), FOREIGN KEY (business_id) REFERENCES businesses(id))")
+        except Exception: pass
         if not db.execute("SELECT 1 FROM businesses LIMIT 1").fetchone():
             seed_demo(db)
 
@@ -372,7 +408,18 @@ def api_ofertes():
     if cat: sql += " AND o.category=?"; p.append(cat)
     if par: sql += " AND b.parroquia=?"; p.append(par)
     sql += " ORDER BY o.featured DESC,o.created DESC"
-    return jsonify([dict(r) for r in get_db().execute(sql,p).fetchall()])
+    rows = get_db().execute(sql,p).fetchall()
+    today2 = today_str()
+    # add is_new (created in last 3 days) and is_ending (valid_until in next 2 days)
+    result = []
+    for r in rows:
+        d = dict(r)
+        d['is_new'] = r['created'] >= (date.today()-timedelta(days=3)).isoformat()
+        d['is_today'] = r['valid_from'] <= today2 <= r['valid_until']
+        d['is_ending'] = r['valid_until'] <= (date.today()+timedelta(days=2)).isoformat()
+        d['is_week'] = r['valid_until'] <= (date.today()+timedelta(days=7)).isoformat()
+        result.append(d)
+    return jsonify(result)
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 @app.route('/login', methods=['GET','POST'])
@@ -444,10 +491,17 @@ def panel():
     total_views   = db.execute("SELECT COUNT(*) FROM page_views WHERE business_id=?",(b['id'],)).fetchone()[0]
     views_7d      = db.execute("SELECT COUNT(*) FROM page_views WHERE business_id=? AND viewed_at>=datetime('now','-7 days')",(b['id'],)).fetchone()[0]
     total_o_views = db.execute("SELECT COALESCE(SUM(views),0) FROM ofertes WHERE business_id=?",(b['id'],)).fetchone()[0]
+    branches = db.execute("SELECT * FROM branches WHERE business_id=? ORDER BY created",(b['id'],)).fetchall()
+    branch_count = len(branches)
+    trial_price, trial_months = get_trial_price(b['category'])
+    normal_price = get_normal_price(b['category'])
+    monthly_total = normal_price + (branch_count * BRANCH_PRICE)
     dl = days_left(b); can_pub = can_publish(b)
     return render_template('panel.html', b=b, ofertes=ofertes, folletos=folletos,
                            days_left=dl, can_pub=can_pub,
-                           total_views=total_views, views_7d=views_7d, total_o_views=total_o_views)
+                           total_views=total_views, views_7d=views_7d, total_o_views=total_o_views,
+                           branches=branches, branch_count=branch_count, monthly_total=monthly_total,
+                           trial_price=trial_price, normal_price=normal_price)
 
 @app.route('/panel/perfil', methods=['GET','POST'])
 @login_required
@@ -571,6 +625,57 @@ def eliminar_folleto(fid):
         except: pass
         db.execute("DELETE FROM folletos WHERE id=?",(fid,)); db.commit()
     flash('Folleto eliminat.'); return redirect(url_for('panel'))
+
+
+# ── Branches ──────────────────────────────────────────────────────────────────
+@app.route('/panel/sucursal/nova', methods=['GET','POST'])
+@login_required
+def nova_sucursal():
+    b = get_biz()
+    if not can_publish(b): flash('La teva subscripció ha vençut.'); return redirect(url_for('panel'))
+    if request.method == 'POST':
+        f = request.form
+        db = get_db()
+        db.execute("""INSERT INTO branches (business_id,name,location,maps_url,phone,
+            hours_mon,hours_tue,hours_wed,hours_thu,hours_fri,hours_sat,hours_sun)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""", (
+            b['id'], f.get('name','Sucursal'), f.get('location',''), f.get('maps_url',''),
+            f.get('phone',''), f.get('h_mon',''), f.get('h_tue',''), f.get('h_wed',''),
+            f.get('h_thu',''), f.get('h_fri',''), f.get('h_sat',''), f.get('h_sun','')))
+        db.commit()
+        flash(f"Sucursal afegida! (+{BRANCH_PRICE:.0f}€/mes a la teva subscripció)")
+        return redirect(url_for('panel'))
+    return render_template('form_sucursal.html', sucursal=None)
+
+@app.route('/panel/sucursal/editar/<int:sid>', methods=['GET','POST'])
+@login_required
+def editar_sucursal(sid):
+    b = get_biz()
+    db = get_db()
+    s = db.execute("SELECT * FROM branches WHERE id=? AND business_id=?",(sid,b['id'])).fetchone()
+    if not s: return redirect(url_for('panel'))
+    if request.method == 'POST':
+        f = request.form
+        db.execute("""UPDATE branches SET name=?,location=?,maps_url=?,phone=?,
+            hours_mon=?,hours_tue=?,hours_wed=?,hours_thu=?,hours_fri=?,hours_sat=?,hours_sun=?
+            WHERE id=? AND business_id=?""", (
+            f.get('name','Sucursal'), f.get('location',''), f.get('maps_url',''), f.get('phone',''),
+            f.get('h_mon',''), f.get('h_tue',''), f.get('h_wed',''),
+            f.get('h_thu',''), f.get('h_fri',''), f.get('h_sat',''), f.get('h_sun',''),
+            sid, b['id']))
+        db.commit()
+        flash('Sucursal actualitzada!')
+        return redirect(url_for('panel'))
+    return render_template('form_sucursal.html', sucursal=s)
+
+@app.route('/panel/sucursal/eliminar/<int:sid>', methods=['POST'])
+@login_required
+def eliminar_sucursal(sid):
+    db = get_db()
+    db.execute("DELETE FROM branches WHERE id=? AND business_id=?",(sid,session['business_id']))
+    db.commit()
+    flash('Sucursal eliminada.')
+    return redirect(url_for('panel'))
 
 # ── Superadmin ────────────────────────────────────────────────────────────────
 @app.route('/admin/login', methods=['GET','POST'])
