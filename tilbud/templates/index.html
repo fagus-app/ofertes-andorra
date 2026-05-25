@@ -70,13 +70,6 @@
   {% for p in parroquies %}<a href="/parroquia/{{p}}" class="fchip">{{p}}</a>{% endfor %}
 </div>
 
-<!-- Filter by business type -->
-<div class="sw" style="margin-bottom:0;margin-top:4px"><div class="section-heading">🏪 Per tipus</div></div>
-<div class="filter-scroll" id="typeRow">
-  <button class="fchip active" data-type="">Tots</button>
-  {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
-</div>
-
 <!-- Featured -->
 {% if featured %}
 <section class="sec" style="padding-top:16px">
@@ -103,6 +96,10 @@
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
   <div class="container">
+    <div class="filter-scroll" id="typeRow" style="padding-left:0;margin-bottom:14px">
+      <button class="fchip active" data-type="">Tots</button>
+      {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
+    </div>
     <div class="biz-grid" id="bizGrid">
       {% for b in businesses %}
       <a href="/negoci/{{b.id}}" class="biz-card" style="--ba:{{b.accent}}" data-type="{{b.category}}">
