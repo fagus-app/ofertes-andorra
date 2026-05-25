@@ -188,7 +188,7 @@ function clearType() {
 async function loadAll() {
   const p = new URLSearchParams();
   if (activeParr) p.set('parroquia', activeParr);
-  if (activeType) p.set('category', activeType);
+  if (activeType) p.set('biz_type', activeType);
   const [br, or] = await Promise.all([
     fetch('/api/businesses?' + p),
     fetch('/api/ofertes?' + p)
