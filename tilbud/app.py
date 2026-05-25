@@ -400,7 +400,7 @@ def api_ofertes():
     bid = request.args.get('business_id',type=int)
     cat = request.args.get('category','')
     par = request.args.get('parroquia','')
-    sql = """SELECT o.*,b.name as bname,b.logo_emoji as blogo,b.id as bid,b.parroquia as bparroquia
+    sql = """SELECT o.*,b.name as bname,b.logo_emoji as blogo,b.id as bid,b.parroquia as bparroquia,b.category as bcategory
              FROM ofertes o JOIN businesses b ON o.business_id=b.id
              WHERE o.valid_from<=? AND o.valid_until>=? AND b.active=1 AND b.subscription_end>=?"""
     p = [today,today,today]
@@ -420,6 +420,19 @@ def api_ofertes():
         d['is_week'] = r['valid_until'] <= (date.today()+timedelta(days=7)).isoformat()
         result.append(d)
     return jsonify(result)
+
+@app.route('/api/businesses')
+def api_businesses():
+    today = today_str()
+    par = request.args.get('parroquia','')
+    cat = request.args.get('category','')
+    sql = "SELECT * FROM businesses WHERE active=1 AND subscription_end>=?"
+    p = [today]
+    if par: sql += " AND parroquia=?"; p.append(par)
+    if cat: sql += " AND category=?"; p.append(cat)
+    sql += " ORDER BY name"
+    rows = get_db().execute(sql, p).fetchall()
+    return jsonify([dict(r) for r in rows])
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 @app.route('/login', methods=['GET','POST'])
