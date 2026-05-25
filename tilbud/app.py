@@ -398,15 +398,17 @@ def api_search():
 def api_ofertes():
     today = today_str()
     bid = request.args.get('business_id',type=int)
-    cat = request.args.get('category','')
-    par = request.args.get('parroquia','')
+    cat      = request.args.get('category','')
+    par      = request.args.get('parroquia','')
+    biz_type = request.args.get('biz_type','')
     sql = """SELECT o.*,b.name as bname,b.logo_emoji as blogo,b.id as bid,b.parroquia as bparroquia,b.category as bcategory
              FROM ofertes o JOIN businesses b ON o.business_id=b.id
              WHERE o.valid_from<=? AND o.valid_until>=? AND b.active=1 AND b.subscription_end>=?"""
     p = [today,today,today]
-    if bid: sql += " AND o.business_id=?"; p.append(bid)
-    if cat: sql += " AND o.category=?"; p.append(cat)
-    if par: sql += " AND b.parroquia=?"; p.append(par)
+    if bid:      sql += " AND o.business_id=?";  p.append(bid)
+    if cat:      sql += " AND o.category=?";     p.append(cat)
+    if par:      sql += " AND b.parroquia=?";    p.append(par)
+    if biz_type: sql += " AND b.category=?";     p.append(biz_type)
     sql += " ORDER BY o.featured DESC,o.created DESC"
     rows = get_db().execute(sql,p).fetchall()
     today2 = today_str()
@@ -424,12 +426,12 @@ def api_ofertes():
 @app.route('/api/businesses')
 def api_businesses():
     today = today_str()
-    par = request.args.get('parroquia','')
-    cat = request.args.get('category','')
+    par      = request.args.get('parroquia','')
+    biz_type = request.args.get('biz_type','')
     sql = "SELECT * FROM businesses WHERE active=1 AND subscription_end>=?"
     p = [today]
-    if par: sql += " AND parroquia=?"; p.append(par)
-    if cat: sql += " AND category=?"; p.append(cat)
+    if par:      sql += " AND parroquia=?"; p.append(par)
+    if biz_type: sql += " AND category=?";  p.append(biz_type)
     sql += " ORDER BY name"
     rows = get_db().execute(sql, p).fetchall()
     return jsonify([dict(r) for r in rows])
