@@ -51,24 +51,59 @@ PARROQUIES = [
     'La Massana','Ordino','Canillo'
 ]
 
-BUSINESS_TYPES = [
-    'Supermercat','Bar','Restaurant','Cafeteria','Fleca i Pastisseria',
-    'Carnisseria','Verduleria i Fruita','Peixateria','Formatgeria',
-    'Colmado i Delicatessen','Botiga de Esports','Electrodomèstics','Farmàcia','Altres'
-]
+# Main categories with their subtypes/tags
+BUSINESS_CATEGORIES = {
+    'Alimentació': [
+        'Supermercat',
+        'Carnisseria',
+        'Verduleria i Fruita',
+        'Peixateria',
+        'Formatgeria i Gourmet',
+        'Granel i Productes Naturals',
+        'Vineria',
+    ],
+    'Restauració': [
+        'Restaurant',
+        'Bar',
+        'Cafeteria',
+        'Fleca i Cafeteria',
+        'Gelateria',
+        'Xocolateria',
+    ],
+    'Salut i Farmàcia': [
+        'Farmàcia',
+        'Botiga de Suplements',
+    ],
+    'Esports': [
+        'Botiga de Esports',
+    ],
+    'Tecnologia i Llar': [
+        'Electrodomèstics',
+    ],
+    'Altres': [
+        'Altres',
+    ],
+}
+
+# Flat list of all subtypes
+BUSINESS_TYPES = [sub for subs in BUSINESS_CATEGORIES.values() for sub in subs]
 
 BUSINESS_EMOJIS = {
-    'Supermercat':'🏪','Bar':'🍺','Restaurant':'🍽️','Cafeteria':'☕',
-    'Fleca i Pastisseria':'🥖','Carnisseria':'🥩','Verduleria i Fruita':'🥬',
-    'Peixateria':'🐟','Formatgeria':'🧀','Colmado i Delicatessen':'🫙',
-    'Farmàcia':'💊','Botiga de Esports':'⚽','Electrodomèstics':'📺','Altres':'🏬'
+    'Supermercat':'🏪','Carnisseria':'🥩','Verduleria i Fruita':'🥬',
+    'Peixateria':'🐟','Formatgeria i Gourmet':'🧀','Granel i Productes Naturals':'🌿',
+    'Vineria':'🍷','Restaurant':'🍽️','Bar':'🍺','Cafeteria':'☕',
+    'Fleca i Cafeteria':'🥐','Gelateria':'🍦','Xocolateria':'🍫',
+    'Farmàcia':'💊','Botiga de Suplements':'💪',
+    'Botiga de Esports':'⚽','Electrodomèstics':'📺','Altres':'🏬'
 }
 
 ACCENT_COLORS = {
-    'Supermercat':'#52B788','Bar':'#AF7AC5','Restaurant':'#E74C3C',
-    'Cafeteria':'#F0B27A','Fleca i Pastisseria':'#D4A574','Carnisseria':'#E74C3C',
-    'Verduleria i Fruita':'#52B788','Peixateria':'#5DADE2','Formatgeria':'#F0D870',
-    'Colmado i Delicatessen':'#D4A574','Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2','Farmàcia':'#AF7AC5','Altres':'#888880'
+    'Supermercat':'#52B788','Carnisseria':'#E74C3C','Verduleria i Fruita':'#52B788',
+    'Peixateria':'#5DADE2','Formatgeria i Gourmet':'#F0D870','Granel i Productes Naturals':'#52B788',
+    'Vineria':'#AF7AC5','Restaurant':'#E74C3C','Bar':'#AF7AC5','Cafeteria':'#F0B27A',
+    'Fleca i Cafeteria':'#D4A574','Gelateria':'#5DADE2','Xocolateria':'#D4A574',
+    'Farmàcia':'#AF7AC5','Botiga de Suplements':'#52B788',
+    'Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2','Altres':'#888880'
 }
 
 os.makedirs(os.path.join(UPLOAD_DIR,'folletos'), exist_ok=True)
@@ -154,6 +189,13 @@ def init_db():
             viewed_at   TEXT DEFAULT (datetime('now'))
         );
 
+        CREATE TABLE IF NOT EXISTS business_tags (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            business_id INTEGER NOT NULL,
+            tag         TEXT NOT NULL,
+            FOREIGN KEY (business_id) REFERENCES businesses(id)
+        );
+
         CREATE TABLE IF NOT EXISTS branches (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             business_id INTEGER NOT NULL,
@@ -193,6 +235,8 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("CREATE TABLE IF NOT EXISTS business_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, tag TEXT NOT NULL, FOREIGN KEY (business_id) REFERENCES businesses(id))")
+        except Exception: pass
         try: db.execute("CREATE TABLE IF NOT EXISTS branches (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, name TEXT NOT NULL DEFAULT 'Sucursal', location TEXT DEFAULT '', maps_url TEXT DEFAULT '', phone TEXT DEFAULT '', hours_mon TEXT DEFAULT '', hours_tue TEXT DEFAULT '', hours_wed TEXT DEFAULT '', hours_thu TEXT DEFAULT '', hours_fri TEXT DEFAULT '', hours_sat TEXT DEFAULT '', hours_sun TEXT DEFAULT '', created TEXT DEFAULT (datetime('now')), FOREIGN KEY (business_id) REFERENCES businesses(id))")
         except Exception: pass
         if not db.execute("SELECT 1 FROM businesses LIMIT 1").fetchone():
@@ -326,6 +370,16 @@ def admin_required(f):
         return f(*a,**kw)
     return dec
 
+def get_biz_tags(business_id):
+    rows = get_db().execute("SELECT tag FROM business_tags WHERE business_id=?", (business_id,)).fetchall()
+    return [r['tag'] for r in rows]
+
+def set_biz_tags(db, business_id, tags):
+    db.execute("DELETE FROM business_tags WHERE business_id=?", (business_id,))
+    for tag in tags:
+        if tag.strip():
+            db.execute("INSERT INTO business_tags (business_id, tag) VALUES (?,?)", (business_id, tag.strip()))
+
 def get_biz(): return get_db().execute("SELECT * FROM businesses WHERE id=?",(session['business_id'],)).fetchone()
 
 # ── Public ────────────────────────────────────────────────────────────────────
@@ -343,7 +397,8 @@ def index():
         'ofertes': db.execute("SELECT COUNT(*) FROM ofertes WHERE valid_until>=?",(today,)).fetchone()[0],
     }
     return render_template('index.html', businesses=businesses, featured=featured,
-                           parroquies=PARROQUIES, stats=stats, business_types=BUSINESS_TYPES)
+                           parroquies=PARROQUIES, stats=stats,
+                           business_categories=BUSINESS_CATEGORIES, business_types=BUSINESS_TYPES)
 
 @app.route('/parroquia/<parroquia>')
 def parroquia(parroquia):
@@ -380,7 +435,7 @@ def sobre():
         'ofertes': db.execute("SELECT COUNT(*) FROM ofertes WHERE valid_until>=?",(today,)).fetchone()[0],
         'parroquies': len(PARROQUIES),
     }
-    return render_template('sobre.html', business_types=BUSINESS_TYPES, stats=stats)
+    return render_template('sobre.html', business_types=BUSINESS_TYPES, business_categories=BUSINESS_CATEGORIES, stats=stats)
 
 @app.route('/api/search')
 def api_search():
@@ -428,13 +483,24 @@ def api_businesses():
     today = today_str()
     par      = request.args.get('parroquia','')
     biz_type = request.args.get('biz_type','')
-    sql = "SELECT * FROM businesses WHERE active=1 AND subscription_end>=?"
+    main_cat = request.args.get('main_cat','')
+    db = get_db()
+    base = "SELECT DISTINCT b.* FROM businesses b LEFT JOIN business_tags bt ON b.id=bt.business_id WHERE b.active=1 AND b.subscription_end>=?"
     p = [today]
-    if par:      sql += " AND parroquia=?"; p.append(par)
-    if biz_type: sql += " AND category=?";  p.append(biz_type)
-    sql += " ORDER BY name"
-    rows = get_db().execute(sql, p).fetchall()
-    return jsonify([dict(r) for r in rows])
+    if biz_type:
+        sql = base + " AND (b.category=? OR bt.tag=?)"
+        p += [biz_type, biz_type]
+    elif main_cat:
+        subtypes = BUSINESS_CATEGORIES.get(main_cat, [])
+        if not subtypes: return jsonify([])
+        ph = ','.join('?'*len(subtypes))
+        sql = base + f" AND (b.category IN ({ph}) OR bt.tag IN ({ph}))"
+        p += subtypes + subtypes
+    else:
+        sql = "SELECT * FROM businesses WHERE active=1 AND subscription_end>=?"
+    if par: sql += " AND b.parroquia=?" if 'DISTINCT' in sql else " AND parroquia=?"; p.append(par)
+    sql += " ORDER BY b.name" if 'DISTINCT' in sql else " ORDER BY name"
+    return jsonify([dict(r) for r in db.execute(sql, p).fetchall()])
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 @app.route('/login', methods=['GET','POST'])
@@ -456,9 +522,9 @@ def registre():
         f = request.form; username = f['username'].strip().lower()
         db = get_db()
         if db.execute("SELECT 1 FROM businesses WHERE username=?",(username,)).fetchone():
-            flash("Aquest nom d'usuari ja existeix"); return render_template('registre.html', business_types=BUSINESS_TYPES, parroquies=PARROQUIES, form=f)
+            flash("Aquest nom d'usuari ja existeix"); return render_template('registre.html', business_types=BUSINESS_TYPES, business_categories=BUSINESS_CATEGORIES, parroquies=PARROQUIES, form=f)
         if f['password'] != f['password2']:
-            flash("Les contrasenyes no coincideixen"); return render_template('registre.html', business_types=BUSINESS_TYPES, parroquies=PARROQUIES, form=f)
+            flash("Les contrasenyes no coincideixen"); return render_template('registre.html', business_types=BUSINESS_TYPES, business_categories=BUSINESS_CATEGORIES, parroquies=PARROQUIES, form=f)
         logo_image = ''
         if 'logo' in request.files and request.files['logo'].filename:
             lf = request.files['logo']
@@ -493,7 +559,7 @@ def registre():
             <p style="font-size:12px;color:#888">Ofertes.ad · ofertes.ad@gmail.com</p></div>""")
         flash(f'Benvingut/da! Tens {TRIAL_DAYS} dies de prova gratuïts.')
         return redirect(url_for('panel'))
-    return render_template('registre.html', business_types=BUSINESS_TYPES, parroquies=PARROQUIES, form={})
+    return render_template('registre.html', business_types=BUSINESS_TYPES, business_categories=BUSINESS_CATEGORIES, parroquies=PARROQUIES, form={})
 
 # ── Panel ─────────────────────────────────────────────────────────────────────
 @app.route('/panel')
