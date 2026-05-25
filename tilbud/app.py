@@ -343,7 +343,7 @@ def index():
         'ofertes': db.execute("SELECT COUNT(*) FROM ofertes WHERE valid_until>=?",(today,)).fetchone()[0],
     }
     return render_template('index.html', businesses=businesses, featured=featured,
-                           parroquies=PARROQUIES, stats=stats)
+                           parroquies=PARROQUIES, stats=stats, business_types=BUSINESS_TYPES)
 
 @app.route('/parroquia/<parroquia>')
 def parroquia(parroquia):
