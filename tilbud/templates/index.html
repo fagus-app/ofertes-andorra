@@ -12,12 +12,16 @@
 .stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
 .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);display:block}
 .stat-lbl{font-size:11px;color:var(--muted)}
-/* filter rows */
-.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:4px 20px 10px;scrollbar-width:none}
+.filter-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 0;margin-bottom:0;position:sticky;top:60px;z-index:50}
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
 .filter-scroll::-webkit-scrollbar{display:none}
-.fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;white-space:nowrap}
+.filter-sep{width:1px;background:var(--border);flex-shrink:0;margin:0 4px}
+.fchip{flex:0 0 auto;padding:6px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .fchip:hover{color:var(--text);background:var(--bg3)}
 .fchip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+.active-filters{padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;min-height:0}
+.active-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:3px 10px;font-size:12px;color:var(--accent);cursor:pointer}
+.active-tag:hover{background:rgba(232,197,71,.2)}
 /* featured */
 .feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .feat-scroll::-webkit-scrollbar{display:none}
@@ -25,7 +29,7 @@
 .feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,.06) 0%,transparent 60%);pointer-events:none}
 .feat-card:hover{transform:translateY(-3px);border-color:rgba(232,197,71,.3)}
 .feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#0F0F0F;padding:2px 7px;border-radius:50px}
-/* businesses */
+/* biz */
 .biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;gap:12px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
 .biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
@@ -37,14 +41,14 @@
 .offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:11px}
 .offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s;cursor:pointer}
 .offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.offer-card.new-badge-card{border-color:rgba(82,201,122,.3)}
-.offer-card.ending-badge-card{border-color:rgba(232,84,84,.3)}
-.o-tags{display:flex;gap:4px;flex-wrap:wrap}
-.o-tag{font-size:10px;padding:1px 7px;border-radius:50px;font-weight:500}
+.offer-card.is-new{border-color:rgba(82,201,122,.3)}
+.offer-card.is-ending{border-color:rgba(232,84,84,.3)}
+.o-tag{font-size:10px;padding:1px 7px;border-radius:50px;font-weight:500;display:inline-block}
 .o-tag-new{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
 .o-tag-end{background:rgba(232,84,84,.1);color:var(--red);border:1px solid rgba(232,84,84,.2)}
 .sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 .sec{padding:0 0 40px}
+.empty-msg{text-align:center;color:var(--muted);padding:48px 20px;font-size:14px}
 </style>
 {% endblock %}
 {% block content %}
@@ -53,68 +57,46 @@
   <h1>Les millors<br>ofertes d'<em>Andorra</em></h1>
   <p class="hero-sub">Totes les promocions dels comerços locals en un sol lloc.</p>
   <div class="hero-btns">
-    <a href="#ofertes" class="btn btn-accent">Veure ofertes</a>
+    <a href="#comercos" class="btn btn-accent">Veure comerços</a>
     <a href="/sobre-nosaltres" class="btn btn-ghost">Com funciona</a>
   </div>
   <div class="stats">
-    <div><span class="stat-num">{{stats.businesses}}</span><span class="stat-lbl">Comerços</span></div>
-    <div><span class="stat-num">{{stats.ofertes}}</span><span class="stat-lbl">Ofertes actives</span></div>
+    <div><span class="stat-num" id="statBiz">{{stats.businesses}}</span><span class="stat-lbl">Comerços</span></div>
+    <div><span class="stat-num" id="statOff">{{stats.ofertes}}</span><span class="stat-lbl">Ofertes actives</span></div>
     <div><span class="stat-num">7</span><span class="stat-lbl">Parròquies</span></div>
   </div>
 </section>
 
-<!-- Filter by parroquia -->
-<div class="sw" style="margin-bottom:0"><div class="section-heading">📍 Per parròquia</div></div>
-<div class="filter-scroll" id="parrRow">
-  <a href="/" class="fchip active">Totes</a>
-  {% for p in parroquies %}<a href="/parroquia/{{p}}" class="fchip">{{p}}</a>{% endfor %}
+<!-- Sticky filter bar -->
+<div class="filter-bar">
+  <div class="filter-scroll">
+    <!-- Parroquia -->
+    <button class="fchip active" data-parr="">📍 Totes</button>
+    {% for p in parroquies %}<button class="fchip" data-parr="{{p}}">{{p}}</button>{% endfor %}
+    <div class="filter-sep"></div>
+    <!-- Tipus -->
+    <button class="fchip active" data-type="">🏪 Tots</button>
+    {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
+  </div>
 </div>
 
+<!-- Active filters display -->
+<div class="active-filters" id="activeFilters" style="display:none"></div>
+
 <!-- Featured -->
-{% if featured %}
-<section class="sec" style="padding-top:16px">
+<section class="sec" id="destacats" style="padding-top:20px">
   <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
-  <div class="feat-scroll">
-    {% for o in featured %}
-    {% set d=((1-o.offer_price/o.original_price)*100)|int %}
-    <div class="feat-card" onclick="location='/negoci/{{o.bid}}'">
-      <div class="feat-badge">−{{d}}%</div>
-      <div style="font-size:36px;line-height:1">{{o.emoji}}</div>
-      <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">{{o.name}}</div>
-      <div style="font-size:11px;color:var(--muted)">{{o.blogo}} {{o.bname}}</div>
-      <div style="display:flex;align-items:baseline;gap:7px;margin-top:auto">
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent)">{{"%.2f"|format(o.offer_price)}}€</span>
-        <span style="font-size:12px;color:var(--muted);text-decoration:line-through">{{"%.2f"|format(o.original_price)}}€</span>
-      </div>
-    </div>
-    {% endfor %}
+  <div class="feat-scroll" id="featGrid">
+    <div style="padding:20px;color:var(--muted);font-size:13px">Carregant...</div>
   </div>
 </section>
-{% endif %}
 
 <!-- Businesses -->
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
   <div class="container">
-    <div class="filter-scroll" id="typeRow" style="padding-left:0;margin-bottom:14px">
-      <button class="fchip active" data-type="">Tots</button>
-      {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
-    </div>
     <div class="biz-grid" id="bizGrid">
-      {% for b in businesses %}
-      <a href="/negoci/{{b.id}}" class="biz-card" style="--ba:{{b.accent}}" data-type="{{b.category}}">
-        <div class="biz-logo">
-          {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="">
-          {% else %}{{b.logo_emoji}}{% endif %}
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">{{b.name}}</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:3px">{{b.category}}</div>
-          <div style="font-size:11px;color:var(--muted)">📍 {{b.parroquia}}</div>
-          <div style="font-size:11px;color:var(--accent);margin-top:5px">Veure ofertes →</div>
-        </div>
-      </a>
-      {% endfor %}
+      <div style="grid-column:1/-1;padding:20px;color:var(--muted);font-size:13px">Carregant...</div>
     </div>
   </div>
 </section>
@@ -123,40 +105,44 @@
 <section class="sec" id="ofertes">
   <div class="sw"><div class="section-heading">🏷️ Totes les ofertes</div></div>
   <div class="container">
-    <!-- Temporal filters -->
-    <div class="filter-scroll" id="timeRow" style="padding-left:0;margin-bottom:12px">
+    <div class="filter-scroll" id="timeRow" style="padding-left:0;margin-bottom:14px">
       <button class="fchip active" data-time="">Totes</button>
       <button class="fchip" data-time="today">📅 Avui</button>
       <button class="fchip" data-time="new">✨ Noves</button>
       <button class="fchip" data-time="ending">⏰ Per acabar</button>
       <button class="fchip" data-time="week">📆 Aquesta setmana</button>
     </div>
-    <div class="offers-grid" id="offersGrid"></div>
+    <div class="offers-grid" id="offersGrid">
+      <div style="grid-column:1/-1;padding:20px;color:var(--muted);font-size:13px">Carregant...</div>
+    </div>
   </div>
 </section>
 {% endblock %}
 {% block scripts %}
 <script>
-const grid = document.getElementById('offersGrid');
-const bizGrid = document.getElementById('bizGrid');
+let activeParr = '';
 let activeType = '';
 let activeTime = '';
-let allOffers = [];
+let allOffers  = [];
+let allBiz     = [];
 
-// Type filter
-document.getElementById('typeRow').addEventListener('click', e => {
+// ── Filter bar clicks ─────────────────────────────────────────────────────
+document.querySelector('.filter-bar').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
-  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
-  c.classList.add('active');
-  activeType = c.dataset.type;
-  // filter businesses
-  document.querySelectorAll('#bizGrid .biz-card').forEach(card => {
-    card.style.display = (!activeType || card.dataset.type === activeType) ? '' : 'none';
-  });
-  renderOffers();
+  if (c.dataset.parr !== undefined) {
+    document.querySelectorAll('[data-parr]').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    activeParr = c.dataset.parr;
+  }
+  if (c.dataset.type !== undefined) {
+    document.querySelectorAll('[data-type]').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    activeType = c.dataset.type;
+  }
+  updateActiveFiltersBar();
+  loadAll();
 });
 
-// Time filter
 document.getElementById('timeRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
   document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
@@ -165,29 +151,119 @@ document.getElementById('timeRow').addEventListener('click', e => {
   renderOffers();
 });
 
+function updateActiveFiltersBar() {
+  const af = document.getElementById('activeFilters');
+  const tags = [];
+  if (activeParr) tags.push(`<span class="active-tag" onclick="clearParr()">📍 ${activeParr} ✕</span>`);
+  if (activeType) tags.push(`<span class="active-tag" onclick="clearType()">🏪 ${activeType} ✕</span>`);
+  if (tags.length) {
+    af.innerHTML = tags.join('');
+    af.style.display = 'flex';
+  } else {
+    af.style.display = 'none';
+  }
+}
+
+function clearParr() {
+  activeParr = '';
+  document.querySelectorAll('[data-parr]').forEach(x => x.classList.remove('active'));
+  document.querySelector('[data-parr=""]').classList.add('active');
+  updateActiveFiltersBar(); loadAll();
+}
+function clearType() {
+  activeType = '';
+  document.querySelectorAll('[data-type]').forEach(x => x.classList.remove('active'));
+  document.querySelector('[data-type=""]').classList.add('active');
+  updateActiveFiltersBar(); loadAll();
+}
+
+// ── Load all data ──────────────────────────────────────────────────────────
+async function loadAll() {
+  const params = new URLSearchParams();
+  if (activeParr) params.set('parroquia', activeParr);
+  if (activeType) params.set('category', activeType);
+
+  const [bizRes, offRes] = await Promise.all([
+    fetch('/api/businesses?' + params),
+    fetch('/api/ofertes?' + params)
+  ]);
+  allBiz    = await bizRes.json();
+  allOffers = await offRes.json();
+
+  renderFeatured();
+  renderBiz();
+  renderOffers();
+}
+
+// ── Render featured ────────────────────────────────────────────────────────
+function renderFeatured() {
+  const feat = allOffers.filter(o => o.featured);
+  const grid = document.getElementById('featGrid');
+  if (!feat.length) {
+    document.getElementById('destacats').style.display = 'none'; return;
+  }
+  document.getElementById('destacats').style.display = '';
+  grid.innerHTML = feat.map(o => {
+    const d = Math.round((1 - o.offer_price / o.original_price) * 100);
+    return `<div class="feat-card" onclick="location='/negoci/${o.bid}'">
+      <div class="feat-badge">−${d}%</div>
+      <div style="font-size:34px;line-height:1">${o.emoji}</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">${o.name}</div>
+      <div style="font-size:11px;color:var(--muted)">${o.blogo} ${o.bname}</div>
+      <div style="display:flex;align-items:baseline;gap:7px;margin-top:auto">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
+        <span style="font-size:12px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Render businesses ─────────────────────────────────────────────────────
+function renderBiz() {
+  const grid = document.getElementById('bizGrid');
+  if (!allBiz.length) {
+    grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">
+      Cap comerç trobat${activeParr ? ' a ' + activeParr : ''}${activeType ? ' de tipus ' + activeType : ''}.
+      <br><a href="/registre" style="color:var(--accent)">Sigues el primer! →</a></div>`;
+    return;
+  }
+  grid.innerHTML = allBiz.map(b => `
+    <a href="/negoci/${b.id}" class="biz-card" style="--ba:${b.accent}">
+      <div class="biz-logo">
+        ${b.logo_image
+          ? `<img src="/static/uploads/logos/${b.logo_image}" alt="">`
+          : b.logo_emoji}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">${b.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:3px">${b.category}</div>
+        <div style="font-size:11px;color:var(--muted)">📍 ${b.parroquia}</div>
+        <div style="font-size:11px;color:var(--accent);margin-top:5px">Veure ofertes →</div>
+      </div>
+    </a>`).join('');
+}
+
+// ── Render offers ─────────────────────────────────────────────────────────
 function renderOffers() {
   let offers = allOffers;
-  if (activeType) offers = offers.filter(o => {
-    // match by business category - we need bcat in API
-    return true; // filtered server-side when we reload
-  });
-  if (activeTime === 'today') offers = offers.filter(o => o.is_today);
-  else if (activeTime === 'new') offers = offers.filter(o => o.is_new);
+  if (activeTime === 'today')  offers = offers.filter(o => o.is_today);
+  else if (activeTime === 'new')    offers = offers.filter(o => o.is_new);
   else if (activeTime === 'ending') offers = offers.filter(o => o.is_ending);
-  else if (activeTime === 'week') offers = offers.filter(o => o.is_week);
+  else if (activeTime === 'week')   offers = offers.filter(o => o.is_week);
 
+  const grid = document.getElementById('offersGrid');
   if (!offers.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;font-size:14px">Cap oferta disponible</div>';
+    grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1">Cap oferta disponible amb els filtres seleccionats</div>';
     return;
   }
   grid.innerHTML = offers.map(o => {
     const d = Math.round((1 - o.offer_price / o.original_price) * 100);
     const tags = [];
-    if (o.is_new) tags.push('<span class="o-tag o-tag-new">✨ Nova</span>');
+    if (o.is_new)    tags.push('<span class="o-tag o-tag-new">✨ Nova</span>');
     if (o.is_ending) tags.push('<span class="o-tag o-tag-end">⏰ Acaba aviat</span>');
-    return `<div class="offer-card ${o.is_new?'new-badge-card':''} ${o.is_ending?'ending-badge-card':''}" onclick="location='/negoci/${o.bid}'">
+    return `<div class="offer-card ${o.is_new?'is-new':''} ${o.is_ending?'is-ending':''}" onclick="location='/negoci/${o.bid}'">
       <span style="font-size:28px;line-height:1">${o.emoji}</span>
-      ${tags.length ? `<div class="o-tags">${tags.join('')}</div>` : ''}
+      ${tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tags.join('')}</div>` : ''}
       <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${o.name}</div>
       <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
         <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
@@ -203,12 +279,7 @@ function renderOffers() {
   }).join('');
 }
 
-async function loadOffers() {
-  const r = await fetch('/api/ofertes');
-  allOffers = await r.json();
-  renderOffers();
-}
-
-loadOffers();
+// Initial load
+loadAll();
 </script>
 {% endblock %}
