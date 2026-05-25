@@ -74,16 +74,10 @@ BUSINESS_CATEGORIES = {
         'Farmàcia',
         'Botiga de Suplements',
     ],
-    'Esports': [
-        'Botiga de Esports',
-    ],
-    'Tecnologia i Llar': [
-        'Electrodomèstics',
-    ],
     'Botigues': [
         'Moda i Roba',
         'Calçat',
-        'Esports',
+        'Botiga de Esports',
         'Electrodomèstics i Tecnologia',
         'Joieria i Rellotgeria',
         'Perfumeria i Cosmètica',
