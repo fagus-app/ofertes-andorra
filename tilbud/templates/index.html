@@ -12,20 +12,21 @@
 .stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
 .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);display:block}
 .stat-lbl{font-size:11px;color:var(--muted)}
-.filter-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 0;margin-bottom:0;position:sticky;top:60px;z-index:50}
-.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
+/* filter rows */
+.filter-section{padding:10px 0 0;border-bottom:1px solid var(--border)}
+.filter-label{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 20px;margin-bottom:8px}
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px 12px;scrollbar-width:none}
 .filter-scroll::-webkit-scrollbar{display:none}
-.filter-sep{width:1px;background:var(--border);flex-shrink:0;margin:0 4px}
-.fchip{flex:0 0 auto;padding:6px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .fchip:hover{color:var(--text);background:var(--bg3)}
 .fchip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
-.active-filters{padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;min-height:0}
+/* active tag */
+.active-bar{padding:8px 20px;display:none;gap:8px;flex-wrap:wrap}
 .active-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:3px 10px;font-size:12px;color:var(--accent);cursor:pointer}
-.active-tag:hover{background:rgba(232,197,71,.2)}
 /* featured */
 .feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .feat-scroll::-webkit-scrollbar{display:none}
-.feat-card{flex:0 0 220px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.feat-card{flex:0 0 210px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
 .feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,.06) 0%,transparent 60%);pointer-events:none}
 .feat-card:hover{transform:translateY(-3px);border-color:rgba(232,197,71,.3)}
 .feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#0F0F0F;padding:2px 7px;border-radius:50px}
@@ -47,11 +48,13 @@
 .o-tag-new{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
 .o-tag-end{background:rgba(232,84,84,.1);color:var(--red);border:1px solid rgba(232,84,84,.2)}
 .sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.sec{padding:0 0 40px}
+.sec{padding:20px 0 40px}
 .empty-msg{text-align:center;color:var(--muted);padding:48px 20px;font-size:14px}
 </style>
 {% endblock %}
 {% block content %}
+
+<!-- Hero -->
 <section class="hero">
   <div class="hero-tag">📣 Ofertes de la setmana</div>
   <h1>Les millors<br>ofertes d'<em>Andorra</em></h1>
@@ -61,62 +64,67 @@
     <a href="/sobre-nosaltres" class="btn btn-ghost">Com funciona</a>
   </div>
   <div class="stats">
-    <div><span class="stat-num" id="statBiz">{{stats.businesses}}</span><span class="stat-lbl">Comerços</span></div>
-    <div><span class="stat-num" id="statOff">{{stats.ofertes}}</span><span class="stat-lbl">Ofertes actives</span></div>
+    <div><span class="stat-num">{{stats.businesses}}</span><span class="stat-lbl">Comerços</span></div>
+    <div><span class="stat-num">{{stats.ofertes}}</span><span class="stat-lbl">Ofertes actives</span></div>
     <div><span class="stat-num">7</span><span class="stat-lbl">Parròquies</span></div>
   </div>
 </section>
 
-<!-- Sticky filter bar -->
-<div class="filter-bar">
-  <div class="filter-scroll">
-    <!-- Parroquia -->
-    <button class="fchip active" data-parr="">📍 Totes</button>
+<!-- Filtre per parròquia -->
+<div class="filter-section">
+  <div class="filter-label">📍 Per parròquia</div>
+  <div class="filter-scroll" id="parrRow">
+    <button class="fchip active" data-parr="">Totes</button>
     {% for p in parroquies %}<button class="fchip" data-parr="{{p}}">{{p}}</button>{% endfor %}
-    <div class="filter-sep"></div>
-    <!-- Tipus -->
-    <button class="fchip active" data-type="">🏪 Tots</button>
-    {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
   </div>
 </div>
 
-<!-- Active filters display -->
-<div class="active-filters" id="activeFilters" style="display:none"></div>
+<!-- Active filters -->
+<div class="active-bar" id="activeBar"></div>
 
-<!-- Featured -->
-<section class="sec" id="destacats" style="padding-top:20px">
+<!-- Destacats -->
+<section class="sec" id="destacats">
   <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
-  <div class="feat-scroll" id="featGrid">
-    <div style="padding:20px;color:var(--muted);font-size:13px">Carregant...</div>
-  </div>
+  <div class="feat-scroll" id="featGrid"></div>
 </section>
 
-<!-- Businesses -->
+<!-- Comerços -->
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
-  <div class="container">
-    <div class="biz-grid" id="bizGrid">
-      <div style="grid-column:1/-1;padding:20px;color:var(--muted);font-size:13px">Carregant...</div>
+
+  <!-- Filtre per tipus — dins de la secció comerços -->
+  <div style="padding:0 20px 16px">
+    <div class="filter-scroll" id="typeRow" style="padding:0">
+      <button class="fchip active" data-type="">Tots els tipus</button>
+      {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
     </div>
+  </div>
+
+  <div class="container">
+    <div class="biz-grid" id="bizGrid"></div>
   </div>
 </section>
 
-<!-- All offers -->
+<!-- Ofertes -->
 <section class="sec" id="ofertes">
-  <div class="sw"><div class="section-heading">🏷️ Totes les ofertes</div></div>
-  <div class="container">
-    <div class="filter-scroll" id="timeRow" style="padding-left:0;margin-bottom:14px">
+  <div class="sw"><div class="section-heading">🏷️ Ofertes</div></div>
+
+  <!-- Filtre temporal — dins de la secció ofertes -->
+  <div style="padding:0 20px 16px">
+    <div class="filter-scroll" id="timeRow" style="padding:0">
       <button class="fchip active" data-time="">Totes</button>
       <button class="fchip" data-time="today">📅 Avui</button>
       <button class="fchip" data-time="new">✨ Noves</button>
       <button class="fchip" data-time="ending">⏰ Per acabar</button>
       <button class="fchip" data-time="week">📆 Aquesta setmana</button>
     </div>
-    <div class="offers-grid" id="offersGrid">
-      <div style="grid-column:1/-1;padding:20px;color:var(--muted);font-size:13px">Carregant...</div>
-    </div>
+  </div>
+
+  <div class="container">
+    <div class="offers-grid" id="offersGrid"></div>
   </div>
 </section>
+
 {% endblock %}
 {% block scripts %}
 <script>
@@ -126,23 +134,27 @@ let activeTime = '';
 let allOffers  = [];
 let allBiz     = [];
 
-// ── Filter bar clicks ─────────────────────────────────────────────────────
-document.querySelector('.filter-bar').addEventListener('click', e => {
+// Parroquia filter
+document.getElementById('parrRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
-  if (c.dataset.parr !== undefined) {
-    document.querySelectorAll('[data-parr]').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-    activeParr = c.dataset.parr;
-  }
-  if (c.dataset.type !== undefined) {
-    document.querySelectorAll('[data-type]').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-    activeType = c.dataset.type;
-  }
-  updateActiveFiltersBar();
+  document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeParr = c.dataset.parr;
+  updateActiveBar();
   loadAll();
 });
 
+// Type filter
+document.getElementById('typeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeType = c.dataset.type;
+  updateActiveBar();
+  loadAll();
+});
+
+// Time filter
 document.getElementById('timeRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
   document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
@@ -151,59 +163,49 @@ document.getElementById('timeRow').addEventListener('click', e => {
   renderOffers();
 });
 
-function updateActiveFiltersBar() {
-  const af = document.getElementById('activeFilters');
+function updateActiveBar() {
+  const bar = document.getElementById('activeBar');
   const tags = [];
   if (activeParr) tags.push(`<span class="active-tag" onclick="clearParr()">📍 ${activeParr} ✕</span>`);
   if (activeType) tags.push(`<span class="active-tag" onclick="clearType()">🏪 ${activeType} ✕</span>`);
-  if (tags.length) {
-    af.innerHTML = tags.join('');
-    af.style.display = 'flex';
-  } else {
-    af.style.display = 'none';
-  }
+  if (tags.length) { bar.innerHTML = tags.join(''); bar.style.display = 'flex'; }
+  else bar.style.display = 'none';
 }
 
 function clearParr() {
   activeParr = '';
-  document.querySelectorAll('[data-parr]').forEach(x => x.classList.remove('active'));
-  document.querySelector('[data-parr=""]').classList.add('active');
-  updateActiveFiltersBar(); loadAll();
+  document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
+  document.querySelector('#parrRow [data-parr=""]').classList.add('active');
+  updateActiveBar(); loadAll();
 }
 function clearType() {
   activeType = '';
-  document.querySelectorAll('[data-type]').forEach(x => x.classList.remove('active'));
-  document.querySelector('[data-type=""]').classList.add('active');
-  updateActiveFiltersBar(); loadAll();
+  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
+  document.querySelector('#typeRow [data-type=""]').classList.add('active');
+  updateActiveBar(); loadAll();
 }
 
-// ── Load all data ──────────────────────────────────────────────────────────
 async function loadAll() {
-  const params = new URLSearchParams();
-  if (activeParr) params.set('parroquia', activeParr);
-  if (activeType) params.set('category', activeType);
-
-  const [bizRes, offRes] = await Promise.all([
-    fetch('/api/businesses?' + params),
-    fetch('/api/ofertes?' + params)
+  const p = new URLSearchParams();
+  if (activeParr) p.set('parroquia', activeParr);
+  if (activeType) p.set('category', activeType);
+  const [br, or] = await Promise.all([
+    fetch('/api/businesses?' + p),
+    fetch('/api/ofertes?' + p)
   ]);
-  allBiz    = await bizRes.json();
-  allOffers = await offRes.json();
-
+  allBiz    = await br.json();
+  allOffers = await or.json();
   renderFeatured();
   renderBiz();
   renderOffers();
 }
 
-// ── Render featured ────────────────────────────────────────────────────────
 function renderFeatured() {
   const feat = allOffers.filter(o => o.featured);
-  const grid = document.getElementById('featGrid');
-  if (!feat.length) {
-    document.getElementById('destacats').style.display = 'none'; return;
-  }
-  document.getElementById('destacats').style.display = '';
-  grid.innerHTML = feat.map(o => {
+  const sec = document.getElementById('destacats');
+  if (!feat.length) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  document.getElementById('featGrid').innerHTML = feat.map(o => {
     const d = Math.round((1 - o.offer_price / o.original_price) * 100);
     return `<div class="feat-card" onclick="location='/negoci/${o.bid}'">
       <div class="feat-badge">−${d}%</div>
@@ -218,22 +220,15 @@ function renderFeatured() {
   }).join('');
 }
 
-// ── Render businesses ─────────────────────────────────────────────────────
 function renderBiz() {
   const grid = document.getElementById('bizGrid');
   if (!allBiz.length) {
-    grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">
-      Cap comerç trobat${activeParr ? ' a ' + activeParr : ''}${activeType ? ' de tipus ' + activeType : ''}.
-      <br><a href="/registre" style="color:var(--accent)">Sigues el primer! →</a></div>`;
+    grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">Cap comerç trobat. <a href="/registre" style="color:var(--accent)">Sigues el primer! →</a></div>`;
     return;
   }
   grid.innerHTML = allBiz.map(b => `
     <a href="/negoci/${b.id}" class="biz-card" style="--ba:${b.accent}">
-      <div class="biz-logo">
-        ${b.logo_image
-          ? `<img src="/static/uploads/logos/${b.logo_image}" alt="">`
-          : b.logo_emoji}
-      </div>
+      <div class="biz-logo">${b.logo_image ? `<img src="/static/uploads/logos/${b.logo_image}" alt="">` : b.logo_emoji}</div>
       <div style="flex:1;min-width:0">
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">${b.name}</div>
         <div style="font-size:11px;color:var(--muted);margin-bottom:3px">${b.category}</div>
@@ -243,17 +238,15 @@ function renderBiz() {
     </a>`).join('');
 }
 
-// ── Render offers ─────────────────────────────────────────────────────────
 function renderOffers() {
   let offers = allOffers;
-  if (activeTime === 'today')  offers = offers.filter(o => o.is_today);
+  if (activeTime === 'today')       offers = offers.filter(o => o.is_today);
   else if (activeTime === 'new')    offers = offers.filter(o => o.is_new);
   else if (activeTime === 'ending') offers = offers.filter(o => o.is_ending);
   else if (activeTime === 'week')   offers = offers.filter(o => o.is_week);
-
   const grid = document.getElementById('offersGrid');
   if (!offers.length) {
-    grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1">Cap oferta disponible amb els filtres seleccionats</div>';
+    grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1">Cap oferta disponible</div>';
     return;
   }
   grid.innerHTML = offers.map(o => {
@@ -279,7 +272,6 @@ function renderOffers() {
   }).join('');
 }
 
-// Initial load
 loadAll();
 </script>
 {% endblock %}
