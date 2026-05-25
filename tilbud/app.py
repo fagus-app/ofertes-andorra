@@ -54,21 +54,21 @@ PARROQUIES = [
 BUSINESS_TYPES = [
     'Supermercat','Bar','Restaurant','Cafeteria','Fleca i Pastisseria',
     'Carnisseria','Verduleria i Fruita','Peixateria','Formatgeria',
-    'Colmado i Delicatessen','Farmàcia','Altres'
+    'Colmado i Delicatessen','Botiga de Esports','Electrodomèstics','Farmàcia','Altres'
 ]
 
 BUSINESS_EMOJIS = {
     'Supermercat':'🏪','Bar':'🍺','Restaurant':'🍽️','Cafeteria':'☕',
     'Fleca i Pastisseria':'🥖','Carnisseria':'🥩','Verduleria i Fruita':'🥬',
     'Peixateria':'🐟','Formatgeria':'🧀','Colmado i Delicatessen':'🫙',
-    'Farmàcia':'💊','Altres':'🏬'
+    'Farmàcia':'💊','Botiga de Esports':'⚽','Electrodomèstics':'📺','Altres':'🏬'
 }
 
 ACCENT_COLORS = {
     'Supermercat':'#52B788','Bar':'#AF7AC5','Restaurant':'#E74C3C',
     'Cafeteria':'#F0B27A','Fleca i Pastisseria':'#D4A574','Carnisseria':'#E74C3C',
     'Verduleria i Fruita':'#52B788','Peixateria':'#5DADE2','Formatgeria':'#F0D870',
-    'Colmado i Delicatessen':'#D4A574','Farmàcia':'#5DADE2','Altres':'#888880'
+    'Colmado i Delicatessen':'#D4A574','Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2','Farmàcia':'#AF7AC5','Altres':'#888880'
 }
 
 os.makedirs(os.path.join(UPLOAD_DIR,'folletos'), exist_ok=True)
