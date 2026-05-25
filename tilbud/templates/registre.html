@@ -155,6 +155,22 @@
 {% endblock %}
 {% block scripts %}
 <script>
+const CATS = {{ business_categories | tojson }};
+function updateTags() {
+  const cat = document.getElementById('mainCatSelect').value;
+  const field = document.getElementById('tagsField');
+  const grid  = document.getElementById('tagsGrid');
+  if (!cat || !CATS[cat]) { field.style.display='none'; grid.innerHTML=''; return; }
+  field.style.display = '';
+  grid.innerHTML = CATS[cat].map(t => `
+    <label style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s">
+      <input type="checkbox" name="tags" value="${t}" style="accent-color:var(--accent)">
+      ${t}
+    </label>`).join('');
+}
+// restore on page load if form has category
+window.addEventListener('load', updateTags);
+
 document.getElementById('logoInput').addEventListener('change',function(){
   const n=this.files[0]?.name||'';
   document.getElementById('logoName').textContent=n?'✅ '+n:'';

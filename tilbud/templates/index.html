@@ -12,25 +12,24 @@
 .stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
 .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);display:block}
 .stat-lbl{font-size:11px;color:var(--muted)}
-/* filter rows */
-.filter-section{padding:10px 0 0;border-bottom:1px solid var(--border)}
-.filter-label{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 20px;margin-bottom:8px}
-.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px 12px;scrollbar-width:none}
+.filter-section{padding:10px 0 2px;border-bottom:1px solid var(--border)}
+.filter-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 20px;margin-bottom:7px;display:block}
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px 10px;scrollbar-width:none}
 .filter-scroll::-webkit-scrollbar{display:none}
 .fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .fchip:hover{color:var(--text);background:var(--bg3)}
 .fchip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
-/* active tag */
-.active-bar{padding:8px 20px;display:none;gap:8px;flex-wrap:wrap}
+.fchip.main-active{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.subtype-row{border-bottom:1px solid var(--border);background:var(--bg2);overflow:hidden;max-height:0;transition:max-height 0.25s ease}
+.subtype-row.open{max-height:80px}
+.active-bar{padding:6px 20px;display:none;gap:7px;flex-wrap:wrap}
 .active-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:3px 10px;font-size:12px;color:var(--accent);cursor:pointer}
-/* featured */
 .feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .feat-scroll::-webkit-scrollbar{display:none}
 .feat-card{flex:0 0 210px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
 .feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,.06) 0%,transparent 60%);pointer-events:none}
 .feat-card:hover{transform:translateY(-3px);border-color:rgba(232,197,71,.3)}
 .feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#0F0F0F;padding:2px 7px;border-radius:50px}
-/* biz */
 .biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;gap:12px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
 .biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
@@ -38,7 +37,6 @@
 .biz-card:hover::before{opacity:1}
 .biz-logo{width:48px;height:48px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
 .biz-logo img{width:100%;height:100%;object-fit:cover}
-/* offers */
 .offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:11px}
 .offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s;cursor:pointer}
 .offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
@@ -54,7 +52,6 @@
 {% endblock %}
 {% block content %}
 
-<!-- Hero -->
 <section class="hero">
   <div class="hero-tag">📣 Ofertes de la setmana</div>
   <h1>Les millors<br>ofertes d'<em>Andorra</em></h1>
@@ -70,12 +67,28 @@
   </div>
 </section>
 
-<!-- Filtre per parròquia -->
+<!-- Filtre 1: Parròquia -->
 <div class="filter-section">
-  <div class="filter-label">📍 Per parròquia</div>
+  <span class="filter-label">📍 Per parròquia</span>
   <div class="filter-scroll" id="parrRow">
     <button class="fchip active" data-parr="">Totes</button>
     {% for p in parroquies %}<button class="fchip" data-parr="{{p}}">{{p}}</button>{% endfor %}
+  </div>
+</div>
+
+<!-- Filtre 2: Categoria principal -->
+<div class="filter-section">
+  <span class="filter-label">🏪 Per tipus de comerç</span>
+  <div class="filter-scroll" id="mainCatRow">
+    <button class="fchip active" data-main="">Tots</button>
+    {% for cat in business_categories %}<button class="fchip" data-main="{{cat}}">{{cat}}</button>{% endfor %}
+  </div>
+</div>
+
+<!-- Filtre 3: Subtipos (apareix quan s'elegeix una categoria) -->
+<div class="subtype-row" id="subtypeRow">
+  <div class="filter-scroll" id="subtypeScroll" style="padding-top:8px">
+    <!-- filled by JS -->
   </div>
 </div>
 
@@ -91,15 +104,6 @@
 <!-- Comerços -->
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
-
-  <!-- Filtre per tipus — dins de la secció comerços -->
-  <div style="padding:0 20px 16px">
-    <div class="filter-scroll" id="typeRow" style="padding:0">
-      <button class="fchip active" data-type="">Tots els tipus</button>
-      {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
-    </div>
-  </div>
-
   <div class="container">
     <div class="biz-grid" id="bizGrid"></div>
   </div>
@@ -108,9 +112,7 @@
 <!-- Ofertes -->
 <section class="sec" id="ofertes">
   <div class="sw"><div class="section-heading">🏷️ Ofertes</div></div>
-
-  <!-- Filtre temporal — dins de la secció ofertes -->
-  <div style="padding:0 20px 16px">
+  <div style="padding:0 20px 14px">
     <div class="filter-scroll" id="timeRow" style="padding:0">
       <button class="fchip active" data-time="">Totes</button>
       <button class="fchip" data-time="today">📅 Avui</button>
@@ -119,7 +121,6 @@
       <button class="fchip" data-time="week">📆 Aquesta setmana</button>
     </div>
   </div>
-
   <div class="container">
     <div class="offers-grid" id="offersGrid"></div>
   </div>
@@ -128,33 +129,54 @@
 {% endblock %}
 {% block scripts %}
 <script>
-let activeParr = '';
-let activeType = '';
-let activeTime = '';
-let allOffers  = [];
-let allBiz     = [];
+const CATEGORIES = {{ business_categories | tojson }};
 
-// Parroquia filter
+let activeParr   = '';
+let activeMain   = '';
+let activeSub    = '';
+let activeTime   = '';
+let allOffers    = [];
+let allBiz       = [];
+
+// ── Parroquia ─────────────────────────────────────────────────────────────
 document.getElementById('parrRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
   document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
   c.classList.add('active');
   activeParr = c.dataset.parr;
-  updateActiveBar();
-  loadAll();
+  updateActiveBar(); loadAll();
 });
 
-// Type filter
-document.getElementById('typeRow').addEventListener('click', e => {
+// ── Main category ─────────────────────────────────────────────────────────
+document.getElementById('mainCatRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
-  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('#mainCatRow .fchip').forEach(x => x.classList.remove('active'));
   c.classList.add('active');
-  activeType = c.dataset.type;
-  updateActiveBar();
-  loadAll();
+  activeMain = c.dataset.main;
+  activeSub  = '';
+  renderSubtypes();
+  updateActiveBar(); loadAll();
 });
 
-// Time filter
+// ── Subtypes ──────────────────────────────────────────────────────────────
+function renderSubtypes() {
+  const row  = document.getElementById('subtypeRow');
+  const scroll = document.getElementById('subtypeScroll');
+  if (!activeMain) { row.classList.remove('open'); scroll.innerHTML = ''; return; }
+  const subs = CATEGORIES[activeMain] || [];
+  scroll.innerHTML = `<button class="fchip active" data-sub="">Tots els ${activeMain}</button>` +
+    subs.map(s => `<button class="fchip" data-sub="${s}">${s}</button>`).join('');
+  row.classList.add('open');
+  scroll.addEventListener('click', e => {
+    const c = e.target.closest('.fchip'); if (!c) return;
+    scroll.querySelectorAll('.fchip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    activeSub = c.dataset.sub;
+    updateActiveBar(); loadAll();
+  });
+}
+
+// ── Time filter ───────────────────────────────────────────────────────────
 document.getElementById('timeRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
   document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
@@ -163,32 +185,43 @@ document.getElementById('timeRow').addEventListener('click', e => {
   renderOffers();
 });
 
+// ── Active bar ────────────────────────────────────────────────────────────
 function updateActiveBar() {
-  const bar = document.getElementById('activeBar');
+  const bar  = document.getElementById('activeBar');
   const tags = [];
-  if (activeParr) tags.push(`<span class="active-tag" onclick="clearParr()">📍 ${activeParr} ✕</span>`);
-  if (activeType) tags.push(`<span class="active-tag" onclick="clearType()">🏪 ${activeType} ✕</span>`);
-  if (tags.length) { bar.innerHTML = tags.join(''); bar.style.display = 'flex'; }
-  else bar.style.display = 'none';
+  if (activeParr) tags.push(`<span class="active-tag" onclick="clearFilter('parr')">📍 ${activeParr} ✕</span>`);
+  if (activeMain) tags.push(`<span class="active-tag" onclick="clearFilter('main')">🏪 ${activeMain} ✕</span>`);
+  if (activeSub)  tags.push(`<span class="active-tag" onclick="clearFilter('sub')">${activeSub} ✕</span>`);
+  bar.innerHTML = tags.join('');
+  bar.style.display = tags.length ? 'flex' : 'none';
 }
 
-function clearParr() {
-  activeParr = '';
-  document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
-  document.querySelector('#parrRow [data-parr=""]').classList.add('active');
-  updateActiveBar(); loadAll();
-}
-function clearType() {
-  activeType = '';
-  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
-  document.querySelector('#typeRow [data-type=""]').classList.add('active');
+function clearFilter(type) {
+  if (type === 'parr') {
+    activeParr = '';
+    document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
+    document.querySelector('#parrRow [data-parr=""]').classList.add('active');
+  } else if (type === 'main') {
+    activeMain = ''; activeSub = '';
+    document.querySelectorAll('#mainCatRow .fchip').forEach(x => x.classList.remove('active'));
+    document.querySelector('#mainCatRow [data-main=""]').classList.add('active');
+    document.getElementById('subtypeRow').classList.remove('open');
+  } else if (type === 'sub') {
+    activeSub = '';
+    const scroll = document.getElementById('subtypeScroll');
+    scroll.querySelectorAll('.fchip').forEach(x => x.classList.remove('active'));
+    scroll.querySelector('[data-sub=""]').classList.add('active');
+  }
   updateActiveBar(); loadAll();
 }
 
+// ── Load data ─────────────────────────────────────────────────────────────
 async function loadAll() {
   const p = new URLSearchParams();
   if (activeParr) p.set('parroquia', activeParr);
-  if (activeType) p.set('biz_type', activeType);
+  if (activeSub)       p.set('biz_type', activeSub);
+  else if (activeMain) p.set('main_cat', activeMain);
+
   const [br, or] = await Promise.all([
     fetch('/api/businesses?' + p),
     fetch('/api/ofertes?' + p)
@@ -200,9 +233,10 @@ async function loadAll() {
   renderOffers();
 }
 
+// ── Render featured ───────────────────────────────────────────────────────
 function renderFeatured() {
   const feat = allOffers.filter(o => o.featured);
-  const sec = document.getElementById('destacats');
+  const sec  = document.getElementById('destacats');
   if (!feat.length) { sec.style.display = 'none'; return; }
   sec.style.display = '';
   document.getElementById('featGrid').innerHTML = feat.map(o => {
@@ -220,6 +254,7 @@ function renderFeatured() {
   }).join('');
 }
 
+// ── Render businesses ─────────────────────────────────────────────────────
 function renderBiz() {
   const grid = document.getElementById('bizGrid');
   if (!allBiz.length) {
@@ -238,6 +273,7 @@ function renderBiz() {
     </a>`).join('');
 }
 
+// ── Render offers ─────────────────────────────────────────────────────────
 function renderOffers() {
   let offers = allOffers;
   if (activeTime === 'today')       offers = offers.filter(o => o.is_today);
