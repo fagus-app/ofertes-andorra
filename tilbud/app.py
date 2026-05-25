@@ -256,7 +256,7 @@ def seed_demo(db):
          'Carrer Major 8, Encamp','https://maps.google.com','+376 800 002','borda@example.com',
          '8:00-20:00','8:00-20:00','8:00-20:00','8:00-20:00','8:00-20:00','9:00-14:00','Tancat',
          'borda','borda123'),
-        ('Gourmet Pirineu','Colmado i Delicatessen','Escaldes-Engordany','🧀','#1B4F72','#5DADE2',
+        ('Gourmet Pirineu','Formatgeria i Gourmet','Escaldes-Engordany','🧀','#1B4F72','#5DADE2',
          'Selecció de productes artesanals i importacions exclusives.',
          'Plaça Coprínceps 3, Escaldes','https://maps.google.com','+376 800 003','gourmet@example.com',
          '10:00-20:00','10:00-20:00','10:00-20:00','10:00-20:00','10:00-20:00','10:00-18:00','Tancat',
@@ -271,7 +271,7 @@ def seed_demo(db):
          'Carrer de la Unió 22, Ordino','https://maps.google.com','+376 800 005','carnros@example.com',
          '8:00-13:30','8:00-13:30','8:00-13:30','8:00-13:30','8:00-13:30','8:00-13:00','Tancat',
          'carnros','carnros123'),
-        ('Fleca Andorrana','Fleca i Pastisseria','Sant Julià de Lòria','🥖','#784212','#F0B27A',
+        ('Fleca Andorrana','Fleca i Cafeteria','Sant Julià de Lòria','🥐','#784212','#F0B27A',
          'Pa artesanal de forn de llenya. Pastissos i dolços tradicionals.',
          'Av. del Fener 5, Sant Julià','https://maps.google.com','+376 800 006','fleca@example.com',
          '7:00-20:00','7:00-20:00','7:00-20:00','7:00-20:00','7:00-20:00','7:00-14:00','Tancat',
@@ -451,32 +451,49 @@ def api_search():
 
 @app.route('/api/ofertes')
 def api_ofertes():
-    today = today_str()
-    bid = request.args.get('business_id',type=int)
-    cat      = request.args.get('category','')
-    par      = request.args.get('parroquia','')
-    biz_type = request.args.get('biz_type','')
-    sql = """SELECT o.*,b.name as bname,b.logo_emoji as blogo,b.id as bid,b.parroquia as bparroquia,b.category as bcategory
+    today    = today_str()
+    bid      = request.args.get('business_id', type=int)
+    cat      = request.args.get('cat', '')
+    par      = request.args.get('parroquia', '')
+    biz_type = request.args.get('biz_type', '')
+    main_cat = request.args.get('main_cat', '')
+
+    sql = """SELECT DISTINCT o.*,b.name as bname,b.logo_emoji as blogo,b.id as bid,b.parroquia as bparroquia,b.category as bcategory
              FROM ofertes o JOIN businesses b ON o.business_id=b.id
              WHERE o.valid_from<=? AND o.valid_until>=? AND b.active=1 AND b.subscription_end>=?"""
-    p = [today,today,today]
-    if bid:      sql += " AND o.business_id=?";  p.append(bid)
-    if cat:      sql += " AND o.category=?";     p.append(cat)
-    if par:      sql += " AND b.parroquia=?";    p.append(par)
-    if biz_type: sql += " AND b.category=?";     p.append(biz_type)
-    sql += " ORDER BY o.featured DESC,o.created DESC"
-    rows = get_db().execute(sql,p).fetchall()
-    today2 = today_str()
-    # add is_new (created in last 3 days) and is_ending (valid_until in next 2 days)
+    p = [today, today, today]
+    if bid: sql += " AND o.business_id=?"; p.append(bid)
+    if cat: sql += " AND o.category=?";    p.append(cat)
+    if par: sql += " AND b.parroquia=?";   p.append(par)
+    if biz_type:
+        biz_ids = [r[0] for r in get_db().execute(
+            "SELECT id FROM businesses WHERE category=? UNION SELECT business_id FROM business_tags WHERE tag=?",
+            (biz_type, biz_type)).fetchall()]
+        if not biz_ids: return jsonify([])
+        ph = ','.join('?'*len(biz_ids))
+        sql += f" AND b.id IN ({ph})"; p.extend(biz_ids)
+    elif main_cat:
+        subtypes = BUSINESS_CATEGORIES.get(main_cat, [])
+        if not subtypes: return jsonify([])
+        ph2 = ','.join('?'*len(subtypes))
+        biz_ids = [r[0] for r in get_db().execute(
+            f"SELECT id FROM businesses WHERE category IN ({ph2}) UNION SELECT business_id FROM business_tags WHERE tag IN ({ph2})",
+            subtypes + subtypes).fetchall()]
+        if not biz_ids: return jsonify([])
+        ph = ','.join('?'*len(biz_ids))
+        sql += f" AND b.id IN ({ph})"; p.extend(biz_ids)
+    sql += " ORDER BY o.featured DESC, o.created DESC"
+    rows = get_db().execute(sql, p).fetchall()
     result = []
     for r in rows:
         d = dict(r)
-        d['is_new'] = r['created'] >= (date.today()-timedelta(days=3)).isoformat()
-        d['is_today'] = r['valid_from'] <= today2 <= r['valid_until']
+        d['is_new']    = r['created']     >= (date.today()-timedelta(days=3)).isoformat()
+        d['is_today']  = r['valid_from']  <= today <= r['valid_until']
         d['is_ending'] = r['valid_until'] <= (date.today()+timedelta(days=2)).isoformat()
-        d['is_week'] = r['valid_until'] <= (date.today()+timedelta(days=7)).isoformat()
+        d['is_week']   = r['valid_until'] <= (date.today()+timedelta(days=7)).isoformat()
         result.append(d)
     return jsonify(result)
+
 
 @app.route('/api/businesses')
 def api_businesses():
@@ -498,8 +515,12 @@ def api_businesses():
         p += subtypes + subtypes
     else:
         sql = "SELECT * FROM businesses WHERE active=1 AND subscription_end>=?"
-    if par: sql += " AND b.parroquia=?" if 'DISTINCT' in sql else " AND parroquia=?"; p.append(par)
-    sql += " ORDER BY b.name" if 'DISTINCT' in sql else " ORDER BY name"
+    if par:
+        if 'DISTINCT' in sql: sql += " AND b.parroquia=?"
+        else: sql += " AND parroquia=?"
+        p.append(par)
+    if 'DISTINCT' in sql: sql += " ORDER BY b.name"
+    else: sql += " ORDER BY name"
     return jsonify([dict(r) for r in db.execute(sql, p).fetchall()])
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
