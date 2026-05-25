@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block title %}Ofertes.ad — Les millors ofertes d'Andorra{% endblock %}
+{% block head %}
+<style>
+.hero{padding:52px 20px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(232,197,71,.12) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:5px 14px;margin-bottom:20px}
+.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,58px);line-height:1.06;letter-spacing:-1.5px;margin-bottom:12px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:15px;color:var(--muted);max-width:380px;margin:0 auto 28px;font-weight:300}
+.hero-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);display:block}
+.stat-lbl{font-size:11px;color:var(--muted)}
+/* filter rows */
+.filter-section{padding:10px 0 0;border-bottom:1px solid var(--border)}
+.filter-label{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 20px;margin-bottom:8px}
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px 12px;scrollbar-width:none}
+.filter-scroll::-webkit-scrollbar{display:none}
+.fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.fchip:hover{color:var(--text);background:var(--bg3)}
+.fchip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+/* active tag */
+.active-bar{padding:8px 20px;display:none;gap:8px;flex-wrap:wrap}
+.active-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:3px 10px;font-size:12px;color:var(--accent);cursor:pointer}
+/* featured */
+.feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.feat-scroll::-webkit-scrollbar{display:none}
+.feat-card{flex:0 0 210px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,.06) 0%,transparent 60%);pointer-events:none}
+.feat-card:hover{transform:translateY(-3px);border-color:rgba(232,197,71,.3)}
+.feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#0F0F0F;padding:2px 7px;border-radius:50px}
+/* biz */
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;gap:12px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
+.biz-card:hover{transform:translateY(-2px);border-color:var(--border2)}
+.biz-card:hover::before{opacity:1}
+.biz-logo{width:48px;height:48px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.biz-logo img{width:100%;height:100%;object-fit:cover}
+/* offers */
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:11px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s;cursor:pointer}
+.offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.offer-card.is-new{border-color:rgba(82,201,122,.3)}
+.offer-card.is-ending{border-color:rgba(232,84,84,.3)}
+.o-tag{font-size:10px;padding:1px 7px;border-radius:50px;font-weight:500;display:inline-block}
+.o-tag-new{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
+.o-tag-end{background:rgba(232,84,84,.1);color:var(--red);border:1px solid rgba(232,84,84,.2)}
+.sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.sec{padding:20px 0 40px}
+.empty-msg{text-align:center;color:var(--muted);padding:48px 20px;font-size:14px}
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-tag">📣 Ofertes de la setmana</div>
+  <h1>Les millors<br>ofertes d'<em>Andorra</em></h1>
+  <p class="hero-sub">Totes les promocions dels comerços locals en un sol lloc.</p>
+  <div class="hero-btns">
+    <a href="#comercos" class="btn btn-accent">Veure comerços</a>
+    <a href="/sobre-nosaltres" class="btn btn-ghost">Com funciona</a>
+  </div>
+  <div class="stats">
+    <div><span class="stat-num">{{stats.businesses}}</span><span class="stat-lbl">Comerços</span></div>
+    <div><span class="stat-num">{{stats.ofertes}}</span><span class="stat-lbl">Ofertes actives</span></div>
+    <div><span class="stat-num">7</span><span class="stat-lbl">Parròquies</span></div>
+  </div>
+</section>
+
+<!-- Filtre per parròquia -->
+<div class="filter-section">
+  <div class="filter-label">📍 Per parròquia</div>
+  <div class="filter-scroll" id="parrRow">
+    <button class="fchip active" data-parr="">Totes</button>
+    {% for p in parroquies %}<button class="fchip" data-parr="{{p}}">{{p}}</button>{% endfor %}
+  </div>
+</div>
+
+<!-- Active filters -->
+<div class="active-bar" id="activeBar"></div>
+
+<!-- Destacats -->
+<section class="sec" id="destacats">
+  <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
+  <div class="feat-scroll" id="featGrid"></div>
+</section>
+
+<!-- Comerços -->
+<section class="sec" id="comercos">
+  <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
+
+  <!-- Filtre per tipus — dins de la secció comerços -->
+  <div style="padding:0 20px 16px">
+    <div class="filter-scroll" id="typeRow" style="padding:0">
+      <button class="fchip active" data-type="">Tots els tipus</button>
+      {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="biz-grid" id="bizGrid"></div>
+  </div>
+</section>
+
+<!-- Ofertes -->
+<section class="sec" id="ofertes">
+  <div class="sw"><div class="section-heading">🏷️ Ofertes</div></div>
+
+  <!-- Filtre temporal — dins de la secció ofertes -->
+  <div style="padding:0 20px 16px">
+    <div class="filter-scroll" id="timeRow" style="padding:0">
+      <button class="fchip active" data-time="">Totes</button>
+      <button class="fchip" data-time="today">📅 Avui</button>
+      <button class="fchip" data-time="new">✨ Noves</button>
+      <button class="fchip" data-time="ending">⏰ Per acabar</button>
+      <button class="fchip" data-time="week">📆 Aquesta setmana</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="offers-grid" id="offersGrid"></div>
+  </div>
+</section>
+
+{% endblock %}
+{% block scripts %}
+<script>
+let activeParr = '';
+let activeType = '';
+let activeTime = '';
+let allOffers  = [];
+let allBiz     = [];
+
+// Parroquia filter
+document.getElementById('parrRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeParr = c.dataset.parr;
+  updateActiveBar();
+  loadAll();
+});
+
+// Type filter
+document.getElementById('typeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeType = c.dataset.type;
+  updateActiveBar();
+  loadAll();
+});
+
+// Time filter
+document.getElementById('timeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeTime = c.dataset.time;
+  renderOffers();
+});
+
+function updateActiveBar() {
+  const bar = document.getElementById('activeBar');
+  const tags = [];
+  if (activeParr) tags.push(`<span class="active-tag" onclick="clearParr()">📍 ${activeParr} ✕</span>`);
+  if (activeType) tags.push(`<span class="active-tag" onclick="clearType()">🏪 ${activeType} ✕</span>`);
+  if (tags.length) { bar.innerHTML = tags.join(''); bar.style.display = 'flex'; }
+  else bar.style.display = 'none';
+}
+
+function clearParr() {
+  activeParr = '';
+  document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
+  document.querySelector('#parrRow [data-parr=""]').classList.add('active');
+  updateActiveBar(); loadAll();
+}
+function clearType() {
+  activeType = '';
+  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
+  document.querySelector('#typeRow [data-type=""]').classList.add('active');
+  updateActiveBar(); loadAll();
+}
+
+async function loadAll() {
+  const p = new URLSearchParams();
+  if (activeParr) p.set('parroquia', activeParr);
+  if (activeType) p.set('category', activeType);
+  const [br, or] = await Promise.all([
+    fetch('/api/businesses?' + p),
+    fetch('/api/ofertes?' + p)
+  ]);
+  allBiz    = await br.json();
+  allOffers = await or.json();
+  renderFeatured();
+  renderBiz();
+  renderOffers();
+}
+
+function renderFeatured() {
+  const feat = allOffers.filter(o => o.featured);
+  const sec = document.getElementById('destacats');
+  if (!feat.length) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  document.getElementById('featGrid').innerHTML = feat.map(o => {
+    const d = Math.round((1 - o.offer_price / o.original_price) * 100);
+    return `<div class="feat-card" onclick="location='/negoci/${o.bid}'">
+      <div class="feat-badge">−${d}%</div>
+      <div style="font-size:34px;line-height:1">${o.emoji}</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">${o.name}</div>
+      <div style="font-size:11px;color:var(--muted)">${o.blogo} ${o.bname}</div>
+      <div style="display:flex;align-items:baseline;gap:7px;margin-top:auto">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
+        <span style="font-size:12px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderBiz() {
+  const grid = document.getElementById('bizGrid');
+  if (!allBiz.length) {
+    grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">Cap comerç trobat. <a href="/registre" style="color:var(--accent)">Sigues el primer! →</a></div>`;
+    return;
+  }
+  grid.innerHTML = allBiz.map(b => `
+    <a href="/negoci/${b.id}" class="biz-card" style="--ba:${b.accent}">
+      <div class="biz-logo">${b.logo_image ? `<img src="/static/uploads/logos/${b.logo_image}" alt="">` : b.logo_emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">${b.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:3px">${b.category}</div>
+        <div style="font-size:11px;color:var(--muted)">📍 ${b.parroquia}</div>
+        <div style="font-size:11px;color:var(--accent);margin-top:5px">Veure ofertes →</div>
+      </div>
+    </a>`).join('');
+}
+
+function renderOffers() {
+  let offers = allOffers;
+  if (activeTime === 'today')       offers = offers.filter(o => o.is_today);
+  else if (activeTime === 'new')    offers = offers.filter(o => o.is_new);
+  else if (activeTime === 'ending') offers = offers.filter(o => o.is_ending);
+  else if (activeTime === 'week')   offers = offers.filter(o => o.is_week);
+  const grid = document.getElementById('offersGrid');
+  if (!offers.length) {
+    grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1">Cap oferta disponible</div>';
+    return;
+  }
+  grid.innerHTML = offers.map(o => {
+    const d = Math.round((1 - o.offer_price / o.original_price) * 100);
+    const tags = [];
+    if (o.is_new)    tags.push('<span class="o-tag o-tag-new">✨ Nova</span>');
+    if (o.is_ending) tags.push('<span class="o-tag o-tag-end">⏰ Acaba aviat</span>');
+    return `<div class="offer-card ${o.is_new?'is-new':''} ${o.is_ending?'is-ending':''}" onclick="location='/negoci/${o.bid}'">
+      <span style="font-size:28px;line-height:1">${o.emoji}</span>
+      ${tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tags.join('')}</div>` : ''}
+      <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${o.name}</div>
+      <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
+        <span style="font-size:11px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
+        <span class="discount">−${d}%</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted)">${o.unit}</div>
+      <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
+        <span>Fins el <strong style="color:var(--accent)">${o.valid_until}</strong></span>
+        <span>${o.blogo} ${o.bname}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+loadAll();
+</script>
+{% endblock %}
