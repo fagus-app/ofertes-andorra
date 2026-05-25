@@ -7,30 +7,29 @@
 .panel-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text)}
 .panel-title span{color:var(--accent)}
 .panel-actions{display:flex;gap:8px;flex-wrap:wrap}
-/* subscription banner */
 .sub-banner{border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .sub-ok{background:rgba(82,201,122,.08);border:1px solid rgba(82,201,122,.15)}
 .sub-warn{background:rgba(232,197,71,.08);border:1px solid rgba(232,197,71,.2)}
 .sub-exp{background:rgba(232,84,84,.08);border:1px solid rgba(232,84,84,.2)}
 .sub-text{font-size:13px}
-/* stats */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
-.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--accent)}
-.stat-lbl{font-size:12px;color:var(--muted);margin-top:2px}
-/* section card */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--accent)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
 .sec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden}
-.sec-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sec-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .sec-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text)}
 .table{width:100%;border-collapse:collapse}
-.table th{padding:9px 18px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
-.table td{padding:12px 18px;font-size:13px;color:var(--text);border-bottom:1px solid var(--border)}
+.table th{padding:9px 16px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.table td{padding:11px 16px;font-size:13px;color:var(--text);border-bottom:1px solid var(--border)}
 .table tr:last-child td{border-bottom:none}
 .table tr:hover td{background:rgba(255,255,255,.02)}
-.badge{display:inline-block;border-radius:50px;font-size:11px;padding:2px 9px}
+.badge{display:inline-block;border-radius:50px;font-size:11px;padding:2px 8px}
 .badge-ok{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
-.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.empty-state{padding:36px;text-align:center;color:var(--muted);font-size:13px}
 .td-actions{display:flex;gap:6px;align-items:center}
+.price-box{background:rgba(232,197,71,.06);border:1px solid rgba(232,197,71,.15);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:13px}
+.price-box strong{color:var(--accent)}
 </style>
 {% endblock %}
 {% block content %}
@@ -47,6 +46,7 @@
     <div class="panel-actions">
       <a href="/panel/oferta/nova" class="btn btn-accent">+ Nova oferta</a>
       <a href="/panel/folleto/nou" class="btn btn-ghost">+ Nou folleto</a>
+      <a href="/panel/sucursal/nova" class="btn btn-ghost">+ Sucursal</a>
       <a href="/panel/perfil" class="btn btn-ghost">✏️ Perfil</a>
       <a href="/negoci/{{b.id}}" class="btn btn-ghost">👁 Veure</a>
     </div>
@@ -56,39 +56,37 @@
   {% if can_pub %}
     {% if days_left <= 7 %}
     <div class="sub-banner sub-warn">
-      <span class="sub-text">⚠️ La teva subscripció venç en <strong>{{days_left}} dies</strong> ({{b.subscription_end}}). Contacta'ns per renovar.</span>
+      <span class="sub-text">⚠️ Subscripció venç en <strong>{{days_left}} dies</strong> ({{b.subscription_end}})</span>
       <a href="mailto:ofertes.ad@gmail.com" class="btn btn-accent btn-sm">Renovar</a>
     </div>
     {% else %}
     <div class="sub-banner sub-ok">
-      <span class="sub-text">✅ Subscripció activa fins el <strong>{{b.subscription_end}}</strong> ({{days_left}} dies restants)</span>
+      <span class="sub-text">✅ Subscripció activa fins el <strong>{{b.subscription_end}}</strong> ({{days_left}} dies)</span>
     </div>
     {% endif %}
   {% else %}
   <div class="sub-banner sub-exp">
-    <span class="sub-text" style="color:var(--red)">❌ La teva subscripció ha vençut. Les teves ofertes no es mostren. Contacta'ns per renovar.</span>
+    <span class="sub-text" style="color:var(--red)">❌ Subscripció vençuda. Les teves ofertes no es mostren.</span>
     <a href="mailto:ofertes.ad@gmail.com" class="btn btn-danger btn-sm">Renovar ara</a>
   </div>
   {% endif %}
 
+  <!-- Pricing info -->
+  <div class="price-box">
+    💰 Pla actual: <strong>{{b.category}}</strong> ·
+    Prova: <strong>{{trial_price}}€/mes</strong> ·
+    Preu normal: <strong>{{normal_price}}€/mes</strong> ·
+    Sucursals extra: <strong>{{branch_count}} × 12€</strong> ·
+    Total mensual: <strong>{{monthly_total}}€/mes</strong>
+  </div>
+
   <!-- Stats -->
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-val">{{total_views}}</div>
-      <div class="stat-lbl">Visites totals al perfil</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">{{views_7d}}</div>
-      <div class="stat-lbl">Visites últims 7 dies</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">{{total_o_views}}</div>
-      <div class="stat-lbl">Visites a ofertes</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">{{ofertes|length}}</div>
-      <div class="stat-lbl">Ofertes actives</div>
-    </div>
+    <div class="stat-card"><div class="stat-val">{{total_views}}</div><div class="stat-lbl">Visites totals</div></div>
+    <div class="stat-card"><div class="stat-val">{{views_7d}}</div><div class="stat-lbl">Visites 7 dies</div></div>
+    <div class="stat-card"><div class="stat-val">{{total_o_views}}</div><div class="stat-lbl">Visites ofertes</div></div>
+    <div class="stat-card"><div class="stat-val">{{ofertes|length}}</div><div class="stat-lbl">Ofertes actives</div></div>
+    <div class="stat-card"><div class="stat-val">{{branch_count}}</div><div class="stat-lbl">Sucursals extra</div></div>
   </div>
 
   <!-- Ofertes -->
@@ -99,7 +97,7 @@
     </div>
     {% if ofertes %}
     <table class="table">
-      <thead><tr><th>Producte</th><th>Preu oferta</th><th>Desc.</th><th>Vàlid fins</th><th>Dest.</th><th>Visites</th><th></th></tr></thead>
+      <thead><tr><th>Producte</th><th>Preu</th><th>Desc.</th><th>Vàlid fins</th><th>Dest.</th><th>Visites</th><th></th></tr></thead>
       <tbody>
         {% for o in ofertes %}
         <tr>
@@ -109,14 +107,12 @@
           <td><span class="badge badge-ok">{{o.valid_until}}</span></td>
           <td>{% if o.featured %}⭐{% else %}—{% endif %}</td>
           <td style="color:var(--muted)">{{o.views}}</td>
-          <td>
-            <div class="td-actions">
-              {% if can_pub %}<a href="/panel/oferta/editar/{{o.id}}" class="btn btn-ghost btn-sm">Editar</a>{% endif %}
-              <form method="POST" action="/panel/oferta/eliminar/{{o.id}}" onsubmit="return confirm('Eliminar?')">
-                <button type="submit" class="btn btn-danger btn-sm">✕</button>
-              </form>
-            </div>
-          </td>
+          <td><div class="td-actions">
+            {% if can_pub %}<a href="/panel/oferta/editar/{{o.id}}" class="btn btn-ghost btn-sm">Editar</a>{% endif %}
+            <form method="POST" action="/panel/oferta/eliminar/{{o.id}}" onsubmit="return confirm('Eliminar?')">
+              <button type="submit" class="btn btn-danger btn-sm">✕</button>
+            </form>
+          </div></td>
         </tr>
         {% endfor %}
       </tbody>
@@ -142,21 +138,49 @@
           <td>{% if f.filetype=='pdf' %}📄 PDF{% else %}🖼️ Imatge{% endif %}</td>
           <td><span class="badge badge-ok">{{f.valid_until}}</span></td>
           <td style="color:var(--muted)">{{f.views}}</td>
-          <td>
-            <div class="td-actions">
-              <a href="/static/uploads/folletos/{{f.filename}}" target="_blank" class="btn btn-ghost btn-sm">Veure</a>
-              {% if can_pub %}<a href="/panel/folleto/editar/{{f.id}}" class="btn btn-ghost btn-sm">Editar</a>{% endif %}
-              <form method="POST" action="/panel/folleto/eliminar/{{f.id}}" onsubmit="return confirm('Eliminar?')">
-                <button type="submit" class="btn btn-danger btn-sm">✕</button>
-              </form>
-            </div>
-          </td>
+          <td><div class="td-actions">
+            <a href="/static/uploads/folletos/{{f.filename}}" target="_blank" class="btn btn-ghost btn-sm">Veure</a>
+            {% if can_pub %}<a href="/panel/folleto/editar/{{f.id}}" class="btn btn-ghost btn-sm">Editar</a>{% endif %}
+            <form method="POST" action="/panel/folleto/eliminar/{{f.id}}" onsubmit="return confirm('Eliminar?')">
+              <button type="submit" class="btn btn-danger btn-sm">✕</button>
+            </form>
+          </div></td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     {% else %}
-    <div class="empty-state">Cap folleto publicat. {% if can_pub %}<a href="/panel/folleto/nou" style="color:var(--accent)">Puja el primer →</a>{% endif %}</div>
+    <div class="empty-state">Cap folleto. {% if can_pub %}<a href="/panel/folleto/nou" style="color:var(--accent)">Puja el primer →</a>{% endif %}</div>
+    {% endif %}
+  </div>
+
+  <!-- Sucursals -->
+  <div class="sec-card">
+    <div class="sec-head">
+      <div class="sec-title">📍 Sucursals extra ({{branch_count}}) <span style="font-size:11px;color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif">+12€/mes cadascuna</span></div>
+      {% if can_pub %}<a href="/panel/sucursal/nova" class="btn btn-ghost btn-sm">+ Afegir</a>{% endif %}
+    </div>
+    {% if branches %}
+    <table class="table">
+      <thead><tr><th>Nom</th><th>Adreça</th><th>Telèfon</th><th></th></tr></thead>
+      <tbody>
+        {% for s in branches %}
+        <tr>
+          <td style="font-weight:500">{{s.name}}</td>
+          <td style="color:var(--muted)">{{s.location or '—'}}</td>
+          <td style="color:var(--muted)">{{s.phone or '—'}}</td>
+          <td><div class="td-actions">
+            {% if can_pub %}<a href="/panel/sucursal/editar/{{s.id}}" class="btn btn-ghost btn-sm">Editar</a>{% endif %}
+            <form method="POST" action="/panel/sucursal/eliminar/{{s.id}}" onsubmit="return confirm('Eliminar sucursal?')">
+              <button type="submit" class="btn btn-danger btn-sm">✕</button>
+            </form>
+          </div></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">Cap sucursal extra. <a href="/panel/sucursal/nova" style="color:var(--accent)">Afegeix-ne una →</a></div>
     {% endif %}
   </div>
 

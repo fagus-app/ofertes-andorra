@@ -1,69 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Editar Perfil — {{b.name}}{% endblock %}
+{% block title %}Editar Perfil — Panel{% endblock %}
 {% block head %}
 <style>
-.form-wrap{max-width:660px;margin:0 auto;padding:32px 20px 80px}
-.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);margin-bottom:24px}
-.form-title a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:400;margin-left:12px}
-.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin-bottom:14px}
-.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--accent);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
-.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.form-wrap{max-width:680px;margin:0 auto;padding:36px 24px 80px}
+.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;margin-bottom:28px}
+.form-title a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:400;margin-left:12px}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:20px}
+.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
 .field select option{background:var(--bg2)}
-.field textarea{resize:vertical;min-height:70px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.hours-grid{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;margin-bottom:6px}
-.hours-day{font-size:12px;color:var(--muted);font-weight:500}
-.submit-btn{width:100%;padding:13px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
+.field textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.hours-grid{display:grid;grid-template-columns:80px 1fr;gap:8px 12px;align-items:center}
+.hours-day{font-size:13px;color:var(--muted);font-weight:500}
+.hours-input{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%}
+.hours-input:focus{border-color:var(--accent)}
+.submit-btn{width:100%;padding:13px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s}
 .submit-btn:hover{background:#F0D870}
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
-.upload-zone:hover{border-color:var(--accent)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.current-logo{width:64px;height:64px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--border);margin-bottom:10px}
 </style>
 {% endblock %}
 {% block content %}
 <div class="form-wrap">
-  <div class="form-title">✏️ Editar perfil <a href="/panel">← Tornar al panel</a></div>
   {% with msgs=get_flashed_messages() %}{% if msgs %}{% for m in msgs %}<div class="flash">{{m}}</div>{% endfor %}{% endif %}{% endwith %}
+  <div class="form-title">✏️ Editar perfil <a href="/panel">← Tornar al panel</a></div>
   <form method="POST" enctype="multipart/form-data">
     <div class="form-card">
-      <div class="form-section-title">🏪 Informació bàsica</div>
+      <div class="form-section-title">Informació del comerç</div>
+      <div class="field"><label>Nom *</label><input type="text" name="name" value="{{b.name}}" required></div>
       <div class="row2">
-        <div class="field"><label>Nom *</label><input type="text" name="name" required value="{{b.name}}"></div>
-        <div class="field"><label>Tipus</label>
-          <select name="category">{% for t in business_types %}<option value="{{t}}" {% if b.category==t %}selected{% endif %}>{{t}}</option>{% endfor %}</select>
+        <div class="field">
+          <label>Tipus</label>
+          <select name="category">
+            {% for t in business_types %}<option value="{{t}}" {% if b.category==t %}selected{% endif %}>{{t}}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Parròquia</label>
+          <select name="parroquia">
+            {% for p in parroquies %}<option value="{{p}}" {% if b.parroquia==p %}selected{% endif %}>{{p}}</option>{% endfor %}
+          </select>
         </div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Parròquia</label>
-          <select name="parroquia">{% for p in parroquies %}<option value="{{p}}" {% if b.parroquia==p %}selected{% endif %}>{{p}}</option>{% endfor %}</select>
-        </div>
-        <div class="field"><label>Telèfon</label><input type="tel" name="phone" value="{{b.phone}}"></div>
-      </div>
-      <div class="field"><label>Adreça</label><input type="text" name="location" value="{{b.location}}"></div>
-      <div class="field"><label>Enllaç Google Maps</label><input type="url" name="maps_url" value="{{b.maps_url}}"></div>
-      <div class="field"><label>Correu electrònic</label><input type="email" name="email" value="{{b.email}}"></div>
       <div class="field"><label>Descripció</label><textarea name="description">{{b.description}}</textarea></div>
-      <div class="field"><label>Logo{% if b.logo_image %} (puja un nou per reemplaçar){% endif %}</label>
-        {% if b.logo_image %}
-        <div style="margin-bottom:8px"><img src="/static/uploads/logos/{{b.logo_image}}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;border:1px solid var(--border)"></div>
-        {% endif %}
-        <div class="upload-zone"><input type="file" name="logo" accept="image/*">
-          <div style="font-size:13px;color:var(--muted)">📷 Fes clic per canviar la imatge</div>
-        </div>
+      <div class="field">
+        <label>Logo</label>
+        {% if b.logo_image %}<div><img src="/static/uploads/logos/{{b.logo_image}}" class="current-logo"></div>{% endif %}
+        <input type="file" name="logo" accept="image/*">
+        <div class="hint">Deixa buit per mantenir l'actual</div>
       </div>
     </div>
     <div class="form-card">
-      <div class="form-section-title">🕐 Horaris</div>
-      {% set days = [('h_mon','Dilluns',b.hours_mon),('h_tue','Dimarts',b.hours_tue),('h_wed','Dimecres',b.hours_wed),('h_thu','Dijous',b.hours_thu),('h_fri','Divendres',b.hours_fri),('h_sat','Dissabte',b.hours_sat),('h_sun','Diumenge',b.hours_sun)] %}
-      {% for key,label,val in days %}
-      <div class="hours-grid">
-        <div class="hours-day">{{label}}</div>
-        <input type="text" name="{{key}}" placeholder="9:00-20:00" value="{{val}}">
+      <div class="form-section-title">Contacte i ubicació</div>
+      <div class="field"><label>Adreça</label><input type="text" name="location" value="{{b.location}}"></div>
+      <div class="row2">
+        <div class="field"><label>Telèfon</label><input type="tel" name="phone" value="{{b.phone}}"></div>
+        <div class="field"><label>Email</label><input type="email" name="email" value="{{b.email}}"></div>
       </div>
-      {% endfor %}
+      <div class="field"><label>Link Google Maps</label><input type="url" name="maps_url" value="{{b.maps_url}}" placeholder="https://maps.google.com/..."></div>
+    </div>
+    <div class="form-card">
+      <div class="form-section-title">Horaris</div>
+      <div class="hours-grid">
+        {% set days=[('h_mon','hours_mon','Dilluns'),('h_tue','hours_tue','Dimarts'),('h_wed','hours_wed','Dimecres'),('h_thu','hours_thu','Dijous'),('h_fri','hours_fri','Divendres'),('h_sat','hours_sat','Dissabte'),('h_sun','hours_sun','Diumenge')] %}
+        {% for fname,bfield,label in days %}
+        <div class="hours-day">{{label}}</div>
+        <input type="text" name="{{fname}}" class="hours-input" placeholder="9:00-21:00 o Tancat" value="{{b[bfield]}}">
+        {% endfor %}
+      </div>
     </div>
     <button type="submit" class="submit-btn">Guardar canvis →</button>
   </form>

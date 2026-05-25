@@ -1,22 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Admin — Ofertes.ad{% endblock %}
+{% block title %}Admin Login — Ofertes.ad{% endblock %}
 {% block head %}
 <style>
-.login-wrap{min-height:calc(100vh - 140px);display:flex;align-items:center;justify-content:center;padding:40px 20px}
-.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px;width:100%;max-width:360px}
+.login-wrap{min-height:calc(100vh - 140px);display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;width:100%;max-width:360px}
 .field{margin-bottom:16px}
-.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
-.field input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 16px;font-size:14px;color:var(--text);outline:none;font-family:'DM Sans',sans-serif}
 .field input:focus{border-color:var(--accent)}
-.login-btn{width:100%;padding:12px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px}
-.err{background:rgba(232,84,84,.1);border:1px solid rgba(232,84,84,.2);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:16px}
+.login-btn{width:100%;padding:12px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer}
+.error{background:rgba(232,84,84,.1);border:1px solid rgba(232,84,84,.2);color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px}
 </style>
 {% endblock %}
 {% block content %}
 <div class="login-wrap">
   <div class="login-box">
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent);margin-bottom:20px">⚙ Admin</div>
-    {% with msgs=get_flashed_messages() %}{% if msgs %}{% for m in msgs %}<div class="err">{{m}}</div>{% endfor %}{% endif %}{% endwith %}
+    {% with msgs=get_flashed_messages() %}{% if msgs %}{% for m in msgs %}<div class="error">{{m}}</div>{% endfor %}{% endif %}{% endwith %}
     <form method="POST">
       <div class="field"><label>Usuari</label><input type="text" name="username" required autofocus></div>
       <div class="field"><label>Contrasenya</label><input type="password" name="password" required></div>

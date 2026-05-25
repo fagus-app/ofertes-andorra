@@ -2,51 +2,52 @@
 {% block title %}{{parroquia}} — Ofertes.ad{% endblock %}
 {% block head %}
 <style>
-.parr-hero{padding:40px 20px 32px;text-align:center}
-.parr-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,5vw,44px);letter-spacing:-1px;margin-bottom:8px}
+.parr-hero{padding:48px 24px 36px;text-align:center}
+.parr-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(28px,5vw,48px);letter-spacing:-1px;margin-bottom:8px}
 .parr-hero h1 em{font-style:normal;color:var(--accent)}
-.parr-row{display:flex;gap:8px;overflow-x:auto;padding:4px 20px 14px;scrollbar-width:none}
-.parr-row::-webkit-scrollbar{display:none}
-.parr-chip{flex:0 0 auto;padding:7px 16px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;white-space:nowrap}
-.parr-chip:hover{color:var(--text);background:var(--bg3)}
-.parr-chip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
-.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;gap:14px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
-.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
+.parr-hero p{font-size:15px;color:var(--muted)}
+.parr-tabs{display:flex;gap:8px;overflow-x:auto;padding:0 24px 16px;scrollbar-width:none}
+.parr-tabs::-webkit-scrollbar{display:none}
+.parr-tab{flex:0 0 auto;padding:7px 16px;border-radius:50px;font-size:13px;font-weight:500;text-decoration:none;border:1px solid var(--border2);color:var(--muted);white-space:nowrap;transition:all .2s}
+.parr-tab:hover{color:var(--text);background:var(--bg3)}
+.parr-tab.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:flex;gap:16px;text-decoration:none;transition:border-color .2s,transform .2s}
 .biz-card:hover{transform:translateY(-2px);border-color:var(--border2)}
-.biz-card:hover::before{opacity:1}
-.biz-logo{width:52px;height:52px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.biz-logo{width:56px;height:56px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;overflow:hidden}
 .biz-logo img{width:100%;height:100%;object-fit:cover}
-.biz-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px}
-.biz-cat{font-size:11px;color:var(--muted);margin-bottom:4px}
-.biz-cta{font-size:11px;color:var(--accent);margin-top:6px}
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.biz-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:2px}
+.biz-cat{font-size:12px;color:var(--muted);margin-bottom:4px}
+.biz-cta{display:inline-flex;margin-top:8px;font-size:12px;font-weight:500;color:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:64px;font-size:15px}
 </style>
 {% endblock %}
 {% block content %}
+{% set parr_emojis = {'Andorra la Vella':'🏙️','Escaldes-Engordany':'♨️','Encamp':'⛷️','Sant Julià de Lòria':'🌿','La Massana':'🏔️','Ordino':'🌲','Canillo':'🎿'} %}
 <section class="parr-hero">
-  <div class="container">
-    <p style="font-size:13px;color:var(--muted);margin-bottom:8px"><a href="/" style="color:var(--muted);text-decoration:none">Inici</a> › Parròquies</p>
-    <h1>📍 <em>{{parroquia}}</em></h1>
-    <p style="color:var(--muted);font-size:14px">{{businesses|length}} comerç{% if businesses|length != 1 %}os{% endif %} actiu{% if businesses|length != 1 %}s{% endif %}</p>
-  </div>
+  <div>{{parr_emojis.get(parroquia,'📍')}}</div>
+  <h1>Comerços a <em>{{parroquia}}</em></h1>
+  <p>{{businesses|length}} comerç{% if businesses|length != 1 %}os{% endif %} amb ofertes actives</p>
 </section>
 
-<div class="parr-row">
-  <a href="/" class="parr-chip">Totes</a>
-  {% for p in parroquies %}<a href="/parroquia/{{p}}" class="parr-chip {% if p == parroquia %}active{% endif %}">{{p}}</a>{% endfor %}
+<div style="padding:0 0 16px">
+  <div class="parr-tabs">
+    {% for p in parroquies %}
+    <a href="/parroquia/{{p}}" class="parr-tab {% if p==parroquia %}active{% endif %}">{{parr_emojis.get(p,'📍')}} {{p}}</a>
+    {% endfor %}
+  </div>
 </div>
 
-<div class="container" style="padding-bottom:60px">
+<div class="container" style="padding-bottom:64px">
   {% if businesses %}
   <div class="biz-grid">
     {% for b in businesses %}
-    <a href="/negoci/{{b.id}}" class="biz-card" style="--ba:{{b.accent}}">
+    <a href="/negoci/{{b.id}}" class="biz-card">
       <div class="biz-logo">
-        {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="">
+        {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="{{b.name}}">
         {% else %}{{b.logo_emoji}}{% endif %}
       </div>
-      <div style="flex:1;min-width:0">
+      <div>
         <div class="biz-name">{{b.name}}</div>
         <div class="biz-cat">{{b.category}}</div>
         {% if b.location %}<div style="font-size:11px;color:var(--muted)">📍 {{b.location}}</div>{% endif %}
@@ -56,12 +57,7 @@
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty">
-    <div style="font-size:48px;margin-bottom:16px">🏙️</div>
-    <div style="font-size:16px;margin-bottom:8px">Encara no hi ha comerços a {{parroquia}}</div>
-    <div style="font-size:13px;margin-bottom:24px">Sigues el primer en registrar el teu negoci!</div>
-    <a href="/registre" class="btn btn-accent">Registra el teu negoci →</a>
-  </div>
+  <div class="empty">Cap comerç actiu a {{parroquia}} de moment.<br><a href="/registre" style="color:var(--accent)">Registra el teu comerç →</a></div>
   {% endif %}
 </div>
 {% endblock %}

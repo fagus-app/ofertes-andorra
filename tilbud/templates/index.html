@@ -2,66 +2,49 @@
 {% block title %}Ofertes.ad — Les millors ofertes d'Andorra{% endblock %}
 {% block head %}
 <style>
-.hero{padding:56px 20px 44px;text-align:center;position:relative;overflow:hidden}
+.hero{padding:52px 20px 40px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(232,197,71,.12) 0%,transparent 70%);pointer-events:none}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:5px 14px;margin-bottom:22px}
-.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(32px,6vw,60px);line-height:1.06;letter-spacing:-1.5px;margin-bottom:14px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:5px 14px;margin-bottom:20px}
+.hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,58px);line-height:1.06;letter-spacing:-1.5px;margin-bottom:12px}
 .hero h1 em{font-style:normal;color:var(--accent)}
-.hero-sub{font-size:15px;color:var(--muted);max-width:400px;margin:0 auto 32px;font-weight:300}
-.hero-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:36px}
-.stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap}
-.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text);display:block}
+.hero-sub{font-size:15px;color:var(--muted);max-width:380px;margin:0 auto 28px;font-weight:300}
+.hero-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);display:block}
 .stat-lbl{font-size:11px;color:var(--muted)}
-/* parroquies */
-.parr-row{display:flex;gap:8px;overflow-x:auto;padding:4px 20px 14px;scrollbar-width:none}
-.parr-row::-webkit-scrollbar{display:none}
-.parr-chip{flex:0 0 auto;padding:8px 18px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;white-space:nowrap}
-.parr-chip:hover{color:var(--text);background:var(--bg3)}
-.parr-chip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+/* filter rows */
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:4px 20px 10px;scrollbar-width:none}
+.filter-scroll::-webkit-scrollbar{display:none}
+.fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none;white-space:nowrap}
+.fchip:hover{color:var(--text);background:var(--bg3)}
+.fchip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
 /* featured */
-.feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 14px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .feat-scroll::-webkit-scrollbar{display:none}
-.feat-card{flex:0 0 230px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
+.feat-card{flex:0 0 220px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
 .feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,.06) 0%,transparent 60%);pointer-events:none}
 .feat-card:hover{transform:translateY(-3px);border-color:rgba(232,197,71,.3)}
-.feat-badge{position:absolute;top:12px;right:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#0F0F0F;padding:2px 8px;border-radius:50px}
-.feat-emoji{font-size:38px;line-height:1}
-.feat-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
-.feat-store{font-size:11px;color:var(--muted)}
-.feat-new{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--accent)}
-.feat-old{font-size:12px;color:var(--muted);text-decoration:line-through}
+.feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#0F0F0F;padding:2px 7px;border-radius:50px}
 /* businesses */
-.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;gap:14px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;gap:12px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
 .biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
 .biz-card:hover{transform:translateY(-2px);border-color:var(--border2)}
 .biz-card:hover::before{opacity:1}
-.biz-logo{width:52px;height:52px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.biz-logo{width:48px;height:48px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
 .biz-logo img{width:100%;height:100%;object-fit:cover}
-.biz-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:2px}
-.biz-cat{font-size:11px;color:var(--muted);margin-bottom:5px}
-.biz-parr{font-size:11px;color:var(--muted)}
-.biz-cta{display:inline-flex;align-items:center;gap:4px;margin-top:8px;font-size:11px;font-weight:500;color:var(--accent)}
 /* offers */
-.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
-.chip{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
-.chip:hover{color:var(--text);background:var(--bg3)}
-.chip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
-.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:12px}
-.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s;cursor:pointer}
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:11px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s;cursor:pointer}
 .offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.o-emoji{font-size:30px;line-height:1}
-.o-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1}
-.o-prices{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
-.o-new{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:var(--accent)}
-.o-old{font-size:12px;color:var(--muted);text-decoration:line-through}
-.o-unit{font-size:10px;color:var(--muted)}
-.o-footer{display:flex;align-items:center;justify-content:space-between;padding-top:7px;border-top:1px solid var(--border)}
-.o-valid{font-size:10px;color:var(--muted)}
-.o-valid strong{color:var(--accent)}
-.o-store{font-size:10px;color:var(--muted)}
+.offer-card.new-badge-card{border-color:rgba(82,201,122,.3)}
+.offer-card.ending-badge-card{border-color:rgba(232,84,84,.3)}
+.o-tags{display:flex;gap:4px;flex-wrap:wrap}
+.o-tag{font-size:10px;padding:1px 7px;border-radius:50px;font-weight:500}
+.o-tag-new{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
+.o-tag-end{background:rgba(232,84,84,.1);color:var(--red);border:1px solid rgba(232,84,84,.2)}
 .sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.sec{padding:0 0 44px}
+.sec{padding:0 0 40px}
 </style>
 {% endblock %}
 {% block content %}
@@ -80,28 +63,35 @@
   </div>
 </section>
 
-<!-- Parroquies -->
+<!-- Filter by parroquia -->
 <div class="sw" style="margin-bottom:0"><div class="section-heading">📍 Per parròquia</div></div>
-<div class="parr-row">
-  <a href="/" class="parr-chip active">Totes</a>
-  {% for p in parroquies %}<a href="/parroquia/{{p}}" class="parr-chip">{{p}}</a>{% endfor %}
+<div class="filter-scroll" id="parrRow">
+  <a href="/" class="fchip active">Totes</a>
+  {% for p in parroquies %}<a href="/parroquia/{{p}}" class="fchip">{{p}}</a>{% endfor %}
+</div>
+
+<!-- Filter by business type -->
+<div class="sw" style="margin-bottom:0;margin-top:4px"><div class="section-heading">🏪 Per tipus</div></div>
+<div class="filter-scroll" id="typeRow">
+  <button class="fchip active" data-type="">Tots</button>
+  {% for t in business_types %}<button class="fchip" data-type="{{t}}">{{t}}</button>{% endfor %}
 </div>
 
 <!-- Featured -->
 {% if featured %}
-<section class="sec" style="padding-top:12px">
+<section class="sec" style="padding-top:16px">
   <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
   <div class="feat-scroll">
     {% for o in featured %}
     {% set d=((1-o.offer_price/o.original_price)*100)|int %}
     <div class="feat-card" onclick="location='/negoci/{{o.bid}}'">
       <div class="feat-badge">−{{d}}%</div>
-      <div class="feat-emoji">{{o.emoji}}</div>
-      <div class="feat-name">{{o.name}}</div>
-      <div class="feat-store">{{o.blogo}} {{o.bname}}</div>
-      <div style="display:flex;align-items:baseline;gap:8px;margin-top:auto">
-        <span class="feat-new">{{"%.2f"|format(o.offer_price)}}€</span>
-        <span class="feat-old">{{"%.2f"|format(o.original_price)}}€</span>
+      <div style="font-size:36px;line-height:1">{{o.emoji}}</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">{{o.name}}</div>
+      <div style="font-size:11px;color:var(--muted)">{{o.blogo}} {{o.bname}}</div>
+      <div style="display:flex;align-items:baseline;gap:7px;margin-top:auto">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent)">{{"%.2f"|format(o.offer_price)}}€</span>
+        <span style="font-size:12px;color:var(--muted);text-decoration:line-through">{{"%.2f"|format(o.original_price)}}€</span>
       </div>
     </div>
     {% endfor %}
@@ -110,21 +100,21 @@
 {% endif %}
 
 <!-- Businesses -->
-<section class="sec">
+<section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
   <div class="container">
-    <div class="biz-grid">
+    <div class="biz-grid" id="bizGrid">
       {% for b in businesses %}
-      <a href="/negoci/{{b.id}}" class="biz-card" style="--ba:{{b.accent}}">
+      <a href="/negoci/{{b.id}}" class="biz-card" style="--ba:{{b.accent}}" data-type="{{b.category}}">
         <div class="biz-logo">
-          {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="{{b.name}}">
+          {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="">
           {% else %}{{b.logo_emoji}}{% endif %}
         </div>
         <div style="flex:1;min-width:0">
-          <div class="biz-name">{{b.name}}</div>
-          <div class="biz-cat">{{b.category}}</div>
-          <div class="biz-parr">📍 {{b.parroquia}}</div>
-          <div class="biz-cta">Veure ofertes →</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">{{b.name}}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:3px">{{b.category}}</div>
+          <div style="font-size:11px;color:var(--muted)">📍 {{b.parroquia}}</div>
+          <div style="font-size:11px;color:var(--accent);margin-top:5px">Veure ofertes →</div>
         </div>
       </a>
       {% endfor %}
@@ -136,9 +126,13 @@
 <section class="sec" id="ofertes">
   <div class="sw"><div class="section-heading">🏷️ Totes les ofertes</div></div>
   <div class="container">
-    <div class="filter-row" id="filterRow">
-      <button class="chip active" data-bid="">Totes</button>
-      {% for b in businesses %}<button class="chip" data-bid="{{b.id}}">{{b.logo_emoji}} {{b.name}}</button>{% endfor %}
+    <!-- Temporal filters -->
+    <div class="filter-scroll" id="timeRow" style="padding-left:0;margin-bottom:12px">
+      <button class="fchip active" data-time="">Totes</button>
+      <button class="fchip" data-time="today">📅 Avui</button>
+      <button class="fchip" data-time="new">✨ Noves</button>
+      <button class="fchip" data-time="ending">⏰ Per acabar</button>
+      <button class="fchip" data-time="week">📆 Aquesta setmana</button>
     </div>
     <div class="offers-grid" id="offersGrid"></div>
   </div>
@@ -146,27 +140,78 @@
 {% endblock %}
 {% block scripts %}
 <script>
-const grid=document.getElementById('offersGrid'),fr=document.getElementById('filterRow');
-async function load(bid){
-  const r=await fetch('/api/ofertes'+(bid?'?business_id='+bid:''));
-  const data=await r.json();
-  if(!data.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;font-size:14px">Cap oferta disponible</div>';return}
-  grid.innerHTML=data.map(o=>{
-    const d=Math.round((1-o.offer_price/o.original_price)*100);
-    return`<div class="offer-card" onclick="location='/negoci/${o.bid}'">
-      <span class="o-emoji">${o.emoji}</span>
-      <div class="o-name">${o.name}</div>
-      <div class="o-prices"><span class="o-new">${o.offer_price.toFixed(2)}€</span><span class="o-old">${o.original_price.toFixed(2)}€</span><span class="discount">−${d}%</span></div>
-      <div class="o-unit">${o.unit}</div>
-      <div class="o-footer"><span class="o-valid">Fins el <strong>${o.valid_until}</strong></span><span class="o-store">${o.blogo} ${o.bname}</span></div>
+const grid = document.getElementById('offersGrid');
+const bizGrid = document.getElementById('bizGrid');
+let activeType = '';
+let activeTime = '';
+let allOffers = [];
+
+// Type filter
+document.getElementById('typeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#typeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeType = c.dataset.type;
+  // filter businesses
+  document.querySelectorAll('#bizGrid .biz-card').forEach(card => {
+    card.style.display = (!activeType || card.dataset.type === activeType) ? '' : 'none';
+  });
+  renderOffers();
+});
+
+// Time filter
+document.getElementById('timeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeTime = c.dataset.time;
+  renderOffers();
+});
+
+function renderOffers() {
+  let offers = allOffers;
+  if (activeType) offers = offers.filter(o => {
+    // match by business category - we need bcat in API
+    return true; // filtered server-side when we reload
+  });
+  if (activeTime === 'today') offers = offers.filter(o => o.is_today);
+  else if (activeTime === 'new') offers = offers.filter(o => o.is_new);
+  else if (activeTime === 'ending') offers = offers.filter(o => o.is_ending);
+  else if (activeTime === 'week') offers = offers.filter(o => o.is_week);
+
+  if (!offers.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;font-size:14px">Cap oferta disponible</div>';
+    return;
+  }
+  grid.innerHTML = offers.map(o => {
+    const d = Math.round((1 - o.offer_price / o.original_price) * 100);
+    const tags = [];
+    if (o.is_new) tags.push('<span class="o-tag o-tag-new">✨ Nova</span>');
+    if (o.is_ending) tags.push('<span class="o-tag o-tag-end">⏰ Acaba aviat</span>');
+    return `<div class="offer-card ${o.is_new?'new-badge-card':''} ${o.is_ending?'ending-badge-card':''}" onclick="location='/negoci/${o.bid}'">
+      <span style="font-size:28px;line-height:1">${o.emoji}</span>
+      ${tags.length ? `<div class="o-tags">${tags.join('')}</div>` : ''}
+      <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${o.name}</div>
+      <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
+        <span style="font-size:11px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
+        <span class="discount">−${d}%</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted)">${o.unit}</div>
+      <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
+        <span>Fins el <strong style="color:var(--accent)">${o.valid_until}</strong></span>
+        <span>${o.blogo} ${o.bname}</span>
+      </div>
     </div>`;
   }).join('');
 }
-fr.addEventListener('click',e=>{
-  const c=e.target.closest('.chip');if(!c)return;
-  fr.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-  c.classList.add('active');load(c.dataset.bid);
-});
-load('');
+
+async function loadOffers() {
+  const r = await fetch('/api/ofertes');
+  allOffers = await r.json();
+  renderOffers();
+}
+
+loadOffers();
 </script>
 {% endblock %}

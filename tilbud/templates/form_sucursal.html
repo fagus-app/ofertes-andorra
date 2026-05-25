@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{% if sucursal %}Editar{% else %}Nova{% endif %} Sucursal — Panel{% endblock %}
+{% block head %}
+<style>
+.form-wrap{max-width:620px;margin:0 auto;padding:32px 20px 80px}
+.form-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);margin-bottom:24px}
+.form-title a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:400;margin-left:12px}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px;margin-bottom:14px}
+.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--accent);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--accent)}
+.field input::placeholder{color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.hours-grid{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;margin-bottom:6px}
+.hours-day{font-size:12px;color:var(--muted);font-weight:500}
+.submit-row{display:flex;gap:10px;margin-top:6px}
+.submit-btn{flex:1;padding:12px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
+.submit-btn:hover{background:#F0D870}
+.price-notice{background:rgba(232,197,71,.08);border:1px solid rgba(232,197,71,.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--accent);margin-bottom:20px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="form-wrap">
+  <div class="form-title">
+    {% if sucursal %}✏️ Editar sucursal{% else %}+ Nova sucursal{% endif %}
+    <a href="/panel">← Panel</a>
+  </div>
+
+  {% if not sucursal %}
+  <div class="price-notice">💡 Cada sucursal extra té un cost de <strong>12€/mes</strong> addicionals a la teva subscripció.</div>
+  {% endif %}
+
+  <div class="form-card">
+    <div class="form-section-title">📍 Informació de la sucursal</div>
+    <form method="POST">
+      <div class="field">
+        <label>Nom de la sucursal *</label>
+        <input type="text" name="name" required placeholder="Ex: Sucursal Centre, Sucursal Nord..."
+               value="{% if sucursal %}{{sucursal.name}}{% endif %}">
+      </div>
+      <div class="field">
+        <label>Adreça</label>
+        <input type="text" name="location" placeholder="Ex: Carrer Major 5, Encamp"
+               value="{% if sucursal %}{{sucursal.location}}{% endif %}">
+      </div>
+      <div class="field">
+        <label>Enllaç Google Maps</label>
+        <input type="url" name="maps_url" placeholder="https://maps.google.com/..."
+               value="{% if sucursal %}{{sucursal.maps_url}}{% endif %}">
+      </div>
+      <div class="field">
+        <label>Telèfon</label>
+        <input type="tel" name="phone" placeholder="+376 800 000"
+               value="{% if sucursal %}{{sucursal.phone}}{% endif %}">
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-section-title">🕐 Horaris</div>
+      {% set days = [('h_mon','Dilluns'),('h_tue','Dimarts'),('h_wed','Dimecres'),('h_thu','Dijous'),('h_fri','Divendres'),('h_sat','Dissabte'),('h_sun','Diumenge')] %}
+      {% for key,label in days %}
+      {% set val = sucursal[key.replace('h_','hours_')] if sucursal else '' %}
+      <div class="hours-grid">
+        <div class="hours-day">{{label}}</div>
+        <input type="text" name="{{key}}" placeholder="9:00-20:00" value="{{val}}">
+      </div>
+      {% endfor %}
+      <div style="margin-top:16px;display:flex;gap:10px">
+        <button type="submit" class="submit-btn">{% if sucursal %}Guardar →{% else %}Afegir sucursal →{% endif %}</button>
+        <a href="/panel" class="btn btn-ghost">Cancel·lar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
