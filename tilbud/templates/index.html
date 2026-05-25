@@ -155,26 +155,30 @@ document.getElementById('mainCatRow').addEventListener('click', e => {
   activeMain = c.dataset.main;
   activeSub  = '';
   renderSubtypes();
-  updateActiveBar(); loadAll();
+  updateActiveBar();
+  loadAll();
 });
 
 // ── Subtypes ──────────────────────────────────────────────────────────────
 function renderSubtypes() {
-  const row  = document.getElementById('subtypeRow');
+  const row    = document.getElementById('subtypeRow');
   const scroll = document.getElementById('subtypeScroll');
   if (!activeMain) { row.classList.remove('open'); scroll.innerHTML = ''; return; }
   const subs = CATEGORIES[activeMain] || [];
   scroll.innerHTML = `<button class="fchip active" data-sub="">Tots els ${activeMain}</button>` +
     subs.map(s => `<button class="fchip" data-sub="${s}">${s}</button>`).join('');
   row.classList.add('open');
-  scroll.addEventListener('click', e => {
-    const c = e.target.closest('.fchip'); if (!c) return;
-    scroll.querySelectorAll('.fchip').forEach(x => x.classList.remove('active'));
-    c.classList.add('active');
-    activeSub = c.dataset.sub;
-    updateActiveBar(); loadAll();
-  });
 }
+
+// Single delegated listener for subtypes - outside renderSubtypes to avoid duplicates
+document.getElementById('subtypeScroll').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#subtypeScroll .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeSub = c.dataset.sub;
+  updateActiveBar();
+  loadAll();
+});
 
 // ── Time filter ───────────────────────────────────────────────────────────
 document.getElementById('timeRow').addEventListener('click', e => {
