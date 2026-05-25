@@ -76,22 +76,6 @@
   </div>
 </div>
 
-<!-- Filtre 2: Categoria principal -->
-<div class="filter-section">
-  <span class="filter-label">🏪 Per tipus de comerç</span>
-  <div class="filter-scroll" id="mainCatRow">
-    <button class="fchip active" data-main="">Tots</button>
-    {% for cat in business_categories %}<button class="fchip" data-main="{{cat}}">{{cat}}</button>{% endfor %}
-  </div>
-</div>
-
-<!-- Filtre 3: Subtipos (apareix quan s'elegeix una categoria) -->
-<div class="subtype-row" id="subtypeRow">
-  <div class="filter-scroll" id="subtypeScroll" style="padding-top:8px">
-    <!-- filled by JS -->
-  </div>
-</div>
-
 <!-- Active filters -->
 <div class="active-bar" id="activeBar"></div>
 
@@ -104,7 +88,23 @@
 <!-- Comerços -->
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
-  <div class="container">
+
+  <!-- Filtre per categoria principal -->
+  <div style="padding:0 20px 8px">
+    <div class="filter-scroll" id="mainCatRow" style="padding:0">
+      <button class="fchip active" data-main="">Tots</button>
+      {% for cat in business_categories %}<button class="fchip" data-main="{{cat}}">{{cat}}</button>{% endfor %}
+    </div>
+  </div>
+
+  <!-- Subtipos (apareix quan s'elegeix una categoria) -->
+  <div class="subtype-row" id="subtypeRow">
+    <div class="filter-scroll" id="subtypeScroll" style="padding-top:6px">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <div class="container" style="margin-top:16px">
     <div class="biz-grid" id="bizGrid"></div>
   </div>
 </section>
