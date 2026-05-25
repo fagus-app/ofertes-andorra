@@ -80,6 +80,16 @@ BUSINESS_CATEGORIES = {
     'Tecnologia i Llar': [
         'Electrodomèstics',
     ],
+    'Botigues': [
+        'Moda i Roba',
+        'Calçat',
+        'Esports',
+        'Electrodomèstics i Tecnologia',
+        'Joieria i Rellotgeria',
+        'Perfumeria i Cosmètica',
+        'Llibreria i Papereria',
+        'Altres Botigues',
+    ],
     'Altres': [
         'Altres',
     ],
@@ -94,7 +104,11 @@ BUSINESS_EMOJIS = {
     'Vineria':'🍷','Restaurant':'🍽️','Bar':'🍺','Cafeteria':'☕',
     'Fleca i Cafeteria':'🥐','Gelateria':'🍦','Xocolateria':'🍫',
     'Farmàcia':'💊','Botiga de Suplements':'💪',
-    'Botiga de Esports':'⚽','Electrodomèstics':'📺','Altres':'🏬'
+    'Botiga de Esports':'⚽','Electrodomèstics':'📺',
+    'Moda i Roba':'👗','Calçat':'👟','Esports':'⚽',
+    'Electrodomèstics i Tecnologia':'📺','Joieria i Rellotgeria':'💍',
+    'Perfumeria i Cosmètica':'💄','Llibreria i Papereria':'📚',
+    'Altres Botigues':'🛍️','Altres':'🏬'
 }
 
 ACCENT_COLORS = {
@@ -103,7 +117,11 @@ ACCENT_COLORS = {
     'Vineria':'#AF7AC5','Restaurant':'#E74C3C','Bar':'#AF7AC5','Cafeteria':'#F0B27A',
     'Fleca i Cafeteria':'#D4A574','Gelateria':'#5DADE2','Xocolateria':'#D4A574',
     'Farmàcia':'#AF7AC5','Botiga de Suplements':'#52B788',
-    'Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2','Altres':'#888880'
+    'Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2',
+    'Moda i Roba':'#AF7AC5','Calçat':'#E74C3C','Esports':'#52B788',
+    'Electrodomèstics i Tecnologia':'#5DADE2','Joieria i Rellotgeria':'#F0D870',
+    'Perfumeria i Cosmètica':'#E74C3C','Llibreria i Papereria':'#F0B27A',
+    'Altres Botigues':'#888880','Altres':'#888880'
 }
 
 os.makedirs(os.path.join(UPLOAD_DIR,'folletos'), exist_ok=True)
