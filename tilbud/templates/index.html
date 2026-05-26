@@ -104,13 +104,6 @@
   <div class="feat-scroll" id="featGrid"></div>
 </section>
 
-<!-- Mode switcher -->
-<div style="padding:16px 20px 0;display:flex;align-items:center;gap:10px">
-  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px">Veure:</div>
-  <button class="fchip active" id="modeOfertes" onclick="setMode('ofertes')">🏷️ Ofertes</button>
-  <button class="fchip" id="modeCatalegs" onclick="setMode('catalegs')">📋 Catàlegs</button>
-</div>
-
 <!-- Comerços -->
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
@@ -134,6 +127,12 @@
     <div class="biz-grid" id="bizGrid"></div>
   </div>
 </section>
+
+<!-- Mode switcher -->
+<div style="padding:4px 20px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);margin-bottom:0">
+  <button class="fchip active" id="modeOfertes" onclick="setMode('ofertes')" style="font-size:13px;padding:8px 18px">🏷️ Ofertes</button>
+  <button class="fchip" id="modeCatalegs" onclick="setMode('catalegs')" style="font-size:13px;padding:8px 18px">📋 Catàlegs</button>
+</div>
 
 <!-- Ofertes -->
 <section class="sec" id="secOfertes">
