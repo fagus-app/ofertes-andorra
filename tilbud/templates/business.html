@@ -217,6 +217,13 @@ function showTab(name, btn) {
   if(btn) btn.classList.add('active');
 }
 
+// Auto-open tab from URL param
+const urlTab = new URLSearchParams(window.location.search).get('tab');
+if (urlTab) {
+  const btn = document.querySelector(`.tab[onclick*="${urlTab}"]`);
+  if (btn) showTab(urlTab, btn);
+}
+
 const catTabs = document.getElementById('catTabs');
 if(catTabs){ catTabs.addEventListener('click', e => {
   const c = e.target.closest('.cat-chip'); if(!c) return;

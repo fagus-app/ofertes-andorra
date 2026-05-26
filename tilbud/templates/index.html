@@ -379,7 +379,7 @@ async function loadCatalegs() {
     return;
   }
   grid.innerHTML = data.map(f => `
-    <a href="/cataleg/${f.id}" class="cat-preview-card">
+    <a href="/negoci/${f.bid}?tab=cats" class="cat-preview-card">
       <div class="cat-preview-cover">
         ${f.filetype === 'image'
           ? `<img src="/static/uploads/folletos/${f.filename}" alt="${f.title}" loading="lazy">`
