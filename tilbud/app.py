@@ -474,7 +474,7 @@ def business(bid):
         db.commit()
     categories = sorted(set(o['category'] for o in ofertes if o['category']))
     all_biz = db.execute("SELECT * FROM businesses WHERE active=1 AND subscription_end>=? ORDER BY name",(today,)).fetchall()
-    return render_template('business.html', b=b, ofertes=ofertes, folletos=folletos,
+    return render_template('business.html', b=b, ofertes=ofertes, catalogues=folletos,
                            categories=categories, all_businesses=all_biz, sub_active=sub_ok)
 
 @app.route('/sobre-nosaltres')
