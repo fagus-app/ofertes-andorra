@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Catàlegs — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.cat-hero{padding:36px 20px 28px;text-align:center}
+.cat-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,5vw,44px);letter-spacing:-1px;margin-bottom:8px}
+.cat-hero h1 em{font-style:normal;color:var(--accent)}
+.cat-hero p{font-size:14px;color:var(--muted);max-width:400px;margin:0 auto}
+.filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:4px 20px 12px;scrollbar-width:none;border-bottom:1px solid var(--border)}
+.filter-scroll::-webkit-scrollbar{display:none}
+.fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.fchip:hover{color:var(--text);background:var(--bg3)}
+.fchip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+/* Catalogue grid */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;padding:24px 20px 60px}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;text-decoration:none;display:block;position:relative}
+.cat-card:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:var(--shadow-lg)}
+.cat-cover{width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--bg3);display:block;position:relative;overflow:hidden}
+.cat-cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.cat-card:hover .cat-cover img{transform:scale(1.03)}
+.cat-cover-pdf{width:100%;aspect-ratio:3/4;background:var(--bg2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.cat-cover-overlay{position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 50%, transparent 100%)}
+.cat-info{position:absolute;bottom:0;left:0;right:0;padding:14px}
+.cat-biz{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.cat-biz-logo{width:28px;height:28px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;border:1px solid rgba(255,255,255,.2);flex-shrink:0}
+.cat-biz-logo img{width:100%;height:100%;object-fit:cover}
+.cat-biz-name{font-size:12px;font-weight:600;color:#fff}
+.cat-title{font-size:11px;color:rgba(255,255,255,.7);line-height:1.3}
+.cat-valid{display:inline-block;margin-top:6px;font-size:10px;background:rgba(232,197,71,.2);border:1px solid rgba(232,197,71,.3);color:var(--accent);border-radius:50px;padding:2px 8px}
+.cat-parr{position:absolute;top:10px;right:10px;font-size:10px;background:rgba(0,0,0,.6);color:rgba(255,255,255,.8);border-radius:50px;padding:3px 9px;backdrop-filter:blur(4px)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+</style>
+{% endblock %}
+{% block content %}
+<section class="cat-hero">
+  <h1>Catàlegs i <em>Folletos</em></h1>
+  <p>Totes les revistes setmanals dels comerços d'Andorra en format digital</p>
+</section>
+
+<!-- Filter by parroquia -->
+<div class="filter-scroll" id="parrRow">
+  <button class="fchip active" data-parr="">Totes les parròquies</button>
+  {% for p in parroquies_with %}<button class="fchip" data-parr="{{p}}">{{p}}</button>{% endfor %}
+</div>
+
+{% if folletos %}
+<div class="cat-grid" id="catGrid">
+  {% for f in folletos %}
+  <a href="/cataleg/{{f.id}}" class="cat-card" data-parr="{{f.bparroquia}}">
+    <div class="cat-cover">
+      {% if f.filetype == 'image' %}
+        <img src="/static/uploads/folletos/{{f.filename}}" alt="{{f.title}}" loading="lazy">
+      {% else %}
+        <div class="cat-cover-pdf">
+          <div style="font-size:56px">📄</div>
+          <div style="font-size:13px;color:var(--muted)">Document PDF</div>
+        </div>
+      {% endif %}
+      <div class="cat-cover-overlay"></div>
+      <div class="cat-parr">📍 {{f.bparroquia}}</div>
+      <div class="cat-info">
+        <div class="cat-biz">
+          <div class="cat-biz-logo">
+            {% if f.blogo_img %}<img src="/static/uploads/logos/{{f.blogo_img}}" alt="">
+            {% else %}{{f.blogo}}{% endif %}
+          </div>
+          <span class="cat-biz-name">{{f.bname}}</span>
+        </div>
+        <div class="cat-title">{{f.title}}</div>
+        <div class="cat-valid">Fins el {{f.valid_until}}</div>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div style="font-size:48px;margin-bottom:16px">📋</div>
+  <div style="font-size:16px;margin-bottom:8px">Encara no hi ha catàlegs publicats</div>
+  <div style="font-size:13px;margin-bottom:24px">Els comerços aviat publicaran les seves revistes setmanals</div>
+  <a href="/registre" class="btn btn-accent">Registra el teu negoci →</a>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('parrRow')?.addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#parrRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  const parr = c.dataset.parr;
+  document.querySelectorAll('#catGrid .cat-card').forEach(card => {
+    card.style.display = (!parr || card.dataset.parr === parr) ? '' : 'none';
+  });
+});
+</script>
+{% endblock %}
