@@ -212,6 +212,13 @@ def init_db():
             viewed_at   TEXT DEFAULT (datetime('now'))
         );
 
+        CREATE TABLE IF NOT EXISTS custom_tags (
+            id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT NOT NULL,
+            tag      TEXT NOT NULL UNIQUE,
+            created  TEXT DEFAULT (datetime('now'))
+        );
+
         CREATE TABLE IF NOT EXISTS business_tags (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             business_id INTEGER NOT NULL,
@@ -258,6 +265,8 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("CREATE TABLE IF NOT EXISTS custom_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT NOT NULL, tag TEXT NOT NULL UNIQUE, created TEXT DEFAULT (datetime('now')))")
+        except Exception: pass
         try: db.execute("CREATE TABLE IF NOT EXISTS business_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, tag TEXT NOT NULL, FOREIGN KEY (business_id) REFERENCES businesses(id))")
         except Exception: pass
         try: db.execute("CREATE TABLE IF NOT EXISTS branches (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, name TEXT NOT NULL DEFAULT 'Sucursal', location TEXT DEFAULT '', maps_url TEXT DEFAULT '', phone TEXT DEFAULT '', hours_mon TEXT DEFAULT '', hours_tue TEXT DEFAULT '', hours_wed TEXT DEFAULT '', hours_thu TEXT DEFAULT '', hours_fri TEXT DEFAULT '', hours_sat TEXT DEFAULT '', hours_sun TEXT DEFAULT '', created TEXT DEFAULT (datetime('now')), FOREIGN KEY (business_id) REFERENCES businesses(id))")
@@ -334,6 +343,16 @@ def seed_demo(db):
         db.execute("""INSERT INTO ofertes
             (business_id,name,emoji,original_price,offer_price,unit,category,valid_from,valid_until,featured)
             VALUES (?,?,?,?,?,?,?,?,?,?)""", o)
+
+    # Sample folletos for demo
+    db.execute("""INSERT INTO folletos (business_id,title,filename,filetype,valid_from,valid_until)
+        VALUES (?,?,?,?,?,?)""",(
+        biz['mercat'], "Ofertes setmana del 26 de maig al 1 de juny",
+        "sample_folleto.jpg", "image", today, d(7)))
+    db.execute("""INSERT INTO folletos (business_id,title,filename,filetype,valid_from,valid_until)
+        VALUES (?,?,?,?,?,?)""",(
+        biz['borda'], "Fruites i verdures de temporada",
+        "sample_folleto2.jpg", "image", today, d(5)))
 
 init_db()
 
@@ -419,9 +438,16 @@ def index():
         'businesses': db.execute("SELECT COUNT(*) FROM businesses WHERE active=1").fetchone()[0],
         'ofertes': db.execute("SELECT COUNT(*) FROM ofertes WHERE valid_until>=?",(today,)).fetchone()[0],
     }
+    # Get businesses with active folletos
+    folleto_biz = db.execute("""SELECT DISTINCT b.*, f.filename as folleto_file, f.filetype as folleto_type, f.title as folleto_title
+        FROM businesses b JOIN folletos f ON b.id=f.business_id
+        WHERE b.active=1 AND b.subscription_end>=?
+        AND f.valid_from<=? AND f.valid_until>=?
+        ORDER BY f.created DESC""", (today,today,today)).fetchall()
     return render_template('index.html', businesses=businesses, featured=featured,
                            parroquies=PARROQUIES, stats=stats,
-                           business_categories=BUSINESS_CATEGORIES, business_types=BUSINESS_TYPES)
+                           business_categories=BUSINESS_CATEGORIES, business_types=BUSINESS_TYPES,
+                           folleto_biz=folleto_biz)
 
 @app.route('/parroquia/<parroquia>')
 def parroquia(parroquia):
@@ -601,7 +627,24 @@ def registre():
             <p>Tens <strong>{TRIAL_DAYS} dies de prova gratuïts</strong> per publicar les teves ofertes i folletos.</p>
             <p>Accedeix al teu panel: <a href="https://ofertes-ad.onrender.com/panel" style="color:#E8C547">ofertes-ad.onrender.com/panel</a></p>
             <p style="font-size:12px;color:#888">Ofertes.ad · ofertes.ad@gmail.com</p></div>""")
-        flash(f'Benvingut/da! Tens {TRIAL_DAYS} dies de prova gratuïts.')
+        # Notify admin of new registration
+        admin_html = (
+            "<div style='font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px;background:#0F0F0F;color:#F0EDE8'>"
+            "<h2 style='color:#E8C547'>Nou comercio registrat a Ofertes.ad</h2>"
+            f"<p><strong>Nom:</strong> {f['name']}</p>"
+            f"<p><strong>Categoria:</strong> {cat}</p>"
+            f"<p><strong>Parroquia:</strong> {f['parroquia']}</p>"
+            f"<p><strong>Email:</strong> {f.get('email','no informat')}</p>"
+            f"<p><strong>Telefon:</strong> {f.get('phone','no informat')}</p>"
+            f"<p><strong>Usuari:</strong> {username}</p>"
+            f"<p><strong>Subscripcio fins:</strong> {(date.today()+timedelta(days=TRIAL_DAYS)).isoformat()}</p>"
+            "<hr style='border-color:#333;margin:20px 0'>"
+            "<p><a href='https://ofertes-ad.onrender.com/admin' style='color:#E8C547'>Accedir al panel admin</a></p>"
+            "<p style='font-size:12px;color:#888'>Ofertes.ad</p>"
+            "</div>"
+        )
+        send_email(ADMIN_EMAIL, f"Nou comercio: {f['name']} ({cat})", admin_html)
+        flash(f'Benvingut/da! Tens {TRIAL_DAYS} dies de prova gratuits.')
         return redirect(url_for('panel'))
     return render_template('registre.html', business_types=BUSINESS_TYPES, business_categories=BUSINESS_CATEGORIES, parroquies=PARROQUIES, form={})
 
@@ -750,6 +793,31 @@ def eliminar_folleto(fid):
         db.execute("DELETE FROM folletos WHERE id=?",(fid,)); db.commit()
     flash('Folleto eliminat.'); return redirect(url_for('panel'))
 
+
+@app.route('/api/tags/<category>')
+def api_tags(category):
+    from app import BUSINESS_CATEGORIES
+    predefined = BUSINESS_CATEGORIES.get(category, [])
+    custom = [r['tag'] for r in get_db().execute(
+        "SELECT tag FROM custom_tags WHERE category=? ORDER BY tag", (category,)).fetchall()]
+    # merge, remove duplicates
+    all_tags = predefined + [t for t in custom if t not in predefined]
+    return jsonify(all_tags)
+
+@app.route('/api/tags/add', methods=['POST'])
+def api_add_tag():
+    data = request.get_json()
+    category = data.get('category','').strip()
+    tag = data.get('tag','').strip()
+    if not category or not tag or len(tag) > 50:
+        return jsonify({'ok': False})
+    try:
+        db = get_db()
+        db.execute("INSERT OR IGNORE INTO custom_tags (category, tag) VALUES (?,?)", (category, tag))
+        db.commit()
+    except Exception as e:
+        print(f'[TAG ADD ERROR] {e}')
+    return jsonify({'ok': True, 'tag': tag})
 
 # ── Branches ──────────────────────────────────────────────────────────────────
 @app.route('/panel/sucursal/nova', methods=['GET','POST'])
