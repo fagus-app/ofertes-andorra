@@ -48,6 +48,14 @@
 .sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 .sec{padding:20px 0 40px}
 .empty-msg{text-align:center;color:var(--muted);padding:48px 20px;font-size:14px}
+.cat-preview-card{display:block;text-decoration:none;border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s}
+.cat-preview-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.cat-preview-cover{width:100%;aspect-ratio:3/4;position:relative;background:var(--bg3);overflow:hidden}
+.cat-preview-cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.cat-preview-card:hover .cat-preview-cover img{transform:scale(1.04)}
+.cat-pdf-thumb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2)}
+.cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 55%,transparent 100%)}
+.cat-preview-info{position:absolute;bottom:0;left:0;right:0;padding:12px}
 /* folletos */
 .folleto-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .folleto-scroll::-webkit-scrollbar{display:none}
@@ -96,6 +104,13 @@
   <div class="feat-scroll" id="featGrid"></div>
 </section>
 
+<!-- Mode switcher -->
+<div style="padding:16px 20px 0;display:flex;align-items:center;gap:10px">
+  <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px">Veure:</div>
+  <button class="fchip active" id="modeOfertes" onclick="setMode('ofertes')">🏷️ Ofertes</button>
+  <button class="fchip" id="modeCatalegs" onclick="setMode('catalegs')">📋 Catàlegs</button>
+</div>
+
 <!-- Comerços -->
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
@@ -121,7 +136,7 @@
 </section>
 
 <!-- Ofertes -->
-<section class="sec" id="ofertes">
+<section class="sec" id="secOfertes">
   <div class="sw"><div class="section-heading">🏷️ Ofertes</div></div>
   <div style="padding:0 20px 14px">
     <div class="filter-scroll" id="timeRow" style="padding:0">
@@ -134,6 +149,16 @@
   </div>
   <div class="container">
     <div class="offers-grid" id="offersGrid"></div>
+  </div>
+</section>
+
+<!-- Catàlegs section (hidden by default) -->
+<section class="sec" id="secCatalegs" style="display:none">
+  <div class="sw"><div class="section-heading">📋 Catàlegs de la setmana</div></div>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px" id="catalegGrid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px">Carregant...</div>
+    </div>
   </div>
 </section>
 
@@ -330,5 +355,53 @@ function renderOffers(allOffers) {
 }
 
 loadAll();
+
+// ── Mode switcher ─────────────────────────────────────────────────────────
+let currentMode = 'ofertes';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('modeOfertes').classList.toggle('active', mode === 'ofertes');
+  document.getElementById('modeCatalegs').classList.toggle('active', mode === 'catalegs');
+  document.getElementById('secOfertes').style.display = mode === 'ofertes' ? '' : 'none';
+  document.getElementById('secCatalegs').style.display = mode === 'catalegs' ? '' : 'none';
+}
+
+// Load catalogues
+async function loadCatalegs() {
+  const p = new URLSearchParams();
+  if (activeParr) p.set('parroquia', activeParr);
+  const r = await fetch('/api/catalegs?' + p);
+  const data = await r.json();
+  const grid = document.getElementById('catalegGrid');
+  if (!data.length) {
+    grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1">Cap catàleg disponible</div>';
+    return;
+  }
+  grid.innerHTML = data.map(f => `
+    <a href="/cataleg/${f.id}" class="cat-preview-card">
+      <div class="cat-preview-cover">
+        ${f.filetype === 'image'
+          ? `<img src="/static/uploads/folletos/${f.filename}" alt="${f.title}" loading="lazy">`
+          : `<div class="cat-pdf-thumb"><div style="font-size:44px">📄</div><div style="font-size:11px;color:var(--muted);margin-top:8px">PDF</div></div>`}
+        <div class="cat-overlay"></div>
+        <div class="cat-preview-info">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+            <span style="font-size:14px">${f.blogo}</span>
+            <span style="font-size:12px;font-weight:600;color:#fff">${f.bname}</span>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,.7)">${f.title}</div>
+          <div style="font-size:10px;background:rgba(232,197,71,.2);border:1px solid rgba(232,197,71,.3);color:var(--accent);border-radius:50px;padding:2px 8px;display:inline-block;margin-top:5px">Fins ${f.valid_until}</div>
+        </div>
+      </div>
+    </a>`).join('');
+}
+
+// Override loadAll to also reload catalogues
+const _origLoadAll = loadAll;
+async function loadAll() {
+  await _origLoadAll();
+  await loadCatalegs();
+}
 </script>
 {% endblock %}
