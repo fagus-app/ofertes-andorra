@@ -78,6 +78,34 @@
   </div>
 </section>
 
+<!-- Folletos destacats -->
+{% if folleto_biz %}
+<section style="padding:0 0 8px">
+  <div class="sw"><div class="section-heading">📋 Folletos de la setmana</div></div>
+  <div class="folleto-scroll">
+    {% for b in folleto_biz %}
+    <a href="/negoci/{{b.id}}" class="folleto-card">
+      <div class="folleto-thumb">
+        {% if b.folleto_type == 'image' %}
+          <img src="/static/uploads/folletos/{{b.folleto_file}}" alt="{{b.folleto_title}}">
+        {% else %}
+          <div style="text-align:center;padding:20px;background:var(--bg3);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font-size:40px">📄</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px">PDF</div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="folleto-info">
+        <div class="folleto-biz">{{b.logo_emoji}} {{b.name}}</div>
+        <div class="folleto-title">{{b.folleto_title}}</div>
+        <div class="folleto-btn">Veure folleto →</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <!-- Filtre 1: Parròquia -->
 <div class="filter-section">
   <span class="filter-label">📍 Per parròquia</span>
@@ -95,36 +123,6 @@
   <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
   <div class="feat-scroll" id="featGrid"></div>
 </section>
-
-<!-- Folletos -->
-{% if folleto_biz %}
-<section class="sec" id="folletos">
-  <div class="sw">
-    <div class="section-heading">📋 Folletos de la setmana</div>
-  </div>
-  <div class="folleto-scroll">
-    {% for b in folleto_biz %}
-    <a href="/negoci/{{b.id}}#folletos" class="folleto-card">
-      <div class="folleto-thumb">
-        {% if b.folleto_type == 'image' %}
-          <img src="/static/uploads/folletos/{{b.folleto_file}}" alt="{{b.folleto_title}}">
-        {% else %}
-          <div style="text-align:center;padding:20px">
-            <div style="font-size:40px">📄</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:8px">PDF</div>
-          </div>
-        {% endif %}
-      </div>
-      <div class="folleto-info">
-        <div class="folleto-biz">{{b.logo_emoji}} {{b.name}}</div>
-        <div class="folleto-title">{{b.folleto_title}}</div>
-        <div class="folleto-btn">Veure folleto →</div>
-      </div>
-    </a>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
 
 <!-- Comerços -->
 <section class="sec" id="comercos">
