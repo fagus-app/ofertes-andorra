@@ -206,6 +206,14 @@ function showPricing(cat) {
 }
 
 function renderTags(cat) {
+  // Show custom type input for Altres
+  const customWrap = document.getElementById('customTypeWrap');
+  if (cat === 'Altres') {
+    customWrap.style.display = 'block';
+  } else {
+    customWrap.style.display = 'none';
+    document.getElementById('customTypeInput').value = '';
+  }
   const wrap = document.getElementById('tagsWrap');
   const grid = document.getElementById('tagsGrid');
   const subs = CATS[cat] || [];

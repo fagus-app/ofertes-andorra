@@ -48,6 +48,17 @@
 .sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 .sec{padding:20px 0 40px}
 .empty-msg{text-align:center;color:var(--muted);padding:48px 20px;font-size:14px}
+/* folletos */
+.folleto-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.folleto-scroll::-webkit-scrollbar{display:none}
+.folleto-card{flex:0 0 180px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;text-decoration:none}
+.folleto-card:hover{transform:translateY(-3px);border-color:var(--border2)}
+.folleto-thumb{width:100%;height:220px;object-fit:cover;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:40px}
+.folleto-thumb img{width:100%;height:100%;object-fit:cover}
+.folleto-info{padding:12px}
+.folleto-biz{font-size:11px;color:var(--muted);margin-bottom:3px}
+.folleto-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:8px}
+.folleto-btn{display:block;text-align:center;background:var(--accent);color:#0F0F0F;border-radius:50px;padding:6px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif}
 </style>
 {% endblock %}
 {% block content %}
@@ -84,6 +95,36 @@
   <div class="sw"><div class="section-heading">🔥 Destacats</div></div>
   <div class="feat-scroll" id="featGrid"></div>
 </section>
+
+<!-- Folletos -->
+{% if folleto_biz %}
+<section class="sec" id="folletos">
+  <div class="sw">
+    <div class="section-heading">📋 Folletos de la setmana</div>
+  </div>
+  <div class="folleto-scroll">
+    {% for b in folleto_biz %}
+    <a href="/negoci/{{b.id}}#folletos" class="folleto-card">
+      <div class="folleto-thumb">
+        {% if b.folleto_type == 'image' %}
+          <img src="/static/uploads/folletos/{{b.folleto_file}}" alt="{{b.folleto_title}}">
+        {% else %}
+          <div style="text-align:center;padding:20px">
+            <div style="font-size:40px">📄</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px">PDF</div>
+          </div>
+        {% endif %}
+      </div>
+      <div class="folleto-info">
+        <div class="folleto-biz">{{b.logo_emoji}} {{b.name}}</div>
+        <div class="folleto-title">{{b.folleto_title}}</div>
+        <div class="folleto-btn">Veure folleto →</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 
 <!-- Comerços -->
 <section class="sec" id="comercos">
