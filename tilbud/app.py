@@ -30,14 +30,25 @@ BRANCH_PRICE    = 12.0  # euros per extra branch per month
 
 # Pricing tiers
 SUPERMARKET_TYPES = {'Supermercat'}
-PRICE_TRIAL = {
-    'Supermercat': (49.0, 3),   # price, trial_months
-    'default':     (25.0, 1),
+PRICE_INTRO = {
+    'Supermercat': 49.0,
+    'default':     25.0,
 }
 PRICE_NORMAL = {
     'Supermercat': 99.0,
     'default':     49.0,
 }
+INTRO_MONTHS = {
+    'Supermercat': 3,
+    'default':     1,
+}
+
+def get_pricing(category):
+    is_premium = (category == 'Supermercat')
+    intro  = PRICE_INTRO['Supermercat']  if is_premium else PRICE_INTRO['default']
+    normal = PRICE_NORMAL['Supermercat'] if is_premium else PRICE_NORMAL['default']
+    months = INTRO_MONTHS['Supermercat'] if is_premium else INTRO_MONTHS['default']
+    return intro, normal, months
 
 def get_trial_price(category):
     p = PRICE_TRIAL.get(category, PRICE_TRIAL['default'])
@@ -607,8 +618,7 @@ def panel():
     total_o_views = db.execute("SELECT COALESCE(SUM(views),0) FROM ofertes WHERE business_id=?",(b['id'],)).fetchone()[0]
     branches = db.execute("SELECT * FROM branches WHERE business_id=? ORDER BY created",(b['id'],)).fetchall()
     branch_count = len(branches)
-    trial_price, trial_months = get_trial_price(b['category'])
-    normal_price = get_normal_price(b['category'])
+    trial_price, normal_price, trial_months = get_pricing(b['category'])
     monthly_total = normal_price + (branch_count * BRANCH_PRICE)
     dl = days_left(b); can_pub = can_publish(b)
     return render_template('panel.html', b=b, ofertes=ofertes, folletos=folletos,
