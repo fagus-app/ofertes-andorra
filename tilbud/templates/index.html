@@ -274,7 +274,7 @@ async function loadAll() {
   renderFeatured(allOffers);
   renderBiz(allBiz);
   renderOffers(allOffers);
-  loadCatalegs();
+  loadCatalegs(allOffers.length);
 }
 
 // ── Render featured ───────────────────────────────────────────────────────
@@ -367,12 +367,19 @@ function setMode(mode) {
   document.getElementById('secCatalegs').style.display = mode === 'catalegs' ? '' : 'none';
 }
 
+function autoSelectMode(offersCount, catalegsCount) {
+  // If more catalogues than offers, show catalogues first
+  const defaultMode = catalegsCount > offersCount ? 'catalegs' : 'ofertes';
+  if (defaultMode !== currentMode) setMode(defaultMode);
+}
+
 // Load catalogues
-async function loadCatalegs() {
+async function loadCatalegs(offersCount) {
   const p = new URLSearchParams();
   if (activeParr) p.set('parroquia', activeParr);
   const r = await fetch('/api/catalegs?' + p);
   const data = await r.json();
+  if (offersCount !== undefined) autoSelectMode(offersCount, data.length);
   const grid = document.getElementById('catalegGrid');
   if (!data.length) {
     grid.innerHTML = '<div class="empty-msg" style="grid-column:1/-1">Cap catàleg disponible</div>';

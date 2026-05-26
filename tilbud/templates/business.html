@@ -217,11 +217,19 @@ function showTab(name, btn) {
   if(btn) btn.classList.add('active');
 }
 
-// Auto-open tab from URL param
+// Auto-open tab from URL param or based on content count
 const urlTab = new URLSearchParams(window.location.search).get('tab');
 if (urlTab) {
   const btn = document.querySelector(`.tab[onclick*="${urlTab}"]`);
   if (btn) showTab(urlTab, btn);
+} else {
+  // Dynamically choose which tab to show first based on count
+  const ofertesCount = document.querySelectorAll('#tab-ofertes .offer-card').length;
+  const catsCount    = document.querySelectorAll('#tab-cats .cat-card').length;
+  if (catsCount > ofertesCount) {
+    const btn = document.querySelector('.tab[onclick*="cats"]');
+    if (btn) showTab('cats', btn);
+  }
 }
 
 const catTabs = document.getElementById('catTabs');
