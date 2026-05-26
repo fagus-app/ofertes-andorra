@@ -437,6 +437,7 @@ def index():
     stats = {
         'businesses': db.execute("SELECT COUNT(*) FROM businesses WHERE active=1").fetchone()[0],
         'ofertes': db.execute("SELECT COUNT(*) FROM ofertes WHERE valid_until>=?",(today,)).fetchone()[0],
+        'catalogues': db.execute("SELECT COUNT(*) FROM folletos WHERE valid_until>=?",(today,)).fetchone()[0],
     }
     # Get businesses with active folletos
     folleto_biz = db.execute("""SELECT DISTINCT b.*, f.filename as folleto_file, f.filetype as folleto_type, f.title as folleto_title
@@ -818,6 +819,35 @@ def api_add_tag():
     except Exception as e:
         print(f'[TAG ADD ERROR] {e}')
     return jsonify({'ok': True, 'tag': tag})
+
+@app.route('/cataleg')
+def cataleg():
+    db = get_db(); today = today_str()
+    # Get latest folleto per business
+    folletos = db.execute("""SELECT f.*, b.name as bname, b.logo_emoji as blogo, b.logo_image as blogo_img,
+               b.id as bid, b.accent as baccent, b.parroquia as bparroquia
+        FROM folletos f JOIN businesses b ON f.business_id=b.id
+        WHERE b.active=1 AND b.subscription_end>=?
+        AND f.valid_from<=? AND f.valid_until>=?
+        ORDER BY f.created DESC""", (today,today,today)).fetchall()
+    parroquies_with = sorted(set(f['bparroquia'] for f in folletos))
+    return render_template('cataleg.html', folletos=folletos,
+                           parroquies=PARROQUIES,
+                           parroquies_with=parroquies_with)
+
+@app.route('/cataleg/<int:fid>')
+def cataleg_detail(fid):
+    db = get_db(); today = today_str()
+    f = db.execute("""SELECT f.*, b.name as bname, b.logo_emoji as blogo, b.logo_image as blogo_img,
+               b.id as bid, b.accent as baccent
+        FROM folletos f JOIN businesses b ON f.business_id=b.id
+        WHERE f.id=? AND b.active=1 AND b.subscription_end>=?
+        AND f.valid_from<=? AND f.valid_until>=?""", (fid,today,today,today)).fetchone()
+    if not f: return redirect(url_for('cataleg'))
+    # Get other folletos from same business
+    others = db.execute("""SELECT * FROM folletos WHERE business_id=? AND id!=?
+        AND valid_from<=? AND valid_until>=? ORDER BY created DESC LIMIT 4""", (f['bid'],fid,today,today)).fetchall()
+    return render_template('cataleg_detail.html', f=f, others=others)
 
 # ── Branches ──────────────────────────────────────────────────────────────────
 @app.route('/panel/sucursal/nova', methods=['GET','POST'])
