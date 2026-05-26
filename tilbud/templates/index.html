@@ -274,6 +274,7 @@ async function loadAll() {
   renderFeatured(allOffers);
   renderBiz(allBiz);
   renderOffers(allOffers);
+  loadCatalegs();
 }
 
 // ── Render featured ───────────────────────────────────────────────────────
@@ -396,11 +397,6 @@ async function loadCatalegs() {
     </a>`).join('');
 }
 
-// Override loadAll to also reload catalogues
-const _origLoadAll = loadAll;
-async function loadAll() {
-  await _origLoadAll();
-  await loadCatalegs();
-}
+
 </script>
 {% endblock %}
