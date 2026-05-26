@@ -2,114 +2,127 @@
 {% block title %}{{b.name}} — Ofertes.ad{% endblock %}
 {% block head %}
 <style>
-.biz-hero{padding:44px 24px 36px;position:relative;overflow:hidden}
-.biz-hero::before{content:'';position:absolute;top:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(ellipse,{{b.color}}33 0%,transparent 65%);pointer-events:none}
-.breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:24px}
-.breadcrumb a{color:var(--muted);text-decoration:none;transition:color .2s}
+.biz-hero{padding:28px 20px 20px;position:relative;overflow:hidden}
+.biz-hero::before{content:'';position:absolute;top:-80px;left:-80px;width:500px;height:400px;background:radial-gradient(ellipse,{{b.color}}22 0%,transparent 65%);pointer-events:none}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:16px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
 .breadcrumb a:hover{color:var(--accent)}
-.hero-inner{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
-.logo-xl{width:76px;height:76px;background:var(--bg3);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
-.logo-xl img{width:100%;height:100%;object-fit:cover}
-.biz-cat2{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.biz-name2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(24px,5vw,40px);letter-spacing:-1px;line-height:1.1;margin-bottom:8px}
-.biz-desc2{font-size:15px;color:var(--muted);font-weight:300;max-width:500px;margin-bottom:14px}
-.biz-meta{display:flex;gap:16px;flex-wrap:wrap}
-.biz-meta-item{font-size:13px;color:var(--muted)}
-.biz-meta-item a{color:var(--accent);text-decoration:none}
-/* Hours */
-.hours-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-top:16px;display:inline-block}
-.hours-row{display:grid;grid-template-columns:90px 1fr;gap:4px 12px;font-size:13px}
-.hours-day{color:var(--muted)}
-.hours-val{color:var(--text)}
+/* Compact hero */
+.hero-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.biz-logo-sm{width:56px;height:56px;border-radius:14px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.biz-logo-sm img{width:100%;height:100%;object-fit:cover}
+.biz-main{flex:1;min-width:0}
+.biz-cat-tag{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.biz-name{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(18px,4vw,28px);letter-spacing:-.5px;color:var(--text);line-height:1.1}
+.biz-meta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.biz-meta-item{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.biz-meta-item a{color:var(--muted);text-decoration:none}
+.biz-meta-item a:hover{color:var(--accent)}
+.biz-desc{font-size:13px;color:var(--muted);font-weight:300;margin-top:8px;max-width:520px;line-height:1.5}
 /* Tabs */
-.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:50px;padding:4px;width:fit-content;margin-bottom:24px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:50px;padding:4px;width:fit-content;margin:20px 0 20px}
 .tab{padding:8px 20px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
 .tab.active{background:var(--accent);color:#0F0F0F}
-/* Offers */
-.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.cat-chip{padding:7px 16px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+.cat-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
+.cat-chip{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
 .cat-chip:hover{color:var(--text);background:var(--bg3)}
 .cat-chip.active{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
-.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:14px}
-.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s,transform .2s}
+/* Offers grid */
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:12px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s}
 .offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.o-emoji{font-size:34px;line-height:1}
-.o-cat{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.o-name{font-size:13px;font-weight:500;line-height:1.4;flex:1}
-.o-prices{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
-.o-new{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;color:var(--accent)}
-.o-old{font-size:12px;color:var(--muted);text-decoration:line-through}
-.o-unit{font-size:11px;color:var(--muted)}
-.o-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border)}
-.o-valid{font-size:11px;color:var(--muted)}
-.o-valid strong{color:var(--accent)}
-/* Folletos */
-.folleto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
-.folleto-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s,border-color .2s}
-.folleto-card:hover{transform:translateY(-2px);border-color:var(--border2)}
-.folleto-img{width:100%;height:180px;object-fit:cover}
-.folleto-pdf{width:100%;height:180px;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
-.folleto-body{padding:16px}
-.folleto-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px}
-.folleto-valid{font-size:12px;color:var(--muted)}
-.folleto-valid strong{color:var(--accent)}
+/* Catalogue grid */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;text-decoration:none;transition:transform .2s,border-color .2s;display:block}
+.cat-card:hover{transform:translateY(-3px);border-color:var(--border2)}
+.cat-cover{width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;background:var(--bg3)}
+.cat-cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.cat-card:hover .cat-cover img{transform:scale(1.03)}
+.cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 60%)}
+.cat-info{position:absolute;bottom:0;left:0;right:0;padding:12px}
+.cat-pdf{width:100%;aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--bg2)}
 /* Others */
-.others-scroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.others-scroll{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
 .others-scroll::-webkit-scrollbar{display:none}
-.other-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 16px;text-decoration:none;font-size:13px;color:var(--muted);transition:all .2s;white-space:nowrap}
+.other-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 14px;text-decoration:none;font-size:12px;color:var(--muted);transition:all .2s;white-space:nowrap}
 .other-chip:hover{color:var(--text);background:var(--bg3);border-color:var(--border2)}
-.expired-notice{background:rgba(232,84,84,.08);border:1px solid rgba(232,84,84,.2);color:var(--red);border-radius:var(--radius-sm);padding:16px 20px;margin-bottom:24px;font-size:14px}
+.empty-sec{text-align:center;color:var(--muted);padding:48px;font-size:14px}
+/* Hours modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:340px;width:100%}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:0}
+.hours-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.hours-row:last-child{border-bottom:none}
 </style>
 {% endblock %}
 {% block content %}
+
+<!-- Hours modal -->
+{% set has_hours = b.hours_mon or b.hours_tue or b.hours_wed or b.hours_fri or b.hours_sat %}
+{% if has_hours %}
+<div class="modal" id="hoursModal" onclick="if(event.target===this)closeHours()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">🕐 Horaris — {{b.name}}</div>
+      <button class="modal-close" onclick="closeHours()">✕</button>
+    </div>
+    {% set days=[('Dilluns',b.hours_mon),('Dimarts',b.hours_tue),('Dimecres',b.hours_wed),('Dijous',b.hours_thu),('Divendres',b.hours_fri),('Dissabte',b.hours_sat),('Diumenge',b.hours_sun)] %}
+    {% for d,h in days %}{% if h %}
+    <div class="hours-row"><span style="color:var(--muted)">{{d}}</span><span style="font-weight:500">{{h}}</span></div>
+    {% endif %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+
 <section class="biz-hero">
   <div class="container">
-    <div class="breadcrumb">
-      <a href="/">Inici</a><span>›</span>
-      <a href="/parroquia/{{b.parroquia}}">{{b.parroquia}}</a><span>›</span>
-      <span>{{b.name}}</span>
-    </div>
-    <div class="hero-inner">
-      <div class="logo-xl">
-        {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="{{b.name}}">
+    <div class="breadcrumb"><a href="/">Inici</a> › <a href="/parroquia/{{b.parroquia}}">{{b.parroquia}}</a> › {{b.name}}</div>
+    <div class="hero-row">
+      <div class="biz-logo-sm">
+        {% if b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="">
         {% else %}{{b.logo_emoji}}{% endif %}
       </div>
-      <div>
-        <div class="biz-cat2">{{b.category}} · {{b.parroquia}}</div>
-        <h1 class="biz-name2">{{b.name}}</h1>
-        {% if b.description %}<p class="biz-desc2">{{b.description}}</p>{% endif %}
-        <div class="biz-meta">
+      <div class="biz-main">
+        <div class="biz-cat-tag">{{b.category}} · {{b.parroquia}}</div>
+        <div class="biz-name">{{b.name}}</div>
+        <div class="biz-meta-row">
           {% if b.location %}<div class="biz-meta-item">📍 {{b.location}}</div>{% endif %}
-          {% if b.phone %}<div class="biz-meta-item">📞 {{b.phone}}</div>{% endif %}
-          {% if b.maps_url %}<div class="biz-meta-item"><a href="{{b.maps_url}}" target="_blank">🗺️ Veure al mapa</a></div>{% endif %}
-          <div class="biz-meta-item">🏷️ {{ofertes|length}} ofertes · 📋 {{folletos|length}} folletos</div>
+          {% if b.phone %}<div class="biz-meta-item">📞 <a href="tel:{{b.phone}}">{{b.phone}}</a></div>{% endif %}
+          {% if b.maps_url %}<div class="biz-meta-item"><a href="{{b.maps_url}}" target="_blank">🗺️ Mapa</a></div>{% endif %}
+          {% if has_hours %}<div class="biz-meta-item"><a href="javascript:void(0)" onclick="openHours()">🕐 Horaris</a></div>{% endif %}
         </div>
-        {% set has_hours = b.hours_mon or b.hours_tue or b.hours_fri %}
-        {% if has_hours %}
-        <div class="hours-card">
-          <div class="hours-row">
-            {% set days=[('Dl','hours_mon'),('Dt','hours_tue'),('Dc','hours_wed'),('Dj','hours_thu'),('Dv','hours_fri'),('Ds','hours_sat'),('Dg','hours_sun')] %}
-            {% for lbl,field in days %}{% if b[field] %}
-            <span class="hours-day">{{lbl}}</span><span class="hours-val">{{b[field]}}</span>
-            {% endif %}{% endfor %}
-          </div>
-        </div>
-        {% endif %}
+        {% if b.description %}<div class="biz-desc">{{b.description}}</div>{% endif %}
       </div>
     </div>
   </div>
 </section>
 
-<div class="container" style="padding-bottom:64px">
-  {% if not sub_active %}
-  <div class="expired-notice">ℹ️ Aquest comerç no té ofertes actives en aquest moment.</div>
-  {% endif %}
+<div class="container" style="padding-bottom:60px">
 
+  <!-- Dynamic tabs based on what the business has -->
+  {% set has_ofertes = ofertes|length > 0 %}
+  {% set has_cats = catalogues|length > 0 %}
+
+  {% if has_ofertes and has_cats %}
   <div class="tabs">
     <button class="tab active" onclick="showTab('ofertes',this)">🏷️ Ofertes ({{ofertes|length}})</button>
-    <button class="tab" onclick="showTab('folletos',this)">📋 Folletos ({{folletos|length}})</button>
+    <button class="tab" onclick="showTab('cats',this)">📋 Catàlegs ({{catalogues|length}})</button>
   </div>
+  {% elif has_cats %}
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('cats',this)">📋 Catàlegs ({{catalogues|length}})</button>
+  </div>
+  {% elif has_ofertes %}
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('ofertes',this)">🏷️ Ofertes ({{ofertes|length}})</button>
+  </div>
+  {% endif %}
 
+  <!-- Ofertes -->
+  {% if has_ofertes %}
   <div id="tab-ofertes">
     {% if categories %}
     <div class="cat-tabs" id="catTabs">
@@ -117,60 +130,70 @@
       {% for cat in categories %}<button class="cat-chip" data-cat="{{cat}}">{{cat}}</button>{% endfor %}
     </div>
     {% endif %}
-    {% if ofertes %}
     <div class="offers-grid">
       {% for o in ofertes %}
       {% set d=((1-o.offer_price/o.original_price)*100)|int %}
       <div class="offer-card" data-cat="{{o.category}}">
-        <span class="o-emoji">{{o.emoji}}</span>
-        <div class="o-cat">{{o.category}}</div>
-        <div class="o-name">{{o.name}}</div>
-        <div class="o-prices">
-          <span class="o-new">{{"%.2f"|format(o.offer_price)}}€</span>
-          <span class="o-old">{{"%.2f"|format(o.original_price)}}€</span>
+        <span style="font-size:30px;line-height:1">{{o.emoji}}</span>
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{o.category}}</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1">{{o.name}}</div>
+        <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:var(--accent)">{{"%.2f"|format(o.offer_price)}}€</span>
+          <span style="font-size:12px;color:var(--muted);text-decoration:line-through">{{"%.2f"|format(o.original_price)}}€</span>
           <span class="discount">−{{d}}%</span>
         </div>
-        <div class="o-unit">{{o.unit}}</div>
-        <div class="o-footer"><span class="o-valid">Fins el <strong>{{o.valid_until}}</strong></span></div>
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-    <div style="text-align:center;color:var(--muted);padding:48px;font-size:14px">Cap oferta activa en aquest moment</div>
-    {% endif %}
-  </div>
-
-  <div id="tab-folletos" style="display:none">
-    {% if folletos %}
-    <div class="folleto-grid">
-      {% for f in folletos %}
-      <div class="folleto-card">
-        {% if f.filetype=='image' %}
-          <img class="folleto-img" src="/static/uploads/folletos/{{f.filename}}" alt="{{f.title}}">
-        {% else %}
-          <div class="folleto-pdf"><span style="font-size:48px">📄</span><span style="font-size:12px;color:var(--muted)">Document PDF</span></div>
-        {% endif %}
-        <div class="folleto-body">
-          <div class="folleto-title">{{f.title}}</div>
-          <div class="folleto-valid">Vàlid fins el <strong>{{f.valid_until}}</strong></div>
-          <div style="margin-top:10px">
-            <a href="/static/uploads/folletos/{{f.filename}}" target="_blank" class="btn btn-accent btn-sm">
-              {% if f.filetype=='pdf' %}📄 Obrir PDF{% else %}🔍 Veure{% endif %}
-            </a>
-          </div>
+        <div style="font-size:10px;color:var(--muted)">{{o.unit}}</div>
+        <div style="display:flex;justify-content:space-between;padding-top:7px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
+          <span>Fins el <strong style="color:var(--accent)">{{o.valid_until}}</strong></span>
         </div>
       </div>
       {% endfor %}
     </div>
-    {% else %}
-    <div style="text-align:center;color:var(--muted);padding:48px;font-size:14px">Cap folleto publicat en aquest moment</div>
-    {% endif %}
   </div>
+  {% endif %}
+
+  <!-- Catàlegs -->
+  {% if has_cats %}
+  <div id="tab-cats" {% if has_ofertes %}style="display:none"{% endif %}>
+    <div class="cat-grid">
+      {% for f in catalogues %}
+      <a href="/cataleg/{{f.id}}" class="cat-card">
+        <div class="cat-cover">
+          {% if f.filetype=='image' %}
+            <img src="/static/uploads/folletos/{{f.filename}}" alt="{{f.title}}">
+          {% else %}
+            <div class="cat-pdf">
+              <div style="font-size:44px">📄</div>
+              <div style="font-size:12px;color:var(--muted)">PDF</div>
+            </div>
+          {% endif %}
+          <div class="cat-overlay"></div>
+          <div class="cat-info">
+            <div style="font-size:11px;font-weight:600;color:#fff;margin-bottom:3px">{{f.title}}</div>
+            <div style="font-size:10px;background:rgba(232,197,71,.2);border:1px solid rgba(232,197,71,.3);color:var(--accent);border-radius:50px;padding:2px 8px;display:inline-block">Fins {{f.valid_until}}</div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if not has_ofertes and not has_cats and sub_active %}
+  <div class="empty-sec">Cap contingut disponible en aquest moment</div>
+  {% elif not sub_active %}
+  <div class="empty-sec">
+    <div style="font-size:32px;margin-bottom:12px">⏰</div>
+    Les ofertes d'aquest comerç no estan disponibles en aquest moment.
+  </div>
+  {% endif %}
+
 </div>
 
-<div style="border-top:1px solid var(--border);padding:36px 24px 56px">
+<!-- Other businesses -->
+<div style="border-top:1px solid var(--border);padding:28px 20px 52px">
   <div class="container">
-    <div class="section-heading" style="margin-bottom:14px">Altres comerços</div>
+    <div class="section-heading" style="margin-bottom:12px">Altres comerços</div>
     <div class="others-scroll">
       {% for ob in all_businesses %}{% if ob.id != b.id %}
       <a href="/negoci/{{ob.id}}" class="other-chip">{{ob.logo_emoji}} {{ob.name}}</a>
@@ -178,33 +201,31 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block scripts %}
 <script>
-function openHours() {
-  const m = document.getElementById('hoursModal');
-  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
-}
-function closeHours() {
-  const m = document.getElementById('hoursModal');
-  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHours(); });
+function openHours(){ document.getElementById('hoursModal')?.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeHours(){ document.getElementById('hoursModal')?.classList.remove('open'); document.body.style.overflow=''; }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeHours(); });
 
-function showTab(name,btn){
-  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
-  document.getElementById('tab-'+name).style.display='';
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
+function showTab(name, btn) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display='none');
+  const el = document.getElementById('tab-'+name);
+  if(el) el.style.display='';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
 }
-const ct=document.getElementById('catTabs');
-if(ct)ct.addEventListener('click',e=>{
-  const c=e.target.closest('.cat-chip');if(!c)return;
-  ct.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');
-  const cat=c.dataset.cat;
-  document.querySelectorAll('.offer-card[data-cat]').forEach(card=>{
-    card.style.display=(!cat||card.dataset.cat===cat)?'':'none';
+
+const catTabs = document.getElementById('catTabs');
+if(catTabs){ catTabs.addEventListener('click', e => {
+  const c = e.target.closest('.cat-chip'); if(!c) return;
+  catTabs.querySelectorAll('.cat-chip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  const cat = c.dataset.cat;
+  document.querySelectorAll('.offer-card[data-cat]').forEach(card => {
+    card.style.display = (!cat || card.dataset.cat===cat) ? '' : 'none';
   });
-});
+});}
 </script>
 {% endblock %}
