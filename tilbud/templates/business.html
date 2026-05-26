@@ -157,7 +157,7 @@
   <div id="tab-cats" {% if has_ofertes %}style="display:none"{% endif %}>
     <div class="cat-grid">
       {% for f in catalogues %}
-      <a href="/cataleg/{{f.id}}" class="cat-card">
+      <div class="cat-card" onclick="openCatModal('{{f.filename}}','{{f.filetype}}','{{b.logo_emoji}}','{{b.name}}','{{f.title}}')" style="cursor:pointer">
         <div class="cat-cover">
           {% if f.filetype=='image' %}
             <img src="/static/uploads/folletos/{{f.filename}}" alt="{{f.title}}">
@@ -173,7 +173,7 @@
             <div style="font-size:10px;background:rgba(232,197,71,.2);border:1px solid rgba(232,197,71,.3);color:var(--accent);border-radius:50px;padding:2px 8px;display:inline-block">Fins {{f.valid_until}}</div>
           </div>
         </div>
-      </a>
+      </div>
       {% endfor %}
     </div>
   </div>
@@ -188,6 +188,27 @@
   </div>
   {% endif %}
 
+</div>
+
+<!-- Catalogue modal -->
+<div id="catModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;flex-direction:column" onclick="if(event.target===this)closeCatModal()">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.1)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="catModalLogo" style="font-size:20px"></div>
+      <div>
+        <div id="catModalBiz" style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff"></div>
+        <div id="catModalTitle" style="font-size:11px;color:rgba(255,255,255,.5)"></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <a id="catModalDownload" href="#" download target="_blank" class="btn btn-accent btn-sm">⬇ Descarregar</a>
+      <button onclick="closeCatModal()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:16px">
+    <img id="catModalImg" src="" alt="" style="max-width:100%;object-fit:contain;border-radius:8px;display:none">
+    <iframe id="catModalPdf" src="" style="width:100%;min-height:80vh;border:none;border-radius:8px;display:none"></iframe>
+  </div>
 </div>
 
 <!-- Other businesses -->
@@ -231,6 +252,32 @@ if (urlTab) {
     if (btn) showTab('cats', btn);
   }
 }
+
+function openCatModal(filename, filetype, logo, bizName, title) {
+  const modal = document.getElementById('catModal');
+  const img   = document.getElementById('catModalImg');
+  const pdf   = document.getElementById('catModalPdf');
+  const dl    = document.getElementById('catModalDownload');
+  document.getElementById('catModalLogo').textContent  = logo;
+  document.getElementById('catModalBiz').textContent   = bizName;
+  document.getElementById('catModalTitle').textContent = title;
+  const url = `/static/uploads/folletos/${filename}`;
+  dl.href = url;
+  if (filetype === 'image') {
+    img.src = url; img.style.display = ''; pdf.style.display = 'none';
+  } else {
+    pdf.src = url; pdf.style.display = ''; img.style.display = 'none';
+  }
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeCatModal() {
+  document.getElementById('catModal').style.display = 'none';
+  document.getElementById('catModalImg').src = '';
+  document.getElementById('catModalPdf').src = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') { closeCatModal(); closeHours(); } });
 
 const catTabs = document.getElementById('catTabs');
 if(catTabs){ catTabs.addEventListener('click', e => {
