@@ -820,6 +820,20 @@ def api_add_tag():
         print(f'[TAG ADD ERROR] {e}')
     return jsonify({'ok': True, 'tag': tag})
 
+@app.route('/api/catalegs')
+def api_catalegs():
+    today = today_str()
+    par = request.args.get('parroquia','')
+    sql = """SELECT f.*, b.name as bname, b.logo_emoji as blogo, b.id as bid, b.parroquia as bparroquia
+        FROM folletos f JOIN businesses b ON f.business_id=b.id
+        WHERE b.active=1 AND b.subscription_end>=?
+        AND f.valid_from<=? AND f.valid_until>=?"""
+    p = [today,today,today]
+    if par: sql += " AND b.parroquia=?"; p.append(par)
+    sql += " ORDER BY f.created DESC"
+    rows = get_db().execute(sql, p).fetchall()
+    return jsonify([dict(r) for r in rows])
+
 @app.route('/cataleg')
 def cataleg():
     db = get_db(); today = today_str()
