@@ -1,179 +1,233 @@
 {% extends "base.html" %}
-{% block title %}Registra el teu comerç — Ofertes.ad{% endblock %}
+{% block title %}Registra el teu negoci — Ofertes.ad{% endblock %}
 {% block head %}
 <style>
-.reg-wrap{max-width:680px;margin:0 auto;padding:36px 24px 80px}
+.reg-wrap{max-width:680px;margin:0 auto;padding:36px 20px 80px}
 .reg-hero{text-align:center;margin-bottom:36px}
-.reg-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,4vw,40px);letter-spacing:-1px;margin-bottom:8px}
-.reg-hero h1 em{font-style:normal;color:var(--accent)}
-.reg-hero p{font-size:15px;color:var(--muted)}
+.reg-hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:var(--text);margin-bottom:8px}
+.reg-hero p{font-size:14px;color:var(--muted)}
 .trial-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(82,201,122,.1);border:1px solid rgba(82,201,122,.2);color:var(--green);border-radius:50px;padding:6px 16px;font-size:13px;font-weight:500;margin-bottom:20px}
-.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:20px}
-.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.field{margin-bottom:18px}
-.field label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
-.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:16px}
+.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:17px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
 .field input::placeholder,.field textarea::placeholder{color:var(--muted)}
 .field select option{background:var(--bg2)}
-.field textarea{resize:vertical;min-height:80px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.hint{font-size:11px;color:var(--muted);margin-top:5px}
-.hours-grid{display:grid;grid-template-columns:80px 1fr;gap:8px 12px;align-items:center}
-.hours-day{font-size:13px;color:var(--muted);font-weight:500}
-.hours-input{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;width:100%;transition:border-color .2s}
-.hours-input:focus{border-color:var(--accent)}
-.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
+.field textarea{resize:vertical;min-height:72px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.hours-grid{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;margin-bottom:6px}
+.hours-day{font-size:12px;color:var(--muted);font-weight:500}
+.hours-grid input{padding:7px 10px;font-size:13px}
+.submit-btn{width:100%;padding:14px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:background .2s;margin-top:8px}
+.submit-btn:hover{background:#F0D870}
+.login-link{text-align:center;margin-top:16px;font-size:13px;color:var(--muted)}
+.login-link a{color:var(--accent);text-decoration:none}
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-sm);padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
 .upload-zone:hover{border-color:var(--accent)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.submit-btn{width:100%;padding:15px;background:var(--accent);color:#0F0F0F;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,transform .2s;margin-top:8px}
-.submit-btn:hover{background:#F0D870;transform:translateY(-1px)}
-.login-link{text-align:center;font-size:13px;color:var(--muted);margin-top:16px}
-.login-link a{color:var(--accent);text-decoration:none}
-.error{background:rgba(232,84,84,.1);border:1px solid rgba(232,84,84,.2);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:18px}
+/* Category selector */
+.cat-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.cat-btn{padding:8px 16px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s}
+.cat-btn:hover{color:var(--text);background:var(--bg3)}
+.cat-btn.selected{background:var(--accent);color:#0F0F0F;border-color:var(--accent)}
+/* Tags */
+.tags-wrap{margin-top:12px;display:none}
+.tags-title{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.tags-grid{display:flex;flex-wrap:wrap;gap:8px}
+.tag-label{display:inline-flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:7px 14px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s}
+.tag-label:hover{border-color:var(--border2);color:var(--text)}
+.tag-label input{accent-color:var(--accent);cursor:pointer;width:15px;height:15px}
+.tag-label.checked{background:rgba(232,197,71,.1);border-color:rgba(232,197,71,.3);color:var(--text)}
 </style>
 {% endblock %}
 {% block content %}
 <div class="reg-wrap">
   <div class="reg-hero">
-    <div class="trial-badge">✅ 15 dies de prova gratuïts · Sense targeta de crèdit</div>
-    <h1>Registra el teu <em>comerç</em></h1>
-    <p>Comença a publicar les teves ofertes en minuts i arriba a milers de clients d'Andorra.</p>
+    <div class="trial-badge">✅ 15 dies de prova gratuïts</div>
+    <h1>Registra el teu negoci</h1>
+    <p>Comença a publicar les teves ofertes avui. Sense compromisos.</p>
   </div>
 
   {% with msgs=get_flashed_messages() %}{% if msgs %}
-    {% for m in msgs %}<div class="error">{{m}}</div>{% endfor %}
+    {% for m in msgs %}<div class="flash flash-err">{{m}}</div>{% endfor %}
   {% endif %}{% endwith %}
 
   <form method="POST" enctype="multipart/form-data">
 
-    <!-- Informació del comerç -->
+    <!-- Informació bàsica -->
     <div class="form-card">
-      <div class="form-section-title">🏪 Informació del comerç</div>
-      <div class="field">
-        <label>Nom del comerç *</label>
-        <input type="text" name="name" value="{{form.get('name','')}}" placeholder="Ex: Supermercat Can Pepe" required>
-      </div>
+      <div class="form-section-title">🏪 Informació del negoci</div>
       <div class="row2">
         <div class="field">
-          <label>Tipus de comerç *</label>
-          <select name="category" required>
-            <option value="">Selecciona...</option>
-            {% for t in business_types %}
-            <option value="{{t}}" {% if form.get('category')==t %}selected{% endif %}>{{t}}</option>
-            {% endfor %}
-          </select>
+          <label>Nom del negoci *</label>
+          <input type="text" name="name" required placeholder="Ex: Bar El Mirador" value="{{form.get('name','')}}">
         </div>
         <div class="field">
           <label>Parròquia *</label>
           <select name="parroquia" required>
             <option value="">Selecciona...</option>
-            {% for p in parroquies %}
-            <option value="{{p}}" {% if form.get('parroquia')==p %}selected{% endif %}>{{p}}</option>
-            {% endfor %}
+            {% for p in parroquies %}<option value="{{p}}" {% if form.get('parroquia')==p %}selected{% endif %}>{{p}}</option>{% endfor %}
           </select>
         </div>
       </div>
-      <div class="field">
-        <label>Descripció</label>
-        <textarea name="description" placeholder="Descriu breument el teu comerç...">{{form.get('description','')}}</textarea>
-      </div>
-      <div class="field">
-        <label>Logo o foto del comerç</label>
-        <div class="upload-zone">
-          <input type="file" name="logo" accept="image/*" id="logoInput">
-          <div style="font-size:32px;margin-bottom:8px">🖼️</div>
-          <div style="font-size:14px;color:var(--muted)">Fes clic per pujar una imatge</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG, WebP</div>
-          <div id="logoName" style="margin-top:8px;font-size:13px;color:var(--green)"></div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Contacte i ubicació -->
-    <div class="form-card">
-      <div class="form-section-title">📍 Contacte i ubicació</div>
+      <!-- Category selector -->
       <div class="field">
-        <label>Adreça</label>
-        <input type="text" name="location" value="{{form.get('location','')}}" placeholder="Ex: Carrer Major 15, Andorra la Vella">
+        <label>Tipus de negoci *</label>
+        <div class="cat-grid" id="catGrid">
+          {% for cat in business_categories %}
+          <button type="button" class="cat-btn {% if form.get('category')==cat %}selected{% endif %}"
+                  data-cat="{{cat}}" onclick="selectCat('{{cat}}')">{{cat}}</button>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="category" id="categoryInput" value="{{form.get('category','')}}" required>
+        <div class="hint">Selecciona la categoria principal del teu negoci</div>
       </div>
-      <div class="row2">
+
+      <!-- Tags (subtypes) -->
+      <!-- Pricing info -->
+      <div id="pricingBox" style="display:none;background:rgba(232,197,71,.06);border:1px solid rgba(232,197,71,.15);border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px">
+        <div style="font-size:13px;color:var(--text);margin-bottom:4px">💰 El teu pla: <strong id="pricingPlan" style="color:var(--accent)"></strong></div>
+        <div style="font-size:12px;color:var(--muted)" id="pricingDetail"></div>
+        <div style="font-size:12px;color:var(--green);margin-top:4px">✅ 15 dies de prova gratuïts per començar</div>
+      </div>
+
+      <div class="tags-wrap" id="tagsWrap">
+        <div class="tags-title">Etiquetes — marca totes les que apliquen al teu negoci</div>
+        <div class="tags-grid" id="tagsGrid"></div>
+        <div class="hint" style="margin-top:8px">Per exemple: un bar amb cuina pot marcar "Bar" i "Restaurant"</div>
+      </div>
+
+      <div class="row2" style="margin-top:4px">
         <div class="field">
           <label>Telèfon</label>
-          <input type="tel" name="phone" value="{{form.get('phone','')}}" placeholder="+376 800 000">
+          <input type="tel" name="phone" placeholder="+376 800 000" value="{{form.get('phone','')}}">
         </div>
         <div class="field">
-          <label>Email de contacte</label>
-          <input type="email" name="email" value="{{form.get('email','')}}" placeholder="hola@elmeucomerc.ad">
-          <div class="hint">Per rebre avisos de subscripció</div>
+          <label>Correu electrònic *</label>
+          <input type="email" name="email" required placeholder="el-teu@email.com" value="{{form.get('email','')}}">
         </div>
       </div>
       <div class="field">
-        <label>Link de Google Maps</label>
-        <input type="url" name="maps_url" value="{{form.get('maps_url','')}}" placeholder="https://maps.google.com/...">
-        <div class="hint">Copia el link des de Google Maps per mostrar-lo als clients</div>
+        <label>Adreça</label>
+        <input type="text" name="location" placeholder="Ex: Carrer Major 5, Andorra la Vella" value="{{form.get('location','')}}">
+      </div>
+      <div class="field">
+        <label>Enllaç Google Maps</label>
+        <input type="url" name="maps_url" placeholder="https://maps.google.com/..." value="{{form.get('maps_url','')}}">
+      </div>
+      <div class="field">
+        <label>Descripció</label>
+        <textarea name="description" placeholder="Descriu el teu negoci en unes poques frases...">{{form.get('description','')}}</textarea>
+      </div>
+      <div class="field">
+        <label>Logo o foto del negoci</label>
+        <div class="upload-zone">
+          <input type="file" name="logo" accept="image/*" id="logoInput">
+          <div style="font-size:28px;margin-bottom:6px">🖼️</div>
+          <div style="font-size:13px;color:var(--muted)">Fes clic o arrossega una imatge</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG, PNG, WebP — Recomanat: 200x200px</div>
+          <div id="logo-name" style="margin-top:8px;font-size:12px;color:var(--green)"></div>
+        </div>
       </div>
     </div>
 
     <!-- Horaris -->
     <div class="form-card">
       <div class="form-section-title">🕐 Horaris</div>
+      <div class="hint" style="margin-bottom:14px">Ex: 9:00-21:00 · Escriu "Tancat" si no obres aquest dia</div>
+      {% set days = [('h_mon','Dilluns'),('h_tue','Dimarts'),('h_wed','Dimecres'),('h_thu','Dijous'),('h_fri','Divendres'),('h_sat','Dissabte'),('h_sun','Diumenge')] %}
+      {% for key, label in days %}
       <div class="hours-grid">
-        {% set days = [('h_mon','Dilluns'),('h_tue','Dimarts'),('h_wed','Dimecres'),('h_thu','Dijous'),('h_fri','Divendres'),('h_sat','Dissabte'),('h_sun','Diumenge')] %}
-        {% for fname, label in days %}
         <div class="hours-day">{{label}}</div>
-        <input type="text" name="{{fname}}" class="hours-input" placeholder="9:00-21:00 o Tancat" value="{{form.get(fname,'')}}">
-        {% endfor %}
+        <input type="text" name="{{key}}" placeholder="9:00-20:00" value="{{form.get(key,'')}}">
       </div>
+      {% endfor %}
     </div>
 
     <!-- Compte -->
     <div class="form-card">
       <div class="form-section-title">🔐 Dades d'accés</div>
-      <div class="field">
-        <label>Nom d'usuari *</label>
-        <input type="text" name="username" value="{{form.get('username','')}}" placeholder="elsmeucomerc" required autocomplete="username">
-        <div class="hint">Només lletres minúscules i números, sense espais</div>
-      </div>
       <div class="row2">
         <div class="field">
-          <label>Contrasenya *</label>
-          <input type="password" name="password" placeholder="Mínim 6 caràcters" required minlength="6" autocomplete="new-password">
+          <label>Nom d'usuari *</label>
+          <input type="text" name="username" required placeholder="nomdusuari" value="{{form.get('username','')}}" autocomplete="off">
+          <div class="hint">Sense espais ni accents</div>
         </div>
         <div class="field">
-          <label>Repeteix la contrasenya *</label>
-          <input type="password" name="password2" placeholder="Repeteix..." required autocomplete="new-password">
+          <label>Contrasenya *</label>
+          <input type="password" name="password" required placeholder="mínim 6 caràcters" autocomplete="new-password">
         </div>
+      </div>
+      <div class="field">
+        <label>Repeteix la contrasenya *</label>
+        <input type="password" name="password2" required placeholder="repeteix la contrasenya" autocomplete="new-password">
       </div>
     </div>
 
-    <button type="submit" class="submit-btn">Crear compte i començar gratis →</button>
-    <div class="login-link">Ja tens compte? <a href="/login">Inicia sessió</a></div>
+    <button type="submit" class="submit-btn">Crear compte i començar →</button>
   </form>
+  <div class="login-link">Ja tens compte? <a href="/login">Inicia sessió</a></div>
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
 const CATS = {{ business_categories | tojson }};
-function updateTags() {
-  const cat = document.getElementById('mainCatSelect').value;
-  const field = document.getElementById('tagsField');
-  const grid  = document.getElementById('tagsGrid');
-  if (!cat || !CATS[cat]) { field.style.display='none'; grid.innerHTML=''; return; }
-  field.style.display = '';
-  grid.innerHTML = CATS[cat].map(t => `
-    <label style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:50px;padding:6px 12px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s">
-      <input type="checkbox" name="tags" value="${t}" style="accent-color:var(--accent)">
+
+function selectCat(cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`[data-cat="${cat}"]`).classList.add('selected');
+  document.getElementById('categoryInput').value = cat;
+  showPricing(cat);
+  renderTags(cat);
+}
+
+const PRICING = {
+  'Supermercat': {intro: 49, normal: 99, months: 3},
+  'default':     {intro: 25, normal: 49, months: 1}
+};
+
+function getPricing(cat) {
+  return cat === 'Supermercat' ? PRICING['Supermercat'] : PRICING['default'];
+}
+
+function showPricing(cat) {
+  const box = document.getElementById('pricingBox');
+  const plan = document.getElementById('pricingPlan');
+  const detail = document.getElementById('pricingDetail');
+  const p = getPricing(cat);
+  box.style.display = '';
+  plan.textContent = cat;
+  detail.textContent = `${p.intro}€/mes els primers ${p.months} mes${p.months>1?'os':''}, després ${p.normal}€/mes · +12€/mes per sucursal extra`;
+}
+
+function renderTags(cat) {
+  const wrap = document.getElementById('tagsWrap');
+  const grid = document.getElementById('tagsGrid');
+  const subs = CATS[cat] || [];
+  if (!subs.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  grid.innerHTML = subs.map(t => `
+    <label class="tag-label" id="tag-${t.replace(/\s/g,'_')}">
+      <input type="checkbox" name="tags" value="${t}" onchange="updateTagStyle(this)">
       ${t}
     </label>`).join('');
 }
-// restore on page load if form has category
-window.addEventListener('load', updateTags);
 
-document.getElementById('logoInput').addEventListener('change',function(){
-  const n=this.files[0]?.name||'';
-  document.getElementById('logoName').textContent=n?'✅ '+n:'';
+function updateTagStyle(input) {
+  input.closest('.tag-label').classList.toggle('checked', input.checked);
+}
+
+// Restore on page load if form has category
+const savedCat = document.getElementById('categoryInput').value;
+if (savedCat) { selectCat(savedCat); }
+
+document.getElementById('logoInput').addEventListener('change', function(){
+  const n = this.files[0]?.name || '';
+  document.getElementById('logo-name').textContent = n ? '✅ ' + n : '';
 });
 </script>
 {% endblock %}
