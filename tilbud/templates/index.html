@@ -216,7 +216,7 @@ function openCatModal(filename, filetype, logo, bizName, title, bid) {
   } else {
     pdf.src = url; pdf.style.display = ''; img.style.display = 'none';
   }
-  modal.style.display = 'flex';
+  modal.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;flex-direction:column';
   document.body.style.overflow = 'hidden';
 }
 
