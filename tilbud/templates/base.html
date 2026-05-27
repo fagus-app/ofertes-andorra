@@ -10,12 +10,12 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:#0F0F0F;--bg2:#181818;--bg3:#222;--card:#1C1C1C;
-      --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);
-      --text:#F0EDE8;--muted:rgba(240,237,232,.45);
-      --accent:#E8C547;--red:#E85454;--green:#52C97A;
+      --bg:#F8F8F6;--bg2:#FFFFFF;--bg3:#F0EFEC;--card:#FFFFFF;
+      --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.14);
+      --text:#1A1A1A;--muted:rgba(26,26,26,.5);
+      --accent:#C8900A;--red:#D42B2B;--green:#2D6A2D;
       --radius:16px;--radius-sm:10px;
-      --shadow:0 4px 24px rgba(0,0,0,.4);--shadow-lg:0 8px 48px rgba(0,0,0,.6);
+      --shadow:0 2px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);
     }
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh}
@@ -41,8 +41,8 @@
     .dr-price{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--accent);white-space:nowrap}
     .container{max-width:1200px;margin:0 auto;padding:0 24px}
     .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;border:none;transition:all .2s}
-    .btn-accent{background:var(--accent);color:#0F0F0F}
-    .btn-accent:hover{background:#F0D870;transform:translateY(-1px)}
+    .btn-accent{background:#C8900A;color:#FFFFFF}
+    .btn-accent:hover{background:#A87008;transform:translateY(-1px)}
     .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2)}
     .btn-ghost:hover{color:var(--text);background:var(--bg3)}
     .btn-danger{background:rgba(232,84,84,.12);color:var(--red);border:1px solid rgba(232,84,84,.2)}
@@ -57,7 +57,7 @@
     footer a:hover{color:var(--accent)}
     ::-webkit-scrollbar{width:6px;height:6px}
     ::-webkit-scrollbar-track{background:transparent}
-    ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+    ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:3px}
     @media(max-width:640px){
       .hide-mobile{display:none!important}
       nav{padding:0 16px;gap:10px}
