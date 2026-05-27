@@ -435,7 +435,7 @@ async function loadCatalegs(offersCount) {
     return;
   }
   grid.innerHTML = data.map(f => `
-    <div class="cat-preview-card" onclick="openCatModal('${f.filename}','${f.filetype}','${f.blogo}','${f.bname}','${f.title}','${f.bid}')" style="cursor:pointer">
+    <div class="cat-preview-card" onclick="location='/negoci/${f.bid}?tab=cats'" style="cursor:pointer">
       <div class="cat-preview-cover">
         ${f.filetype === 'image'
           ? `<img src="/static/uploads/folletos/${f.filename}" alt="${f.title}" loading="lazy">`
