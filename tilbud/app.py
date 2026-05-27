@@ -109,7 +109,7 @@ BUSINESS_EMOJIS = {
     'Vineria':'🍷','Restaurant':'🍽️','Bar':'🍺','Cafeteria':'☕',
     'Fleca i Cafeteria':'🥐','Gelateria':'🍦','Xocolateria':'🍫',
     'Farmàcia':'💊','Botiga de Suplements':'💪',
-    'Botiga de Esports':'⚽','Electrodomèstics':'📺',
+    'Botiga de Esports':'🎿','Electrodomèstics':'📺',
     'Moda i Roba':'👗','Calçat':'👟','Esports':'⚽',
     'Electrodomèstics i Tecnologia':'📺','Joieria i Rellotgeria':'💍',
     'Perfumeria i Cosmètica':'💄','Llibreria i Papereria':'📚',
