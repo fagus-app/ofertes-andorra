@@ -3,10 +3,10 @@
 {% block head %}
 <style>
 .hero{padding:52px 20px 40px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(200,144,10,.08) 0%,transparent 70%);pointer-events:none}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#C8900A;background:rgba(200,144,10,.08);border:1px solid rgba(200,144,10,.2);border-radius:50px;padding:5px 14px;margin-bottom:20px}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(166,112,0,.08) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#A67000;background:rgba(166,112,0,.08);border:1px solid rgba(166,112,0,.2);border-radius:50px;padding:5px 14px;margin-bottom:20px}
 .hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,58px);line-height:1.06;letter-spacing:-1.5px;margin-bottom:12px}
-.hero h1 em{font-style:normal;color:#C8900A}
+.hero h1 em{font-style:normal;color:#A67000}
 .hero-sub{font-size:15px;color:var(--muted);max-width:380px;margin:0 auto 28px;font-weight:300}
 .hero-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px}
 .stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
@@ -18,7 +18,7 @@
 .filter-scroll::-webkit-scrollbar{display:none}
 .fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .fchip:hover{color:var(--text);background:var(--bg3)}
-.fchip.active{background:#C8900A;color:#FFFFFF;border-color:#C8900A}
+.fchip.active{background:#A67000;color:#FFFFFF;border-color:#A67000}
 .fchip.main-active{background:var(--bg3);color:var(--text);border-color:var(--border2)}
 .subtype-row{border-bottom:1px solid var(--border);background:var(--bg2);overflow:hidden;max-height:0;transition:max-height 0.25s ease}
 .subtype-row.open{max-height:80px}
@@ -27,9 +27,9 @@
 .feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .feat-scroll::-webkit-scrollbar{display:none}
 .feat-card{flex:0 0 210px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
-.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,144,10,.04) 0%,transparent 60%);pointer-events:none}
-.feat-card:hover{transform:translateY(-3px);border-color:rgba(200,144,10,.3);box-shadow:var(--shadow)}
-.feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:#C8900A;color:#FFFFFF;padding:2px 7px;border-radius:50px}
+.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(166,112,0,.04) 0%,transparent 60%);pointer-events:none}
+.feat-card:hover{transform:translateY(-3px);border-color:rgba(166,112,0,.3);box-shadow:var(--shadow)}
+.feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:#A67000;color:#FFFFFF;padding:2px 7px;border-radius:50px}
 .biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;gap:12px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
 .biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,#C8900A);opacity:0;transition:opacity .2s}
@@ -390,13 +390,13 @@ function renderOffers(allOffers) {
       ${tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tags.join('')}</div>` : ''}
       <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${o.name}</div>
       <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#C8900A">${o.offer_price.toFixed(2)}€</span>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#A67000">${o.offer_price.toFixed(2)}€</span>
         <span style="font-size:11px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
         <span class="discount">−${d}%</span>
       </div>
       <div style="font-size:10px;color:var(--muted)">${o.unit}</div>
       <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
-        <span>Fins el <strong style="color:#C8900A">${o.valid_until}</strong></span>
+        <span>Fins el <strong style="color:#A67000">${o.valid_until}</strong></span>
         <span>${o.blogo} ${o.bname}</span>
       </div>
     </div>`;
