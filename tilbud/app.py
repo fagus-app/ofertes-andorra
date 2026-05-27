@@ -31,16 +31,16 @@ BRANCH_PRICE    = 12.0  # euros per extra branch per month
 # Pricing tiers
 SUPERMARKET_TYPES = {'Supermercat'}
 PRICE_INTRO = {
-    'Supermercat': 49.0,
-    'default':     25.0,
+    'Supermercat': 60.0,
+    'default':     30.0,
 }
 PRICE_NORMAL = {
-    'Supermercat': 99.0,
-    'default':     49.0,
+    'Supermercat': 120.0,
+    'default':     60.0,
 }
 INTRO_MONTHS = {
-    'Supermercat': 3,
-    'default':     1,
+    'Supermercat': 2,
+    'default':     2,
 }
 
 def get_pricing(category):
