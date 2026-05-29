@@ -31,12 +31,12 @@ BRANCH_PRICE    = 12.0  # euros per extra branch per month
 # Pricing tiers
 SUPERMARKET_TYPES = {'Supermercat'}
 PRICE_INTRO = {
-    'Supermercat': 60.0,
-    'default':     30.0,
+    'Supermercat': 70.0,
+    'default':     35.0,
 }
 PRICE_NORMAL = {
-    'Supermercat': 120.0,
-    'default':     60.0,
+    'Supermercat': 140.0,
+    'default':     70.0,
 }
 INTRO_MONTHS = {
     'Supermercat': 2,
@@ -265,6 +265,14 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("ALTER TABLE businesses ADD COLUMN website TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE businesses ADD COLUMN shop_url TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE businesses ADD COLUMN delivery_url TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE businesses ADD COLUMN instagram TEXT DEFAULT ''")
+        except Exception: pass
         try: db.execute("CREATE TABLE IF NOT EXISTS custom_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT NOT NULL, tag TEXT NOT NULL UNIQUE, created TEXT DEFAULT (datetime('now')))")
         except Exception: pass
         try: db.execute("CREATE TABLE IF NOT EXISTS business_tags (id INTEGER PRIMARY KEY AUTOINCREMENT, business_id INTEGER NOT NULL, tag TEXT NOT NULL, FOREIGN KEY (business_id) REFERENCES businesses(id))")
