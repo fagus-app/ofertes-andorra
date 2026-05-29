@@ -94,6 +94,14 @@
           {% if b.maps_url %}<div class="biz-meta-item"><a href="{{b.maps_url}}" target="_blank">🗺️ Mapa</a></div>{% endif %}
           {% if has_hours %}<div class="biz-meta-item"><a href="javascript:void(0)" onclick="openHours()">🕐 Horaris</a></div>{% endif %}
         </div>
+        {% if b.website or b.shop_url or b.delivery_url or b.instagram %}
+        <div class="biz-meta-row" style="margin-top:8px">
+          {% if b.website %}<div class="biz-meta-item"><a href="{{b.website}}" target="_blank">🌐 Web oficial</a></div>{% endif %}
+          {% if b.shop_url %}<div class="biz-meta-item"><a href="{{b.shop_url}}" target="_blank">🛒 Botiga online</a></div>{% endif %}
+          {% if b.delivery_url %}<div class="biz-meta-item"><a href="{{b.delivery_url}}" target="_blank">🛵 Delivery</a></div>{% endif %}
+          {% if b.instagram %}<div class="biz-meta-item"><a href="{{b.instagram}}" target="_blank">📸 Instagram</a></div>{% endif %}
+        </div>
+        {% endif %}
         {% if b.description %}<div class="biz-desc">{{b.description}}</div>{% endif %}
       </div>
     </div>
