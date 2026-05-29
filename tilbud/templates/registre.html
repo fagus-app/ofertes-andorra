@@ -192,7 +192,10 @@ const PRICING = {
 };
 
 function getPricing(cat) {
-  return cat === 'Supermercat' ? PRICING['Supermercat'] : PRICING['default'];
+  // Check if Supermercat tag is selected (either as main cat or as subtag)
+  const supSelected = cat === 'Supermercat' ||
+    document.querySelector('input[name="tags"][value="Supermercat"]:checked') !== null;
+  return supSelected ? PRICING['Supermercat'] : PRICING['default'];
 }
 
 function showPricing(cat) {
@@ -228,6 +231,9 @@ function toggleTag(label) {
   input.checked = !input.checked;
   label.classList.toggle('checked', input.checked);
   label.querySelector('.tag-check').textContent = input.checked ? '☑' : '☐';
+  // Update pricing if Supermercat tag toggled
+  const cat = document.getElementById('categoryInput').value;
+  if (cat) showPricing(cat);
 }
 
 function showCustomInput(cat) {
