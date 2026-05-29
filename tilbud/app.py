@@ -42,6 +42,12 @@ INTRO_MONTHS = {
     'Supermercat': 2,
     'default':     2,
 }
+FEATURED_INCLUDED = {
+    'Supermercat': 3,
+    'default':     2,
+}
+FEATURED_EXTRA_PACK = 3    # extra featured per pack
+FEATURED_EXTRA_PRICE = 10.0  # EUR/mes per pack
 
 def get_pricing(category):
     is_premium = (category == 'Supermercat')
@@ -265,6 +271,8 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("ALTER TABLE businesses ADD COLUMN featured_packs INTEGER DEFAULT 0")
+        except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN website TEXT DEFAULT ''")
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN shop_url TEXT DEFAULT ''")
@@ -420,7 +428,12 @@ def admin_required(f):
         return f(*a,**kw)
     return dec
 
-def get_biz_tags(business_id):
+def get_max_featured(b):
+    base = FEATURED_INCLUDED.get(b['category'], FEATURED_INCLUDED['default'])
+    extra = (b['featured_packs'] or 0) * FEATURED_EXTRA_PACK
+    return base + extra
+
+
     rows = get_db().execute("SELECT tag FROM business_tags WHERE business_id=?", (business_id,)).fetchall()
     return [r['tag'] for r in rows]
 
@@ -673,11 +686,14 @@ def panel():
     trial_price, normal_price, trial_months = get_pricing(b['category'])
     monthly_total = normal_price + (branch_count * BRANCH_PRICE)
     dl = days_left(b); can_pub = can_publish(b)
+    max_featured = get_max_featured(b)
+    current_featured = sum(1 for o in ofertes if o['featured'])
     return render_template('panel.html', b=b, ofertes=ofertes, folletos=folletos,
                            days_left=dl, can_pub=can_pub,
                            total_views=total_views, views_7d=views_7d, total_o_views=total_o_views,
                            branches=branches, branch_count=branch_count, monthly_total=monthly_total,
-                           trial_price=trial_price, normal_price=normal_price)
+                           trial_price=trial_price, normal_price=normal_price,
+                           max_featured=max_featured, current_featured=current_featured)
 
 @app.route('/panel/perfil', methods=['GET','POST'])
 @login_required
