@@ -206,32 +206,66 @@ function showPricing(cat) {
 }
 
 function renderTags(cat) {
-  // Show custom type input for Altres
-  const customWrap = document.getElementById('customTypeWrap');
-  if (cat === 'Altres') {
-    customWrap.style.display = 'block';
-  } else {
-    customWrap.style.display = 'none';
-    document.getElementById('customTypeInput').value = '';
-  }
   const wrap = document.getElementById('tagsWrap');
   const grid = document.getElementById('tagsGrid');
+  if (!wrap || !grid) return;
   const subs = CATS[cat] || [];
   if (!subs.length) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
-  grid.innerHTML = subs.map(t => `
-    <label class="tag-label" id="tag-${t.replace(/\s/g,'_')}" onclick="this.classList.toggle('checked')">
-      <input type="checkbox" name="tags" value="${t}" onchange="updateTagStyle(this)">
+  // Add "Altra opcio" button at end
+  const tagHTML = subs.map(t => `
+    <label class="tag-label" onclick="toggleTag(this)">
+      <input type="checkbox" name="tags" value="${t}">
       <span class="tag-check">☐</span>
       ${t}
     </label>`).join('');
+  grid.innerHTML = tagHTML + `<button type="button" class="tag-label" style="border-style:dashed" onclick="showCustomInput('${cat}')"><span>＋</span> Altra opció...</button>`;
 }
 
-function updateTagStyle(input) {
-  const label = input.closest('.tag-label');
+function toggleTag(label) {
+  const input = label.querySelector('input');
+  if (!input) return;
+  input.checked = !input.checked;
   label.classList.toggle('checked', input.checked);
   label.querySelector('.tag-check').textContent = input.checked ? '☑' : '☐';
 }
+
+function showCustomInput(cat) {
+  const grid = document.getElementById('tagsGrid');
+  const existing = document.getElementById('customInput_' + cat.replace(/\s/g,'_'));
+  if (existing) { existing.focus(); return; }
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;width:100%;margin-top:4px';
+  div.innerHTML = `
+    <input type="text" id="customInput_${cat.replace(/\s/g,'_')}" name="custom_tag_${cat}"
+      placeholder="Escriu el tipus..." 
+      style="flex:1;background:var(--bg3);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomTag('${cat}',this.value)}">
+    <button type="button" onclick="addCustomTag('${cat}',document.getElementById('customInput_${cat.replace(/\s/g,'_')}').value)"
+      style="padding:8px 14px;background:var(--accent);color:#FFFFFF;border:none;border-radius:50px;font-size:13px;cursor:pointer;font-weight:500">Afegir</button>`;
+  grid.appendChild(div);
+  div.querySelector('input').focus();
+}
+
+async function addCustomTag(cat, value) {
+  value = value.trim();
+  if (!value) return;
+  await fetch('/api/tags/add', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({category:cat, tag:value})
+  });
+  renderTags(cat);
+  setTimeout(() => {
+    document.querySelectorAll('#tagsGrid .tag-label').forEach(l => {
+      if (l.textContent.trim().startsWith(value)) {
+        const inp = l.querySelector('input');
+        if (inp) { inp.checked=true; l.classList.add('checked'); l.querySelector('.tag-check').textContent='☑'; }
+      }
+    });
+  }, 50);
+}
+
+
 
 // Restore on page load if form has category
 const savedCat = document.getElementById('categoryInput').value;
