@@ -117,30 +117,15 @@
 
 <div class="container" style="padding-bottom:60px">
 
-  <!-- Dynamic tabs based on what the business has -->
   {% set has_ofertes = ofertes|length > 0 %}
   {% set has_cats = catalogues|length > 0 %}
 
-  {% if has_ofertes and has_cats %}
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('ofertes',this)">🏷️ Ofertes ({{ofertes|length}})</button>
-    <button class="tab" onclick="showTab('cats',this)">📋 Catàlegs ({{catalogues|length}})</button>
-  </div>
-  {% elif has_cats %}
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('cats',this)">📋 Catàlegs ({{catalogues|length}})</button>
-  </div>
-  {% elif has_ofertes %}
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('ofertes',this)">🏷️ Ofertes ({{ofertes|length}})</button>
-  </div>
-  {% endif %}
-
   <!-- Ofertes -->
   {% if has_ofertes %}
-  <div id="tab-ofertes">
+  <div style="margin-bottom:32px">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:14px">🏷️ Ofertes</div>
     {% if categories %}
-    <div class="cat-tabs" id="catTabs">
+    <div class="cat-tabs" id="catTabs" style="margin-bottom:14px">
       <button class="cat-chip active" data-cat="">Totes</button>
       {% for cat in categories %}<button class="cat-chip" data-cat="{{cat}}">{{cat}}</button>{% endfor %}
     </div>
@@ -169,7 +154,8 @@
 
   <!-- Catàlegs -->
   {% if has_cats %}
-  <div id="tab-cats" {% if has_ofertes %}style="display:none"{% endif %}>
+  <div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:14px">📋 Catàlegs</div>
     <div class="cat-grid">
       {% for f in catalogues %}
       <div class="cat-card" onclick="openCatModal('{{f.filename}}','{{f.filetype}}','{{b.logo_emoji}}','{{b.name}}','{{f.title}}')" style="cursor:pointer">
@@ -185,7 +171,7 @@
           <div class="cat-overlay"></div>
           <div class="cat-info">
             <div style="font-size:11px;font-weight:600;color:#fff;margin-bottom:3px">{{f.title}}</div>
-            <div style="font-size:10px;background:rgba(232,197,71,.2);border:1px solid rgba(232,197,71,.3);color:var(--accent);border-radius:50px;padding:2px 8px;display:inline-block">Fins {{f.valid_until}}</div>
+            <div style="font-size:10px;background:rgba(166,112,0,.2);border:1px solid rgba(166,112,0,.3);color:var(--accent);border-radius:50px;padding:2px 8px;display:inline-block">Fins {{f.valid_until}}</div>
           </div>
         </div>
       </div>
