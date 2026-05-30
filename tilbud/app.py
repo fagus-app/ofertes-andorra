@@ -808,7 +808,7 @@ def nova_oferta():
             if allowed_file(img.filename): image = save_file(img,'ofertes')
         orig  = float(f['original_price']) if f.get('original_price') else 0.0
         offer = float(f['offer_price'])    if f.get('offer_price')    else 0.0
-        branch_ids = ','.join(request.form.getlist('branch_ids')) if not f.get('branch_all') else ''
+        branch_ids = ','.join(request.form.getlist('branch_ids'))
         db.execute("""INSERT INTO ofertes (business_id,name,emoji,description,original_price,offer_price,unit,category,image,valid_from,valid_until,featured,branch_ids)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""", (
             b['id'],f['name'],f.get('emoji','🛒'),f.get('description',''),
@@ -832,7 +832,7 @@ def editar_oferta(oid):
             if allowed_file(img.filename): image = save_file(img,'ofertes')
         orig  = float(f['original_price']) if f.get('original_price') else 0.0
         offer = float(f['offer_price'])    if f.get('offer_price')    else 0.0
-        branch_ids = ','.join(request.form.getlist('branch_ids')) if not f.get('branch_all') else ''
+        branch_ids = ','.join(request.form.getlist('branch_ids'))
         db.execute("""UPDATE ofertes SET name=?,emoji=?,description=?,original_price=?,offer_price=?,
             unit=?,category=?,image=?,valid_from=?,valid_until=?,featured=?,branch_ids=? WHERE id=? AND business_id=?""", (
             f['name'],f.get('emoji','🛒'),f.get('description',''),
