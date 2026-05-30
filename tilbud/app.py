@@ -278,6 +278,8 @@ def init_db():
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN featured_packs INTEGER DEFAULT 0")
         except Exception: pass
+        try: db.execute("ALTER TABLE businesses ADD COLUMN cover_image TEXT DEFAULT ''")
+        except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN website TEXT DEFAULT ''")
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN shop_url TEXT DEFAULT ''")
