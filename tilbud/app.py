@@ -242,6 +242,15 @@ def init_db():
             location    TEXT DEFAULT '',
             maps_url    TEXT DEFAULT '',
             phone       TEXT DEFAULT '',
+            email       TEXT DEFAULT '',
+            description TEXT DEFAULT '',
+            logo_emoji  TEXT DEFAULT '🏪',
+            logo_image  TEXT DEFAULT '',
+            cover_image TEXT DEFAULT '',
+            website     TEXT DEFAULT '',
+            shop_url    TEXT DEFAULT '',
+            delivery_url TEXT DEFAULT '',
+            instagram   TEXT DEFAULT '',
             hours_mon   TEXT DEFAULT '',
             hours_tue   TEXT DEFAULT '',
             hours_wed   TEXT DEFAULT '',
@@ -274,9 +283,31 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("ALTER TABLE ofertes ADD COLUMN branch_ids TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE folletos ADD COLUMN branch_ids TEXT DEFAULT ''")
+        except Exception: pass
         try: db.execute("ALTER TABLE folletos ADD COLUMN featured INTEGER DEFAULT 0")
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN featured_packs INTEGER DEFAULT 0")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN email TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN description TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN logo_emoji TEXT DEFAULT '🏪'")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN logo_image TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN cover_image TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN website TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN shop_url TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN delivery_url TEXT DEFAULT ''")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN instagram TEXT DEFAULT ''")
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN cover_image TEXT DEFAULT ''")
         except Exception: pass
@@ -1019,3 +1050,70 @@ def admin_renovar(bid):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
+
+
+# ── Branch Panel Routes ────────────────────────────────────────────────────
+
+@app.route('/panel/sucursal/<int:sid>/panel')
+@login_required
+def branch_panel(sid):
+    b = get_biz()
+    db = get_db(); today = today_str()
+    branch = db.execute("SELECT * FROM branches WHERE id=? AND business_id=?", (sid, b['id'])).fetchone()
+    if not branch: return redirect(url_for('panel'))
+    ofertes  = db.execute("SELECT * FROM ofertes WHERE business_id=? AND valid_until>=? ORDER BY featured DESC, created DESC", (b['id'], today)).fetchall()
+    folletos = db.execute("SELECT * FROM folletos WHERE business_id=? AND valid_until>=? ORDER BY created DESC", (b['id'], today)).fetchall()
+    branches = db.execute("SELECT * FROM branches WHERE business_id=? ORDER BY created", (b['id'],)).fetchall()
+    max_credits  = get_max_credits(b)
+    used_credits = get_used_credits(b['id'])
+    can_pub = today <= b['subscription_end']
+    dl = max(0, (date.fromisoformat(b['subscription_end']) - date.today()).days)
+    return render_template('branch_panel.html', b=b, branch=branch, branches=branches,
+                           ofertes=ofertes, folletos=folletos, current_sid=sid,
+                           can_pub=can_pub, days_left=dl,
+                           max_credits=max_credits, used_credits=used_credits,
+                           offer_cost=OFFER_CREDIT_COST, cat_cost=CATALOGUE_CREDIT_COST)
+
+@app.route('/panel/sucursal/<int:sid>/perfil', methods=['GET','POST'])
+@login_required
+def branch_perfil(sid):
+    b  = get_biz()
+    db = get_db()
+    branch = db.execute("SELECT * FROM branches WHERE id=? AND business_id=?", (sid, b['id'])).fetchone()
+    if not branch: return redirect(url_for('panel'))
+    if request.method == 'POST':
+        f = request.form
+        logo_image  = branch['logo_image'] or ''
+        cover_image = branch['cover_image'] or ''
+        import time
+        logo_file  = request.files.get('logo')
+        cover_file = request.files.get('cover_image')
+        if logo_file and logo_file.filename:
+            ext = logo_file.filename.rsplit('.',1)[-1].lower()
+            if ext in ['jpg','jpeg','png','webp']:
+                fname = f"branch_{sid}_logo_{int(time.time())}.{ext}"
+                logo_file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'logos', fname))
+                logo_image = fname
+        if cover_file and cover_file.filename:
+            ext = cover_file.filename.rsplit('.',1)[-1].lower()
+            if ext in ['jpg','jpeg','png','webp']:
+                fname = f"branch_{sid}_cover_{int(time.time())}.{ext}"
+                cover_file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'logos', fname))
+                cover_image = fname
+        db.execute(
+            "UPDATE branches SET name=?,location=?,maps_url=?,phone=?,email=?,"
+            "description=?,logo_emoji=?,logo_image=?,cover_image=?,"
+            "website=?,shop_url=?,delivery_url=?,instagram=?,"
+            "hours_mon=?,hours_tue=?,hours_wed=?,hours_thu=?,"
+            "hours_fri=?,hours_sat=?,hours_sun=? WHERE id=?",
+            (f.get('name','Sucursal'), f.get('location',''), f.get('maps_url',''),
+             f.get('phone',''), f.get('email',''), f.get('description',''),
+             f.get('logo_emoji','🏪'), logo_image, cover_image,
+             f.get('website',''), f.get('shop_url',''), f.get('delivery_url',''), f.get('instagram',''),
+             f.get('h_mon',''), f.get('h_tue',''), f.get('h_wed',''),
+             f.get('h_thu',''), f.get('h_fri',''), f.get('h_sat',''), f.get('h_sun',''),
+             sid))
+        db.commit()
+        flash('Sucursal actualitzada!')
+        return redirect(url_for('branch_panel', sid=sid))
+    return render_template('branch_perfil.html', b=b, branch=branch)
