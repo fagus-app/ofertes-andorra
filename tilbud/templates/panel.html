@@ -34,6 +34,21 @@
 {% endblock %}
 {% block content %}
 <div class="panel-wrap">
+
+<!-- Branch selector tabs -->
+{% set all_branches = branches %}
+{% if all_branches %}
+<div style="background:#0F0F0F;border-bottom:1px solid rgba(255,255,255,.1);padding:0 20px;overflow-x:auto;white-space:nowrap;scrollbar-width:none">
+  <a href="/panel" style="display:inline-block;padding:12px 16px;font-size:13px;font-weight:500;color:rgba(255,255,255,.9);text-decoration:none;border-bottom:2px solid var(--accent);margin-right:4px">
+    🏠 Compte principal
+  </a>
+  {% for br in all_branches %}
+  <a href="/panel/sucursal/{{br.id}}/panel" style="display:inline-block;padding:12px 16px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);text-decoration:none;border-bottom:2px solid transparent;margin-right:4px;transition:all .2s">
+    🏪 {{br.name or 'Sucursal ' + loop.index|string}}
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
   {% with msgs=get_flashed_messages() %}{% if msgs %}
     {% for m in msgs %}<div class="flash">{{m}}</div>{% endfor %}
   {% endif %}{% endwith %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Editar {{branch.name}} — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.panel-wrap{max-width:760px;margin:0 auto;padding:28px 20px 80px}
+.form-section-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--accent);margin-bottom:16px;padding-bottom:8px;border-top:1px solid var(--border);padding-top:20px;margin-top:20px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:72px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.hours-grid{display:grid;grid-template-columns:100px 1fr;gap:8px;align-items:center;margin-bottom:6px}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.save-btn{width:100%;padding:14px;background:var(--accent);color:#FFFFFF;border:none;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}
+</style>
+{% endblock %}
+{% block content %}
+<div class="panel-wrap">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+    <a href="/panel/sucursal/{{branch.id}}/panel" style="color:var(--muted);text-decoration:none;font-size:13px">← Tornar</a>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--text)">Editar {{branch.name}}</div>
+  </div>
+
+  {% with msgs=get_flashed_messages() %}{% if msgs %}
+    {% for m in msgs %}<div class="flash">{{m}}</div>{% endfor %}
+  {% endif %}{% endwith %}
+
+  <form method="POST" enctype="multipart/form-data">
+
+    <div class="form-section-title" style="border-top:none;padding-top:0;margin-top:0">🏪 Informació de la sucursal</div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Nom de la sucursal</label>
+        <input type="text" name="name" value="{{branch.name or ''}}" placeholder="Ex: Sucursal Centre">
+      </div>
+      <div class="field">
+        <label>Telèfon</label>
+        <input type="tel" name="phone" value="{{branch.phone or ''}}" placeholder="+376 800 000">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Adreça</label>
+      <input type="text" name="location" value="{{branch.location or ''}}" placeholder="Carrer, número, localitat">
+    </div>
+
+    <div class="field">
+      <label>Enllaç Google Maps</label>
+      <input type="url" name="maps_url" value="{{branch.maps_url or ''}}" placeholder="https://maps.google.com/...">
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Email de contacte</label>
+        <input type="email" name="email" value="{{branch.email or ''}}" placeholder="sucursal@exemple.com">
+      </div>
+      <div class="field">
+        <label>Emoji logo</label>
+        <input type="text" name="logo_emoji" value="{{branch.logo_emoji or '🏪'}}" placeholder="🏪">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Descripció</label>
+      <textarea name="description" placeholder="Descriu aquesta sucursal...">{{branch.description or ''}}</textarea>
+    </div>
+
+    <div class="form-section-title">🖼️ Imatges</div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Logo</label>
+        {% if branch.logo_image %}
+        <img src="/static/uploads/logos/{{branch.logo_image}}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:block">
+        {% endif %}
+        <input type="file" name="logo" accept="image/*">
+      </div>
+      <div class="field">
+        <label>Foto de portada</label>
+        {% if branch.cover_image %}
+        <img src="/static/uploads/logos/{{branch.cover_image}}" style="width:100%;height:60px;object-fit:cover;border-radius:8px;margin-bottom:8px">
+        {% endif %}
+        <input type="file" name="cover_image" accept="image/*">
+        <div class="hint">Format panoràmic recomanat</div>
+      </div>
+    </div>
+
+    <div class="form-section-title">🔗 Links (opcional)</div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Pàgina web</label>
+        <input type="url" name="website" value="{{branch.website or ''}}" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label>Botiga online</label>
+        <input type="url" name="shop_url" value="{{branch.shop_url or ''}}" placeholder="https://...">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Delivery</label>
+        <input type="url" name="delivery_url" value="{{branch.delivery_url or ''}}" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label>Instagram</label>
+        <input type="url" name="instagram" value="{{branch.instagram or ''}}" placeholder="https://instagram.com/...">
+      </div>
+    </div>
+
+    <div class="form-section-title">🕐 Horaris</div>
+    <div class="hint" style="margin-bottom:12px">Ex: 9:00-21:00 · Escriu "Tancat" si no obres</div>
+    {% set days=[('h_mon','Dilluns'),('h_tue','Dimarts'),('h_wed','Dimecres'),('h_thu','Dijous'),('h_fri','Divendres'),('h_sat','Dissabte'),('h_sun','Diumenge')] %}
+    {% for key,label in days %}
+    <div class="hours-grid">
+      <div style="font-size:12px;color:var(--muted);font-weight:500">{{label}}</div>
+      <input type="text" name="{{key}}" value="{{branch['hours_'+key[2:]] or ''}}" placeholder="9:00-20:00">
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="save-btn">Guardar canvis</button>
+  </form>
+</div>
+{% endblock %}
