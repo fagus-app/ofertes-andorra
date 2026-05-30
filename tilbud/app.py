@@ -100,7 +100,6 @@ BUSINESS_CATEGORIES = {
         'Botiga de Esports',
         'Electrodomèstics i Tecnologia',
         'Joieria i Rellotgeria',
-        'Perfumeria i Cosmètica',
         'Llibreria i Papereria',
         'Altres Botigues',
     ],
@@ -419,7 +418,7 @@ def seed_demo(db):
         'Sucursal d\'Escaldes-Engordany del Mercat Central.'))
     db.execute("""INSERT INTO branches (business_id,name,parroquia,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
         VALUES (?,?,?,?,?,?,?,?,?,?)""",(
-        biz['mercat'], 'Sucursal Sant Julia', 'Sant Julia de Loria', 'Carrer Major 5, Sant Julia de Loria', '+376 800 002',
+        biz['mercat'], 'Sucursal Sant Julia', 'Sant Julià de Lòria', 'Carrer Major 5, Sant Julià de Lòria', '+376 800 002',
         '9:00-20:00', '9:00-20:00', '9:00-15:00', '🏪',
         'Sucursal de Sant Julia de Loria del Mercat Central.'))
 
