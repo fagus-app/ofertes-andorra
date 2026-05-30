@@ -77,7 +77,14 @@
 </div>
 {% endif %}
 
-<section class="biz-hero">
+{% if b.cover_image %}
+<div style="width:100%;height:200px;overflow:hidden;position:relative">
+  <img src="/static/uploads/logos/{{b.cover_image}}" alt="{{b.name}}" style="width:100%;height:100%;object-fit:cover">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.4) 100%)"></div>
+</div>
+{% endif %}
+
+<section class="biz-hero" {% if b.cover_image %}style="padding-top:16px"{% endif %}>
   <div class="container">
     <div class="breadcrumb"><a href="/">Inici</a> › <a href="/parroquia/{{b.parroquia}}">{{b.parroquia}}</a> › {{b.name}}</div>
     <div class="hero-row">
