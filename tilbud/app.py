@@ -863,15 +863,34 @@ def api_add_tag():
 
 @app.route('/api/catalegs')
 def api_catalegs():
-    today = today_str()
-    par = request.args.get('parroquia','')
+    today    = today_str()
+    par      = request.args.get('parroquia','')
+    biz_type = request.args.get('biz_type','')
+    main_cat = request.args.get('main_cat','')
     sql = """SELECT f.*, b.name as bname, b.logo_emoji as blogo, b.id as bid, b.parroquia as bparroquia
         FROM folletos f JOIN businesses b ON f.business_id=b.id
         WHERE b.active=1 AND b.subscription_end>=?
         AND f.valid_from<=? AND f.valid_until>=?"""
     p = [today,today,today]
     if par: sql += " AND b.parroquia=?"; p.append(par)
-    sql += " ORDER BY f.created DESC"
+    if biz_type:
+        biz_ids = [r[0] for r in get_db().execute(
+            "SELECT id FROM businesses WHERE category=? UNION SELECT business_id FROM business_tags WHERE tag=?",
+            (biz_type, biz_type)).fetchall()]
+        if not biz_ids: return jsonify([])
+        ph = ','.join('?'*len(biz_ids))
+        sql += f" AND b.id IN ({ph})"; p.extend(biz_ids)
+    elif main_cat:
+        subtypes = BUSINESS_CATEGORIES.get(main_cat, [])
+        if not subtypes: return jsonify([])
+        ph2 = ','.join('?'*len(subtypes))
+        biz_ids = [r[0] for r in get_db().execute(
+            f"SELECT id FROM businesses WHERE category IN ({ph2}) UNION SELECT business_id FROM business_tags WHERE tag IN ({ph2})",
+            subtypes + subtypes).fetchall()]
+        if not biz_ids: return jsonify([])
+        ph = ','.join('?'*len(biz_ids))
+        sql += f" AND b.id IN ({ph})"; p.extend(biz_ids)
+    sql += " ORDER BY f.featured DESC, f.created DESC"
     rows = get_db().execute(sql, p).fetchall()
     return jsonify([dict(r) for r in rows])
 
