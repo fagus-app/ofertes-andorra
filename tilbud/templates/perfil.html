@@ -51,6 +51,16 @@
         <label>Logo</label>
         {% if b.logo_image %}<div><img src="/static/uploads/logos/{{b.logo_image}}" class="current-logo"></div>{% endif %}
         <input type="file" name="logo" accept="image/*">
+      </div>
+      <div class="field">
+        <label>Foto de portada <span style="font-size:11px;font-weight:400;color:var(--muted)">(opcional — imatge panoràmica del local)</span></label>
+        {% if b.cover_image %}
+        <div style="margin-bottom:8px;border-radius:var(--radius-sm);overflow:hidden">
+          <img src="/static/uploads/logos/{{b.cover_image}}" style="width:100%;height:100px;object-fit:cover;border-radius:var(--radius-sm)">
+        </div>
+        {% endif %}
+        <input type="file" name="cover_image" accept="image/*">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Recomanat: format panoràmic 1200×400px</div>
         <div class="hint">Deixa buit per mantenir l'actual</div>
       </div>
     </div>
