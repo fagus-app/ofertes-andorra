@@ -239,6 +239,7 @@ def init_db():
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             business_id INTEGER NOT NULL,
             name        TEXT NOT NULL DEFAULT 'Sucursal',
+            parroquia   TEXT DEFAULT '',
             location    TEXT DEFAULT '',
             maps_url    TEXT DEFAULT '',
             phone       TEXT DEFAULT '',
@@ -290,6 +291,8 @@ def init_db():
         try: db.execute("ALTER TABLE folletos ADD COLUMN featured INTEGER DEFAULT 0")
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN featured_packs INTEGER DEFAULT 0")
+        except Exception: pass
+        try: db.execute("ALTER TABLE branches ADD COLUMN parroquia TEXT DEFAULT ''")
         except Exception: pass
         try: db.execute("ALTER TABLE branches ADD COLUMN email TEXT DEFAULT ''")
         except Exception: pass
@@ -409,14 +412,14 @@ def seed_demo(db):
         "sample_folleto2.jpg", "image", today, d(5)))
 
     # Sample branches for mercat
-    db.execute("""INSERT INTO branches (business_id,name,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
-        VALUES (?,?,?,?,?,?,?,?,?)""",(
-        biz['mercat'], 'Sucursal Escaldes', 'Av. Carlemany 30, Escaldes-Engordany', '+376 800 001',
+    db.execute("""INSERT INTO branches (business_id,name,parroquia,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
+        VALUES (?,?,?,?,?,?,?,?,?,?)""",(
+        biz['mercat'], 'Sucursal Escaldes', 'Escaldes-Engordany', 'Av. Carlemany 30, Escaldes-Engordany', '+376 800 001',
         '9:00-21:00', '9:00-21:00', '9:00-20:00', '🏪',
         'Sucursal d\'Escaldes-Engordany del Mercat Central.'))
-    db.execute("""INSERT INTO branches (business_id,name,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
-        VALUES (?,?,?,?,?,?,?,?,?)""",(
-        biz['mercat'], 'Sucursal Sant Julia', 'Carrer Major 5, Sant Julia de Loria', '+376 800 002',
+    db.execute("""INSERT INTO branches (business_id,name,parroquia,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
+        VALUES (?,?,?,?,?,?,?,?,?,?)""",(
+        biz['mercat'], 'Sucursal Sant Julia', 'Sant Julia de Loria', 'Carrer Major 5, Sant Julia de Loria', '+376 800 002',
         '9:00-20:00', '9:00-20:00', '9:00-15:00', '🏪',
         'Sucursal de Sant Julia de Loria del Mercat Central.'))
 
@@ -616,6 +619,7 @@ def api_ofertes():
         sql += f" AND b.id IN ({ph})"; p.extend(biz_ids)
     sql += " ORDER BY o.featured DESC, o.created DESC"
     rows = get_db().execute(sql, p).fetchall()
+    db2  = get_db()
     result = []
     for r in rows:
         d = dict(r)
@@ -623,6 +627,15 @@ def api_ofertes():
         d['is_today']  = r['valid_from']  <= today <= r['valid_until']
         d['is_ending'] = r['valid_until'] <= (date.today()+timedelta(days=2)).isoformat()
         d['is_week']   = r['valid_until'] <= (date.today()+timedelta(days=7)).isoformat()
+        # If offer has branch_ids, find first branch and use its parroquia + link
+        branch_ids = (r['branch_ids'] or '').strip()
+        if branch_ids:
+            first_bid = branch_ids.split(',')[0].strip()
+            if first_bid:
+                br = db2.execute("SELECT * FROM branches WHERE id=?", (first_bid,)).fetchone()
+                if br:
+                    if br['parroquia']: d['bparroquia'] = br['parroquia']
+                    d['branch_id'] = int(first_bid)
         result.append(d)
     return jsonify(result)
 
@@ -1065,6 +1078,32 @@ def admin_renovar(bid):
     db.execute("UPDATE businesses SET subscription_end=?,subscription_status='active',warning_sent=0 WHERE id=?",(new_end,bid))
     db.commit(); flash(f'Subscripció renovada fins {new_end}.'); return redirect(url_for('admin_panel'))
 
+# ── Public Branch Page ────────────────────────────────────────────────────
+
+@app.route('/sucursal/<int:sid>')
+def sucursal_page(sid):
+    db = get_db(); today = today_str()
+    br = db.execute("SELECT * FROM branches WHERE id=?", (sid,)).fetchone()
+    if not br: return redirect(url_for('index'))
+    b  = db.execute("SELECT * FROM businesses WHERE id=? AND active=1", (br['business_id'],)).fetchone()
+    if not b: return redirect(url_for('index'))
+    sub_ok = today <= b['subscription_end']
+    # Get offers assigned to this branch or all branches
+    if sub_ok:
+        all_ofertes = db.execute(
+            "SELECT * FROM ofertes WHERE business_id=? AND valid_from<=? AND valid_until>=? ORDER BY featured DESC, created DESC",
+            (b['id'], today, today)).fetchall()
+        ofertes = [o for o in all_ofertes if not o['branch_ids'] or str(sid) in (o['branch_ids'] or '').split(',')]
+        catalogues = db.execute(
+            "SELECT * FROM folletos WHERE business_id=? AND valid_from<=? AND valid_until>=? ORDER BY created DESC",
+            (b['id'], today, today)).fetchall()
+    else:
+        ofertes = []; catalogues = []
+    categories = sorted(set(o['category'] for o in ofertes if o['category']))
+    all_biz = db.execute("SELECT * FROM businesses WHERE active=1 AND subscription_end>=? ORDER BY name LIMIT 10", (today,)).fetchall()
+    return render_template('sucursal.html', b=b, branch=br, ofertes=ofertes, catalogues=catalogues,
+                           categories=categories, all_businesses=all_biz, sub_active=sub_ok)
+
 # ── Branch Panel Routes ────────────────────────────────────────────────────
 
 @app.route('/panel/sucursal/<int:sid>/panel')
@@ -1114,12 +1153,12 @@ def branch_perfil(sid):
                 cover_file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'logos', fname))
                 cover_image = fname
         db.execute(
-            "UPDATE branches SET name=?,location=?,maps_url=?,phone=?,email=?,"
+            "UPDATE branches SET name=?,parroquia=?,location=?,maps_url=?,phone=?,email=?,"
             "description=?,logo_emoji=?,logo_image=?,cover_image=?,"
             "website=?,shop_url=?,delivery_url=?,instagram=?,"
             "hours_mon=?,hours_tue=?,hours_wed=?,hours_thu=?,"
             "hours_fri=?,hours_sat=?,hours_sun=? WHERE id=?",
-            (f.get('name','Sucursal'), f.get('location',''), f.get('maps_url',''),
+            (f.get('name','Sucursal'), f.get('parroquia',''), f.get('location',''), f.get('maps_url',''),
              f.get('phone',''), f.get('email',''), f.get('description',''),
              f.get('logo_emoji','🏪'), logo_image, cover_image,
              f.get('website',''), f.get('shop_url',''), f.get('delivery_url',''), f.get('instagram',''),
