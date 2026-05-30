@@ -230,7 +230,7 @@ function closeCatModal() {
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeCatModal(); });
 });
 
-// ── Main category (delegated to document since it's always in DOM) ────────
+// ── Main category (filters destacats + ofertes + catalegs) ───────────────
 document.getElementById('mainCatRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
   document.querySelectorAll('#mainCatRow .fchip').forEach(x => x.classList.remove('active'));
@@ -241,6 +241,50 @@ document.getElementById('mainCatRow').addEventListener('click', e => {
   updateActiveBar();
   loadAll();
 });
+
+// ── Biz type filter (filters only Comerços, independent) ──────────────────
+let activeBizType = '';
+let activeBizSub  = '';
+
+document.getElementById('bizTypeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#bizTypeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeBizType = c.dataset.biztype;
+  activeBizSub  = '';
+  renderBizSubtypes();
+  loadBiz();
+});
+
+document.getElementById('bizSubtypeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#bizSubtypeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeBizSub = c.dataset.sub;
+  loadBiz();
+});
+
+function renderBizSubtypes() {
+  const row    = document.getElementById('bizSubtypeRow');
+  const scroll = document.getElementById('bizSubtypeScroll');
+  if (!activeBizType || !CATEGORIES[activeBizType]) {
+    row.classList.remove('open'); scroll.innerHTML = ''; return;
+  }
+  const subs = CATEGORIES[activeBizType];
+  scroll.innerHTML = `<button class="fchip active" data-sub="">Tots</button>` +
+    subs.map(s => `<button class="fchip" data-sub="${s}">${s}</button>`).join('');
+  row.classList.add('open');
+}
+
+async function loadBiz() {
+  const p = new URLSearchParams();
+  if (activeParr)    p.set('parroquia', activeParr);
+  if (activeBizSub)       p.set('biz_type', activeBizSub);
+  else if (activeBizType) p.set('main_cat', activeBizType);
+  const r   = await fetch('/api/businesses?' + p);
+  const biz = await r.json();
+  renderBiz(biz);
+}
 
 // ── Subtypes (delegated to parent which is always in DOM) ─────────────────
 document.getElementById('subtypeRow').addEventListener('click', e => {
@@ -313,17 +357,13 @@ async function loadAll() {
   if (activeSub)       p.set('biz_type', activeSub);
   else if (activeMain) p.set('main_cat', activeMain);
 
-  const [br, or] = await Promise.all([
-    fetch('/api/businesses?' + p),
-    fetch('/api/ofertes?' + p)
-  ]);
-  const allBiz    = await br.json();
-  const allOffers = await or.json();
+  const r       = await fetch('/api/ofertes?' + p);
+  const allOffers = await r.json();
 
   renderFeatured(allOffers);
-  renderBiz(allBiz);
   renderOffers(allOffers);
   loadCatalegs(allOffers.length);
+  loadBiz(); // biz uses its own independent filters
 }
 
 // ── Render featured ───────────────────────────────────────────────────────
