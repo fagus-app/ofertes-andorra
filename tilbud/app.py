@@ -1060,10 +1060,6 @@ def admin_renovar(bid):
     db.execute("UPDATE businesses SET subscription_end=?,subscription_status='active',warning_sent=0 WHERE id=?",(new_end,bid))
     db.commit(); flash(f'Subscripció renovada fins {new_end}.'); return redirect(url_for('admin_panel'))
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=5000)
-
-
 # ── Branch Panel Routes ────────────────────────────────────────────────────
 
 @app.route('/panel/sucursal/<int:sid>/panel')
@@ -1129,3 +1125,8 @@ def branch_perfil(sid):
         flash('Sucursal actualitzada!')
         return redirect(url_for('branch_panel', sid=sid))
     return render_template('branch_perfil.html', b=b, branch=branch)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', debug=True, port=5000)
+
+
