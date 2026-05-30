@@ -599,7 +599,7 @@ def api_ofertes():
     p = [today, today, today]
     if bid: sql += " AND o.business_id=?"; p.append(bid)
     if cat: sql += " AND o.category=?";    p.append(cat)
-    if par: sql += " AND b.parroquia=?";   p.append(par)
+    # parroquia filter applied in Python after branch resolution
     if biz_type:
         biz_ids = [r[0] for r in get_db().execute(
             "SELECT id FROM businesses WHERE category=? UNION SELECT business_id FROM business_tags WHERE tag=?",
@@ -627,15 +627,19 @@ def api_ofertes():
         d['is_today']  = r['valid_from']  <= today <= r['valid_until']
         d['is_ending'] = r['valid_until'] <= (date.today()+timedelta(days=2)).isoformat()
         d['is_week']   = r['valid_until'] <= (date.today()+timedelta(days=7)).isoformat()
-        # If offer has branch_ids, find first branch and use its parroquia + link
+        # If offer has branch_ids, use first branch parroquia + link
         branch_ids = (r['branch_ids'] or '').strip()
         if branch_ids:
-            first_bid = branch_ids.split(',')[0].strip()
-            if first_bid:
-                br = db2.execute("SELECT * FROM branches WHERE id=?", (first_bid,)).fetchone()
+            bids = [x.strip() for x in branch_ids.split(',') if x.strip()]
+            if bids:
+                br = db2.execute("SELECT * FROM branches WHERE id=?", (bids[0],)).fetchone()
                 if br:
                     if br['parroquia']: d['bparroquia'] = br['parroquia']
-                    d['branch_id'] = int(first_bid)
+                    d['branch_id'] = int(bids[0])
+                    d['branch_name'] = br['name']
+        # If parroquia filter active, skip offers whose effective parroquia doesn't match
+        if par and d['bparroquia'] != par:
+            continue
         result.append(d)
     return jsonify(result)
 
