@@ -4,35 +4,33 @@
 <style>
 .hero{padding:52px 20px 40px;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(166,112,0,.08) 0%,transparent 70%);pointer-events:none}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#A67000;background:rgba(166,112,0,.08);border:1px solid rgba(166,112,0,.2);border-radius:50px;padding:5px 14px;margin-bottom:20px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:rgba(166,112,0,.08);border:1px solid rgba(166,112,0,.2);border-radius:50px;padding:5px 14px;margin-bottom:20px}
 .hero h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,6vw,58px);line-height:1.06;letter-spacing:-1.5px;margin-bottom:12px}
-.hero h1 em{font-style:normal;color:#A67000}
+.hero h1 em{font-style:normal;color:var(--accent)}
 .hero-sub{font-size:15px;color:var(--muted);max-width:380px;margin:0 auto 28px;font-weight:300}
 .hero-btns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:32px}
 .stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap}
 .stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text);display:block}
 .stat-lbl{font-size:11px;color:var(--muted)}
-.filter-section{padding:10px 0 2px;border-bottom:1px solid var(--border)}
+.filter-section{padding:10px 0 0;border-bottom:1px solid var(--border)}
 .filter-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 20px;margin-bottom:7px;display:block}
 .filter-scroll{display:flex;gap:7px;overflow-x:auto;padding:0 20px 10px;scrollbar-width:none}
 .filter-scroll::-webkit-scrollbar{display:none}
 .fchip{flex:0 0 auto;padding:7px 14px;border-radius:50px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .fchip:hover{color:var(--text);background:var(--bg3)}
-.fchip.active{background:#A67000;color:#FFFFFF;border-color:#A67000}
-.fchip.main-active{background:var(--bg3);color:var(--text);border-color:var(--border2)}
+.fchip.active{background:var(--accent);color:#FFFFFF;border-color:var(--accent)}
+.active-bar{padding:6px 20px;display:none;gap:7px;flex-wrap:wrap}
+.active-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(166,112,0,.08);border:1px solid rgba(166,112,0,.2);border-radius:50px;padding:3px 10px;font-size:12px;color:var(--accent);cursor:pointer}
 .subtype-row{border-bottom:1px solid var(--border);background:var(--bg2);overflow:hidden;max-height:0;transition:max-height 0.25s ease}
 .subtype-row.open{max-height:80px}
-.active-bar{padding:6px 20px;display:none;gap:7px;flex-wrap:wrap}
-.active-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.2);border-radius:50px;padding:3px 10px;font-size:12px;color:var(--accent);cursor:pointer}
 .feat-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
 .feat-scroll::-webkit-scrollbar{display:none}
 .feat-card{flex:0 0 210px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s}
-.feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(166,112,0,.04) 0%,transparent 60%);pointer-events:none}
-.feat-card:hover{transform:translateY(-3px);border-color:rgba(166,112,0,.3);box-shadow:var(--shadow)}
-.feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:#A67000;color:#FFFFFF;padding:2px 7px;border-radius:50px}
+.feat-card:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:var(--shadow)}
+.feat-badge{position:absolute;top:11px;right:11px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;background:var(--accent);color:#FFFFFF;padding:2px 7px;border-radius:50px}
 .biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;gap:12px;text-decoration:none;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
-.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,#C8900A);opacity:0;transition:opacity .2s}
+.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ba,var(--accent));opacity:0;transition:opacity .2s}
 .biz-card:hover{transform:translateY(-2px);border-color:var(--border2)}
 .biz-card:hover::before{opacity:1}
 .biz-logo{width:48px;height:48px;background:var(--bg3);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
@@ -40,15 +38,15 @@
 .offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:11px}
 .offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px;display:flex;flex-direction:column;gap:7px;transition:border-color .2s,transform .2s;cursor:pointer}
 .offer-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.offer-card.is-new{border-color:rgba(82,201,122,.3)}
-.offer-card.is-ending{border-color:rgba(232,84,84,.3)}
+.offer-card.is-new{border-color:rgba(45,106,45,.3)}
+.offer-card.is-ending{border-color:rgba(212,43,43,.3)}
 .o-tag{font-size:10px;padding:1px 7px;border-radius:50px;font-weight:500;display:inline-block}
-.o-tag-new{background:rgba(82,201,122,.1);color:var(--green);border:1px solid rgba(82,201,122,.2)}
-.o-tag-end{background:rgba(232,84,84,.1);color:var(--red);border:1px solid rgba(232,84,84,.2)}
+.o-tag-new{background:rgba(45,106,45,.08);color:var(--green);border:1px solid rgba(45,106,45,.2)}
+.o-tag-end{background:rgba(212,43,43,.08);color:var(--red);border:1px solid rgba(212,43,43,.2)}
 .sw{padding:0 20px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
 .sec{padding:20px 0 40px}
 .empty-msg{text-align:center;color:var(--muted);padding:48px 20px;font-size:14px}
-.cat-preview-card{display:block;text-decoration:none;border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s}
+.cat-preview-card{display:block;text-decoration:none;border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer}
 .cat-preview-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
 .cat-preview-cover{width:100%;aspect-ratio:3/4;position:relative;background:var(--bg3);overflow:hidden}
 .cat-preview-cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
@@ -56,17 +54,6 @@
 .cat-pdf-thumb{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2)}
 .cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.1) 55%,transparent 100%)}
 .cat-preview-info{position:absolute;bottom:0;left:0;right:0;padding:12px}
-/* folletos */
-.folleto-scroll{display:flex;gap:14px;overflow-x:auto;padding:4px 20px 12px;scroll-snap-type:x mandatory;scrollbar-width:none}
-.folleto-scroll::-webkit-scrollbar{display:none}
-.folleto-card{flex:0 0 180px;scroll-snap-align:start;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s;text-decoration:none}
-.folleto-card:hover{transform:translateY(-3px);border-color:var(--border2)}
-.folleto-thumb{width:100%;height:220px;object-fit:cover;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:40px}
-.folleto-thumb img{width:100%;height:100%;object-fit:cover}
-.folleto-info{padding:12px}
-.folleto-biz{font-size:11px;color:var(--muted);margin-bottom:3px}
-.folleto-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:8px}
-.folleto-btn{display:block;text-align:center;background:var(--accent);color:#0F0F0F;border-radius:50px;padding:6px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif}
 </style>
 {% endblock %}
 {% block content %}
@@ -86,20 +73,12 @@
   </div>
 </section>
 
-<!-- Filtre 1: Parròquia -->
+<!-- Filtre parròquia -->
 <div class="filter-section">
   <span class="filter-label">📍 Per parròquia</span>
   <div class="filter-scroll" id="parrRow">
     <button class="fchip active" data-parr="">Totes</button>
     {% for p in parroquies %}<button class="fchip" data-parr="{{p}}">{{p}}</button>{% endfor %}
-  </div>
-</div>
-
-<!-- Filtre 2: Categoria principal (just below parroquia) -->
-<div class="filter-section" style="border-bottom:1px solid var(--border);padding:8px 0 2px">
-  <div class="filter-scroll" id="mainCatRow" style="padding-bottom:8px">
-    <button class="fchip active" data-main="">Tots</button>
-    {% for cat in business_categories %}<button class="fchip" data-main="{{cat}}">{{cat}}</button>{% endfor %}
   </div>
 </div>
 
@@ -116,20 +95,26 @@
 <section class="sec" id="comercos">
   <div class="sw"><div class="section-heading">🏪 Comerços</div></div>
 
-  <!-- Subtipos (apareix quan s'elegeix una categoria) -->
-  <div class="subtype-row" id="subtypeRow">
-    <div class="filter-scroll" id="subtypeScroll" style="padding-top:6px">
-      <!-- filled by JS -->
+  <!-- Filtre categoria principal -->
+  <div style="padding:0 20px 8px">
+    <div class="filter-scroll" id="mainCatRow" style="padding:0">
+      <button class="fchip active" data-main="">Tots</button>
+      {% for cat in business_categories %}<button class="fchip" data-main="{{cat}}">{{cat}}</button>{% endfor %}
     </div>
   </div>
 
-  <div class="container" style="margin-top:16px">
+  <!-- Subtipos -->
+  <div class="subtype-row" id="subtypeRow">
+    <div class="filter-scroll" id="subtypeScroll" style="padding-top:6px;padding-bottom:6px"></div>
+  </div>
+
+  <div class="container" style="margin-top:14px">
     <div class="biz-grid" id="bizGrid"></div>
   </div>
 </section>
 
 <!-- Mode switcher -->
-<div style="padding:4px 20px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);margin-bottom:0">
+<div style="padding:4px 20px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)">
   <button class="fchip active" id="modeOfertes" onclick="setMode('ofertes')" style="font-size:13px;padding:8px 18px">🏷️ Ofertes</button>
   <button class="fchip" id="modeCatalegs" onclick="setMode('catalegs')" style="font-size:13px;padding:8px 18px">📋 Catàlegs</button>
 </div>
@@ -151,13 +136,11 @@
   </div>
 </section>
 
-<!-- Catàlegs section (hidden by default) -->
+<!-- Catàlegs -->
 <section class="sec" id="secCatalegs" style="display:none">
-  <div class="sw"><div class="section-heading">📋 Catàlegs de la setmana</div></div>
+  <div class="sw"><div class="section-heading">📋 Catàlegs</div></div>
   <div class="container">
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px" id="catalegGrid">
-      <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px">Carregant...</div>
-    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px" id="catalegGrid"></div>
   </div>
 </section>
 
@@ -177,7 +160,7 @@
     </div>
   </div>
   <div style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:16px">
-    <img id="catModalImg" src="" alt="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;display:none">
+    <img id="catModalImg" src="" alt="" style="max-width:100%;object-fit:contain;border-radius:8px;display:none">
     <iframe id="catModalPdf" src="" style="width:100%;min-height:80vh;border:none;border-radius:8px;display:none"></iframe>
   </div>
 </div>
@@ -191,6 +174,8 @@ let activeParr = '';
 let activeMain = '';
 let activeSub  = '';
 let activeTime = '';
+let currentMode = 'ofertes';
+let lastOffers = [];
 
 // ── Parroquia ─────────────────────────────────────────────────────────────
 document.getElementById('parrRow').addEventListener('click', e => {
@@ -200,52 +185,21 @@ document.getElementById('parrRow').addEventListener('click', e => {
   activeParr = c.dataset.parr;
   updateActiveBar();
   loadAll();
-
-function openCatModal(filename, filetype, logo, bizName, title, bid) {
-  const modal = document.getElementById('catModal');
-  const img   = document.getElementById('catModalImg');
-  const pdf   = document.getElementById('catModalPdf');
-  const dl    = document.getElementById('catModalDownload');
-  document.getElementById('catModalLogo').textContent  = logo;
-  document.getElementById('catModalBiz').textContent   = bizName;
-  document.getElementById('catModalTitle').textContent = title;
-  const url = `/static/uploads/folletos/${filename}`;
-  dl.href = url;
-  if (filetype === 'image') {
-    img.src = url; img.style.display = ''; pdf.style.display = 'none';
-  } else {
-    pdf.src = url; pdf.style.display = ''; img.style.display = 'none';
-  }
-  modal.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;flex-direction:column';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeCatModal() {
-  document.getElementById('catModal').style.display = 'none';
-  document.getElementById('catModalImg').src = '';
-  document.getElementById('catModalPdf').src = '';
-  document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeCatModal(); });
 });
 
-// ── Main category filters (top + inside comerços, synced) ────────────────
-function handleMainCatClick(e) {
+// ── Main category ─────────────────────────────────────────────────────────
+document.getElementById('mainCatRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
-  // Sync both rows
-  document.querySelectorAll('#mainCatRow .fchip, #mainCatRowBiz .fchip').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll(`#mainCatRow [data-main="${c.dataset.main}"], #mainCatRowBiz [data-main="${c.dataset.main}"]`).forEach(x => x.classList.add('active'));
+  document.querySelectorAll('#mainCatRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
   activeMain = c.dataset.main;
   activeSub  = '';
   renderSubtypes();
   updateActiveBar();
   loadAll();
-}
-document.getElementById('mainCatRow').addEventListener('click', handleMainCatClick);
-document.getElementById('mainCatRowBiz').addEventListener('click', handleMainCatClick);
+});
 
-// ── Subtypes (delegated to parent which is always in DOM) ─────────────────
+// ── Subtypes ──────────────────────────────────────────────────────────────
 document.getElementById('subtypeRow').addEventListener('click', e => {
   const c = e.target.closest('.fchip'); if (!c) return;
   document.querySelectorAll('#subtypeRow .fchip').forEach(x => x.classList.remove('active'));
@@ -255,16 +209,6 @@ document.getElementById('subtypeRow').addEventListener('click', e => {
   loadAll();
 });
 
-// ── Time filter ───────────────────────────────────────────────────────────
-document.getElementById('timeRow').addEventListener('click', e => {
-  const c = e.target.closest('.fchip'); if (!c) return;
-  document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
-  c.classList.add('active');
-  activeTime = c.dataset.time;
-  renderOffers();
-});
-
-// ── Render subtypes ───────────────────────────────────────────────────────
 function renderSubtypes() {
   const row    = document.getElementById('subtypeRow');
   const scroll = document.getElementById('subtypeScroll');
@@ -276,6 +220,15 @@ function renderSubtypes() {
     subs.map(s => `<button class="fchip" data-sub="${s}">${s}</button>`).join('');
   row.classList.add('open');
 }
+
+// ── Time filter ───────────────────────────────────────────────────────────
+document.getElementById('timeRow').addEventListener('click', e => {
+  const c = e.target.closest('.fchip'); if (!c) return;
+  document.querySelectorAll('#timeRow .fchip').forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  activeTime = c.dataset.time;
+  renderOffers(undefined);
+});
 
 // ── Active bar ────────────────────────────────────────────────────────────
 function updateActiveBar() {
@@ -309,7 +262,7 @@ function clearFilter(type) {
   loadAll();
 }
 
-// ── Load all data ─────────────────────────────────────────────────────────
+// ── Load all ──────────────────────────────────────────────────────────────
 async function loadAll() {
   const p = new URLSearchParams();
   if (activeParr) p.set('parroquia', activeParr);
@@ -327,6 +280,20 @@ async function loadAll() {
   renderBiz(allBiz);
   renderOffers(allOffers);
   loadCatalegs(allOffers.length);
+}
+
+// ── Mode switcher ─────────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('modeOfertes').classList.toggle('active', mode === 'ofertes');
+  document.getElementById('modeCatalegs').classList.toggle('active', mode === 'catalegs');
+  document.getElementById('secOfertes').style.display  = mode === 'ofertes'  ? '' : 'none';
+  document.getElementById('secCatalegs').style.display = mode === 'catalegs' ? '' : 'none';
+}
+
+function autoSelectMode(offersCount, catalegsCount) {
+  const defaultMode = catalegsCount > offersCount ? 'catalegs' : 'ofertes';
+  if (defaultMode !== currentMode) setMode(defaultMode);
 }
 
 // ── Render featured ───────────────────────────────────────────────────────
@@ -350,7 +317,7 @@ function renderFeatured(allOffers) {
   }).join('');
 }
 
-// ── Render businesses ─────────────────────────────────────────────────────
+// ── Render biz ────────────────────────────────────────────────────────────
 function renderBiz(allBiz) {
   const grid = document.getElementById('bizGrid');
   if (!allBiz.length) {
@@ -370,7 +337,6 @@ function renderBiz(allBiz) {
 }
 
 // ── Render offers ─────────────────────────────────────────────────────────
-let lastOffers = [];
 function renderOffers(allOffers) {
   if (allOffers !== undefined) lastOffers = allOffers;
   let offers = lastOffers;
@@ -393,45 +359,26 @@ function renderOffers(allOffers) {
       ${tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tags.join('')}</div>` : ''}
       <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${o.name}</div>
       <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#A67000">${o.offer_price.toFixed(2)}€</span>
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
         <span style="font-size:11px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
         <span class="discount">−${d}%</span>
       </div>
       <div style="font-size:10px;color:var(--muted)">${o.unit}</div>
       <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
-        <span>Fins el <strong style="color:#A67000">${o.valid_until}</strong></span>
+        <span>Fins el <strong style="color:var(--accent)">${o.valid_until}</strong></span>
         <span>${o.blogo} ${o.bname}</span>
       </div>
     </div>`;
   }).join('');
 }
 
-loadAll();
-
-// ── Mode switcher ─────────────────────────────────────────────────────────
-let currentMode = 'ofertes';
-
-function setMode(mode) {
-  currentMode = mode;
-  document.getElementById('modeOfertes').classList.toggle('active', mode === 'ofertes');
-  document.getElementById('modeCatalegs').classList.toggle('active', mode === 'catalegs');
-  document.getElementById('secOfertes').style.display = mode === 'ofertes' ? '' : 'none';
-  document.getElementById('secCatalegs').style.display = mode === 'catalegs' ? '' : 'none';
-}
-
-function autoSelectMode(offersCount, catalegsCount) {
-  // If more catalogues than offers, show catalogues first
-  const defaultMode = catalegsCount > offersCount ? 'catalegs' : 'ofertes';
-  if (defaultMode !== currentMode) setMode(defaultMode);
-}
-
-// Load catalogues
+// ── Catàlegs ──────────────────────────────────────────────────────────────
 async function loadCatalegs(offersCount) {
   const p = new URLSearchParams();
   if (activeParr) p.set('parroquia', activeParr);
   if (activeSub)       p.set('biz_type', activeSub);
   else if (activeMain) p.set('main_cat', activeMain);
-  const r = await fetch('/api/catalegs?' + p);
+  const r    = await fetch('/api/catalegs?' + p);
   const data = await r.json();
   if (offersCount !== undefined) autoSelectMode(offersCount, data.length);
   const grid = document.getElementById('catalegGrid');
@@ -440,7 +387,7 @@ async function loadCatalegs(offersCount) {
     return;
   }
   grid.innerHTML = data.map(f => `
-    <div class="cat-preview-card" onclick="location='/negoci/${f.bid}?tab=cats'" style="cursor:pointer">
+    <div class="cat-preview-card" onclick="openCatModal('${f.filename}','${f.filetype}','${f.blogo}','${f.bname}','${f.title}','${f.bid}')">
       <div class="cat-preview-cover">
         ${f.filetype === 'image'
           ? `<img src="/static/uploads/folletos/${f.filename}" alt="${f.title}" loading="lazy">`
@@ -452,12 +399,40 @@ async function loadCatalegs(offersCount) {
             <span style="font-size:12px;font-weight:600;color:#fff">${f.bname}</span>
           </div>
           <div style="font-size:10px;color:rgba(255,255,255,.7)">${f.title}</div>
-          <div style="font-size:10px;background:rgba(232,197,71,.2);border:1px solid rgba(232,197,71,.3);color:var(--accent);border-radius:50px;padding:2px 8px;display:inline-block;margin-top:5px">Fins ${f.valid_until}</div>
+          <div style="font-size:10px;background:rgba(166,112,0,.2);border:1px solid rgba(166,112,0,.3);color:#E8C547;border-radius:50px;padding:2px 8px;display:inline-block;margin-top:5px">Fins ${f.valid_until}</div>
         </div>
       </div>
-    </a>`).join('');
+    </div>`).join('');
 }
 
+function openCatModal(filename, filetype, logo, bizName, title, bid) {
+  const modal = document.getElementById('catModal');
+  const img   = document.getElementById('catModalImg');
+  const pdf   = document.getElementById('catModalPdf');
+  const dl    = document.getElementById('catModalDownload');
+  document.getElementById('catModalLogo').textContent  = logo;
+  document.getElementById('catModalBiz').textContent   = bizName;
+  document.getElementById('catModalTitle').textContent = title;
+  const url = `/static/uploads/folletos/${filename}`;
+  dl.href = url;
+  if (filetype === 'image') {
+    img.src = url; img.style.display = ''; pdf.style.display = 'none';
+  } else {
+    pdf.src = url; pdf.style.display = ''; img.style.display = 'none';
+  }
+  modal.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;flex-direction:column';
+  document.body.style.overflow = 'hidden';
+}
 
+function closeCatModal() {
+  document.getElementById('catModal').style.display = 'none';
+  document.getElementById('catModalImg').src = '';
+  document.getElementById('catModalPdf').src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeCatModal(); });
+
+loadAll();
 </script>
 {% endblock %}
