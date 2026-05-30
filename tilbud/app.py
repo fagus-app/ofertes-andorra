@@ -46,8 +46,10 @@ FEATURED_INCLUDED = {
     'Supermercat': 3,
     'default':     2,
 }
-FEATURED_EXTRA_PACK = 3    # extra featured per pack
+FEATURED_EXTRA_PACK  = 3     # extra credits per pack
 FEATURED_EXTRA_PRICE = 10.0  # EUR/mes per pack
+OFFER_CREDIT_COST    = 1     # credits per featured offer
+CATALOGUE_CREDIT_COST= 2     # credits per featured catalogue
 
 def get_pricing(category):
     is_premium = (category == 'Supermercat')
@@ -90,6 +92,7 @@ BUSINESS_CATEGORIES = {
     'Salut i Farmàcia': [
         'Farmàcia',
         'Botiga de Suplements',
+        'Perfumeria i Cosmètica',
     ],
     'Botigues': [
         'Moda i Roba',
@@ -128,7 +131,7 @@ ACCENT_COLORS = {
     'Vineria':'#AF7AC5','Restaurant':'#E74C3C','Bar':'#AF7AC5','Cafeteria':'#F0B27A',
     'Fleca i Cafeteria':'#D4A574','Gelateria':'#5DADE2','Xocolateria':'#D4A574',
     'Farmàcia':'#AF7AC5','Botiga de Suplements':'#52B788',
-    'Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2',
+    'Botiga de Esports':'#52B788','Electrodomèstics':'#5DADE2','Perfumeria i Cosmètica':'#E74C3C',
     'Moda i Roba':'#AF7AC5','Calçat':'#E74C3C','Esports':'#52B788',
     'Electrodomèstics i Tecnologia':'#5DADE2','Joieria i Rellotgeria':'#F0D870',
     'Perfumeria i Cosmètica':'#E74C3C','Llibreria i Papereria':'#F0B27A',
@@ -271,6 +274,8 @@ def init_db():
             except Exception: pass
             try: db.execute(f"ALTER TABLE folletos ADD COLUMN {col} INTEGER DEFAULT 0")
             except Exception: pass
+        try: db.execute("ALTER TABLE folletos ADD COLUMN featured INTEGER DEFAULT 0")
+        except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN featured_packs INTEGER DEFAULT 0")
         except Exception: pass
         try: db.execute("ALTER TABLE businesses ADD COLUMN website TEXT DEFAULT ''")
@@ -428,10 +433,21 @@ def admin_required(f):
         return f(*a,**kw)
     return dec
 
-def get_max_featured(b):
-    base = FEATURED_INCLUDED.get(b['category'], FEATURED_INCLUDED['default'])
+def get_max_credits(b):
+    base  = FEATURED_INCLUDED.get(b['category'], FEATURED_INCLUDED['default'])
     extra = (b['featured_packs'] or 0) * FEATURED_EXTRA_PACK
     return base + extra
+
+def get_max_featured(b):
+    return get_max_credits(b)
+
+def get_used_credits(business_id):
+    db = get_db()
+    offer_feat = db.execute(
+        "SELECT COUNT(*) FROM ofertes WHERE business_id=? AND featured=1", (business_id,)).fetchone()[0]
+    cat_feat   = db.execute(
+        "SELECT COUNT(*) FROM folletos WHERE business_id=? AND featured=1", (business_id,)).fetchone()[0]
+    return offer_feat * OFFER_CREDIT_COST + cat_feat * CATALOGUE_CREDIT_COST
 
 
     rows = get_db().execute("SELECT tag FROM business_tags WHERE business_id=?", (business_id,)).fetchall()
@@ -686,14 +702,15 @@ def panel():
     trial_price, normal_price, trial_months = get_pricing(b['category'])
     monthly_total = normal_price + (branch_count * BRANCH_PRICE)
     dl = days_left(b); can_pub = can_publish(b)
-    max_featured = get_max_featured(b)
-    current_featured = sum(1 for o in ofertes if o['featured'])
+    max_credits     = get_max_credits(b)
+    used_credits    = get_used_credits(b['id'])
     return render_template('panel.html', b=b, ofertes=ofertes, folletos=folletos,
                            days_left=dl, can_pub=can_pub,
                            total_views=total_views, views_7d=views_7d, total_o_views=total_o_views,
                            branches=branches, branch_count=branch_count, monthly_total=monthly_total,
                            trial_price=trial_price, normal_price=normal_price,
-                           max_featured=max_featured, current_featured=current_featured)
+                           max_credits=max_credits, used_credits=used_credits,
+                           offer_cost=OFFER_CREDIT_COST, cat_cost=CATALOGUE_CREDIT_COST)
 
 @app.route('/panel/perfil', methods=['GET','POST'])
 @login_required
