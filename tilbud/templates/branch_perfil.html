@@ -39,7 +39,7 @@
         <label>Parròquia</label>
         <select name="parroquia">
           <option value="">Selecciona...</option>
-          {% for p in ['Andorra la Vella','Canillo','Encamp','Escaldes-Engordany','La Massana','Ordino','Sant Julia de Loria'] %}
+          {% for p in ['Andorra la Vella','Escaldes-Engordany','Encamp','Sant Julià de Lòria','La Massana','Ordino','Canillo'] %}
           <option value="{{p}}" {% if branch.parroquia==p %}selected{% endif %}>{{p}}</option>
           {% endfor %}
         </select>
