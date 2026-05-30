@@ -408,6 +408,18 @@ def seed_demo(db):
         biz['borda'], "Fruites i verdures de temporada",
         "sample_folleto2.jpg", "image", today, d(5)))
 
+    # Sample branches for mercat
+    db.execute("""INSERT INTO branches (business_id,name,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
+        VALUES (?,?,?,?,?,?,?,?,?)""",(
+        biz['mercat'], 'Sucursal Escaldes', 'Av. Carlemany 30, Escaldes-Engordany', '+376 800 001',
+        '9:00-21:00', '9:00-21:00', '9:00-20:00', '🏪',
+        'Sucursal d\'Escaldes-Engordany del Mercat Central.'))
+    db.execute("""INSERT INTO branches (business_id,name,location,phone,hours_mon,hours_fri,hours_sat,logo_emoji,description)
+        VALUES (?,?,?,?,?,?,?,?,?)""",(
+        biz['mercat'], 'Sucursal Sant Julia', 'Carrer Major 5, Sant Julia de Loria', '+376 800 002',
+        '9:00-20:00', '9:00-20:00', '9:00-15:00', '🏪',
+        'Sucursal de Sant Julia de Loria del Mercat Central.'))
+
 init_db()
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
