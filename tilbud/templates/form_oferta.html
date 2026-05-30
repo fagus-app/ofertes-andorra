@@ -75,20 +75,18 @@
       <!-- Branch selector -->
       {% if branches and branches|length > 0 %}
       <div class="field">
-        <label>Sucursals on és vàlida</label>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
-            <input type="checkbox" name="branch_all" value="1" id="branchAll" checked onchange="document.getElementById('branchList').style.display=this.checked?'none':'flex'" style="accent-color:var(--accent);width:15px;height:15px">
-            <strong>Totes les sucursals</strong>
+        <label>Sucursals on és vàlida aquesta oferta</label>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Marca les sucursals on vols publicar aquesta oferta</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          {% for br in branches %}
+          <label style="display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text);transition:all .15s" onclick="this.classList.toggle('selected-branch');this.querySelector('input').checked=!this.querySelector('input').checked">
+            <input type="checkbox" name="branch_ids" value="{{br.id}}" checked
+              {% if oferta and oferta.branch_ids and br.id|string in oferta.branch_ids.split(',') %}checked{% endif %}
+              style="accent-color:var(--accent);width:15px;height:15px;pointer-events:none">
+            <span>🏪 {{br.name}}</span>
+            {% if br.parroquia %}<span style="font-size:11px;color:var(--muted);margin-left:auto">📍 {{br.parroquia}}</span>{% endif %}
           </label>
-          <div id="branchList" style="display:none;padding-left:20px;flex-direction:column;gap:6px">
-            {% for br in branches %}
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--muted)">
-              <input type="checkbox" name="branch_ids" value="{{br.id}}" style="accent-color:var(--accent);width:15px;height:15px">
-              {{br.name}}
-            </label>
-            {% endfor %}
-          </div>
+          {% endfor %}
         </div>
       </div>
       {% endif %}
