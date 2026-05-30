@@ -785,43 +785,48 @@ def editar_perfil():
 @app.route('/panel/oferta/nova', methods=['GET','POST'])
 @login_required
 def nova_oferta():
-    b = get_biz()
+    b = get_biz(); db = get_db()
+    branches = db.execute("SELECT * FROM branches WHERE business_id=? ORDER BY created",(b['id'],)).fetchall()
     if not can_publish(b): flash('La teva subscripció ha vençut.'); return redirect(url_for('panel'))
     if request.method == 'POST':
         f = request.form; image = ''
         if 'image' in request.files and request.files['image'].filename:
             img = request.files['image']
             if allowed_file(img.filename): image = save_file(img,'ofertes')
-        db = get_db()
-        db.execute("""INSERT INTO ofertes (business_id,name,emoji,description,original_price,offer_price,unit,category,image,valid_from,valid_until,featured)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""", (
+        orig  = float(f['original_price']) if f.get('original_price') else 0.0
+        offer = float(f['offer_price'])    if f.get('offer_price')    else 0.0
+        branch_ids = ','.join(request.form.getlist('branch_ids')) if not f.get('branch_all') else ''
+        db.execute("""INSERT INTO ofertes (business_id,name,emoji,description,original_price,offer_price,unit,category,image,valid_from,valid_until,featured,branch_ids)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""", (
             b['id'],f['name'],f.get('emoji','🛒'),f.get('description',''),
-            float(f['original_price']),float(f['offer_price']),
-            f.get('unit',''),f.get('category',''),image,
-            f['valid_from'],f['valid_until'],1 if f.get('featured') else 0))
+            orig, offer, f.get('unit',''),f.get('category',''),image,
+            f['valid_from'],f['valid_until'],1 if f.get('featured') else 0, branch_ids))
         db.commit(); flash('Oferta publicada!'); return redirect(url_for('panel'))
-    return render_template('form_oferta.html', oferta=None)
+    return render_template('form_oferta.html', oferta=None, branches=branches)
 
 @app.route('/panel/oferta/editar/<int:oid>', methods=['GET','POST'])
 @login_required
 def editar_oferta(oid):
-    b = get_biz()
+    b = get_biz(); db = get_db()
+    branches = db.execute("SELECT * FROM branches WHERE business_id=? ORDER BY created",(b['id'],)).fetchall()
     if not can_publish(b): flash('La teva subscripció ha vençut.'); return redirect(url_for('panel'))
-    db = get_db(); o = db.execute("SELECT * FROM ofertes WHERE id=? AND business_id=?",(oid,b['id'])).fetchone()
+    o = db.execute("SELECT * FROM ofertes WHERE id=? AND business_id=?",(oid,b['id'])).fetchone()
     if not o: return redirect(url_for('panel'))
     if request.method == 'POST':
         f = request.form; image = o['image']
         if 'image' in request.files and request.files['image'].filename:
             img = request.files['image']
             if allowed_file(img.filename): image = save_file(img,'ofertes')
+        orig  = float(f['original_price']) if f.get('original_price') else 0.0
+        offer = float(f['offer_price'])    if f.get('offer_price')    else 0.0
+        branch_ids = ','.join(request.form.getlist('branch_ids')) if not f.get('branch_all') else ''
         db.execute("""UPDATE ofertes SET name=?,emoji=?,description=?,original_price=?,offer_price=?,
-            unit=?,category=?,image=?,valid_from=?,valid_until=?,featured=? WHERE id=? AND business_id=?""", (
+            unit=?,category=?,image=?,valid_from=?,valid_until=?,featured=?,branch_ids=? WHERE id=? AND business_id=?""", (
             f['name'],f.get('emoji','🛒'),f.get('description',''),
-            float(f['original_price']),float(f['offer_price']),
-            f.get('unit',''),f.get('category',''),image,
-            f['valid_from'],f['valid_until'],1 if f.get('featured') else 0,oid,b['id']))
+            orig, offer, f.get('unit',''),f.get('category',''),image,
+            f['valid_from'],f['valid_until'],1 if f.get('featured') else 0, branch_ids, oid,b['id']))
         db.commit(); flash('Oferta actualitzada!'); return redirect(url_for('panel'))
-    return render_template('form_oferta.html', oferta=o)
+    return render_template('form_oferta.html', oferta=o, branches=branches)
 
 @app.route('/panel/oferta/eliminar/<int:oid>', methods=['POST'])
 @login_required
