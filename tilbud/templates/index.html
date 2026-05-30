@@ -426,6 +426,8 @@ function autoSelectMode(offersCount, catalegsCount) {
 async function loadCatalegs(offersCount) {
   const p = new URLSearchParams();
   if (activeParr) p.set('parroquia', activeParr);
+  if (activeSub)       p.set('biz_type', activeSub);
+  else if (activeMain) p.set('main_cat', activeMain);
   const r = await fetch('/api/catalegs?' + p);
   const data = await r.json();
   if (offersCount !== undefined) autoSelectMode(offersCount, data.length);
