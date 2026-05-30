@@ -670,7 +670,27 @@ def api_businesses():
         p.append(par)
     if 'DISTINCT' in sql: sql += " ORDER BY b.name"
     else: sql += " ORDER BY name"
-    return jsonify([dict(r) for r in db.execute(sql, p).fetchall()])
+    
+    biz_list = [dict(r) for r in db.execute(sql, p).fetchall()]
+    
+    # Also include businesses that have branches in this parroquia
+    if par:
+        branch_biz_ids = set(r[0] for r in db.execute(
+            "SELECT DISTINCT business_id FROM branches WHERE parroquia=?", (par,)).fetchall())
+        existing_ids = set(b['id'] for b in biz_list)
+        for bid in branch_biz_ids - existing_ids:
+            b = db.execute("SELECT * FROM businesses WHERE id=? AND active=1 AND subscription_end>=?", (bid, today)).fetchone()
+            if b:
+                bd = dict(b)
+                # Add the branch info so client knows this is shown for a branch
+                br = db.execute("SELECT * FROM branches WHERE business_id=? AND parroquia=? LIMIT 1", (bid, par)).fetchone()
+                if br:
+                    bd['branch_id']   = br['id']
+                    bd['branch_name'] = br['name']
+                    bd['parroquia']   = par  # show as if it's in this parroquia
+                biz_list.append(bd)
+    
+    return jsonify(biz_list)
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 @app.route('/login', methods=['GET','POST'])
