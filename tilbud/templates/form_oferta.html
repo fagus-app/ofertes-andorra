@@ -41,6 +41,15 @@
           <span class="emoji-btn {% if oferta and oferta.emoji==e %}sel{% endif %}" onclick="pickE('{{e}}')">{{e}}</span>
           {% endfor %}
         </div>
+        <div style="margin-top:8px">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Badges promocionals</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px" id="badgeGrid">
+            {% for badge in ['2x1','3x2','50% OFF','30% OFF','20% OFF','-10%','-15%','-25%','Happy Hour','Gratis','Oferta','Flash','Avui','Cap de setmana','Nou','Temporada'] %}
+            <span onclick="pickBadge('{{badge}}')" style="padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600;cursor:pointer;background:var(--bg3);border:1px solid var(--border2);color:var(--muted);transition:all .15s" class="badge-btn">{{badge}}</span>
+            {% endfor %}
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px">El badge apareix com a títol si no poses nom, o com a complement visual</div>
+        </div>
       </div>
       <div class="row2">
         <div class="field"><label>Preu original (€)</label><input type="number" name="original_price" step="0.01" min="0" placeholder="3.50" value="{% if oferta and oferta.original_price %}{{'%.2f'|format(oferta.original_price)}}{% endif %}"><div class="hint">Opcional — deixa en blanc si no vols mostrar preu</div></div>
@@ -96,5 +105,16 @@
 <script>
 {% if not oferta %}document.querySelector('[name=valid_from]').value=new Date().toISOString().split('T')[0];{% endif %}
 function pickE(e){document.getElementById('emojiInput').value=e;document.querySelectorAll('.emoji-btn').forEach(b=>b.classList.remove('sel'));event.target.classList.add('sel');}
+function pickBadge(badge){
+  const nameField = document.querySelector('[name=name]');
+  if (!nameField.value || nameField.value === nameField.dataset.last) {
+    nameField.value = badge;
+    nameField.dataset.last = badge;
+  }
+  document.querySelectorAll('.badge-btn').forEach(b=>b.style.background='var(--bg3)');
+  event.target.style.background='rgba(166,112,0,.15)';
+  event.target.style.borderColor='var(--accent)';
+  event.target.style.color='var(--accent)';
+}
 </script>
 {% endblock %}

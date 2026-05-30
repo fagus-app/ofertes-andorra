@@ -303,16 +303,16 @@ function renderFeatured(allOffers) {
   if (!feat.length) { sec.style.display = 'none'; return; }
   sec.style.display = '';
   document.getElementById('featGrid').innerHTML = feat.map(o => {
-    const d = Math.round((1 - o.offer_price / o.original_price) * 100);
+    const d = o.original_price > 0 ? Math.round((1 - o.offer_price / o.original_price) * 100) : 0;
     return `<div class="feat-card" onclick="location='/negoci/${o.bid}'">
       <div class="feat-badge">−${d}%</div>
       <div style="font-size:34px;line-height:1">${o.emoji}</div>
       <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4">${o.name}</div>
       <div style="font-size:11px;color:var(--muted)">${o.blogo} ${o.bname}</div>
-      <div style="display:flex;align-items:baseline;gap:7px;margin-top:auto">
+      ${o.offer_price > 0 ? `<div style="display:flex;align-items:baseline;gap:7px;margin-top:auto">
         <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
-        <span style="font-size:12px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
-      </div>
+        ${o.original_price > 0 ? `<span style="font-size:12px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>` : ''}
+      </div>` : ''}
     </div>`;
   }).join('');
 }
@@ -350,7 +350,7 @@ function renderOffers(allOffers) {
     return;
   }
   grid.innerHTML = offers.map(o => {
-    const d = Math.round((1 - o.offer_price / o.original_price) * 100);
+    const d = o.original_price > 0 ? Math.round((1 - o.offer_price / o.original_price) * 100) : 0;
     const tags = [];
     if (o.is_new)    tags.push('<span class="o-tag o-tag-new">✨ Nova</span>');
     if (o.is_ending) tags.push('<span class="o-tag o-tag-end">⏰ Acaba aviat</span>');
@@ -358,11 +358,10 @@ function renderOffers(allOffers) {
       <span style="font-size:28px;line-height:1">${o.emoji}</span>
       ${tags.length ? `<div style="display:flex;gap:4px;flex-wrap:wrap">${tags.join('')}</div>` : ''}
       <div style="font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1">${o.name}</div>
-      <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+      ${o.offer_price > 0 ? `<div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
         <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent)">${o.offer_price.toFixed(2)}€</span>
-        <span style="font-size:11px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span>
-        <span class="discount">−${d}%</span>
-      </div>
+        ${o.original_price > 0 ? `<span style="font-size:11px;color:var(--muted);text-decoration:line-through">${o.original_price.toFixed(2)}€</span><span class="discount">−${d}%</span>` : ''}
+      </div>` : ''}
       <div style="font-size:10px;color:var(--muted)">${o.unit}</div>
       <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
         <span>Fins el <strong style="color:var(--accent)">${o.valid_until}</strong></span>

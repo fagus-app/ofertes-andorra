@@ -132,16 +132,20 @@
     {% endif %}
     <div class="offers-grid">
       {% for o in ofertes %}
-      {% set d=((1-o.offer_price/o.original_price)*100)|int %}
+      {% set d = ((1-o.offer_price/o.original_price)*100)|int if o.original_price and o.original_price > 0 else 0 %}
       <div class="offer-card" data-cat="{{o.category}}">
         <span style="font-size:30px;line-height:1">{{o.emoji}}</span>
         <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">{{o.category}}</div>
         <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1">{{o.name}}</div>
+        {% if o.offer_price and o.offer_price > 0 %}
         <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
           <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:var(--accent)">{{"%.2f"|format(o.offer_price)}}€</span>
+          {% if o.original_price and o.original_price > 0 %}
           <span style="font-size:12px;color:var(--muted);text-decoration:line-through">{{"%.2f"|format(o.original_price)}}€</span>
           <span class="discount">−{{d}}%</span>
+          {% endif %}
         </div>
+        {% endif %}
         <div style="font-size:10px;color:var(--muted)">{{o.unit}}</div>
         {% if o.description %}
         <div style="font-size:12px;color:var(--muted);font-style:italic;border-top:1px solid var(--border);padding-top:6px;margin-top:2px">{{o.description}}</div>
