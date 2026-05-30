@@ -749,7 +749,8 @@ def registre():
 @login_required
 def panel():
     b = get_biz(); today = today_str(); db = get_db()
-    ofertes  = db.execute("SELECT * FROM ofertes WHERE business_id=? AND valid_from<=? AND valid_until>=? ORDER BY featured DESC,created DESC",(b['id'],today,today)).fetchall()
+    all_o = db.execute("SELECT * FROM ofertes WHERE business_id=? AND valid_from<=? AND valid_until>=? ORDER BY featured DESC,created DESC",(b['id'],today,today)).fetchall()
+    ofertes = [o for o in all_o if not (o['branch_ids'] or '').strip()]
     folletos = db.execute("SELECT * FROM folletos WHERE business_id=? AND valid_from<=? AND valid_until>=? ORDER BY created DESC",(b['id'],today,today)).fetchall()
     # stats
     total_views   = db.execute("SELECT COUNT(*) FROM page_views WHERE business_id=?",(b['id'],)).fetchone()[0]
@@ -1113,7 +1114,9 @@ def branch_panel(sid):
     db = get_db(); today = today_str()
     branch = db.execute("SELECT * FROM branches WHERE id=? AND business_id=?", (sid, b['id'])).fetchone()
     if not branch: return redirect(url_for('panel'))
-    ofertes  = db.execute("SELECT * FROM ofertes WHERE business_id=? AND valid_until>=? ORDER BY featured DESC, created DESC", (b['id'], today)).fetchall()
+    all_ofertes = db.execute("SELECT * FROM ofertes WHERE business_id=? AND valid_until>=? ORDER BY featured DESC, created DESC", (b['id'], today)).fetchall()
+    # Only show offers assigned to this branch (branch_ids contains sid) or offers with no branch assigned
+    ofertes = [o for o in all_ofertes if str(sid) in (o['branch_ids'] or '').split(',')]
     folletos = db.execute("SELECT * FROM folletos WHERE business_id=? AND valid_until>=? ORDER BY created DESC", (b['id'], today)).fetchall()
     branches = db.execute("SELECT * FROM branches WHERE business_id=? ORDER BY created", (b['id'],)).fetchall()
     max_credits  = get_max_credits(b)
