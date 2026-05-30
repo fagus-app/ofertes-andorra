@@ -174,20 +174,25 @@
     {% endif %}
   </div>
 
-  <!-- Featured counter + upsell -->
-<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-  <div>
-    <div style="font-size:13px;font-weight:500;color:var(--text)">⭐ Ofertes destacades</div>
-    <div style="font-size:12px;color:var(--muted);margin-top:2px">
-      Usant <strong style="color:var(--accent)">{{current_featured}}</strong> de <strong style="color:var(--accent)">{{max_featured}}</strong> destacades incloses
+  <!-- Credits counter + upsell -->
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:13px;font-weight:500;color:var(--text)">⭐ Crèdits de destacats</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">
+        Usant <strong style="color:var(--accent)">{{used_credits}}</strong> de <strong style="color:var(--accent)">{{max_credits}}</strong> crèdits inclosos
+      </div>
     </div>
+    {% if used_credits >= max_credits %}
+    <div style="text-align:right">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px">+3 crèdits per <strong>10€/mes</strong></div>
+      <a href="mailto:ofertes.ad@gmail.com?subject=Pack credits - {{b.name}}&body=Hola, voldria contractar un pack de 3 credits extra per a {{b.name}}." class="btn btn-accent btn-sm">Contractar pack →</a>
+    </div>
+    {% endif %}
   </div>
-  {% if current_featured >= max_featured %}
-  <div style="text-align:right">
-    <div style="font-size:11px;color:var(--muted);margin-bottom:6px">+3 destacades per <strong>10€/mes</strong></div>
-    <a href="mailto:ofertes.ad@gmail.com?subject=Pack destacades - {{b.name}}&body=Hola, voldria contractar un pack de 3 destacades extra per a {{b.name}}." class="btn btn-accent btn-sm">Contractar pack →</a>
+  <div style="font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+    💡 Oferta destacada = {{offer_cost}} crèdit · Catàleg destacat = {{cat_cost}} crèdits
   </div>
-  {% endif %}
 </div>
 
 <!-- Branch incentive -->
