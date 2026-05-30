@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}{{branch.name}} — {{b.name}} — Ofertes.ad{% endblock %}
+{% block head %}
+<style>
+.biz-hero{padding:20px 20px 16px;position:relative}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:14px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+.hero-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.biz-logo-sm{width:52px;height:52px;border-radius:14px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.biz-logo-sm img{width:100%;height:100%;object-fit:cover}
+.biz-meta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+.biz-meta-item{font-size:12px;color:var(--muted)}
+.biz-meta-item a{color:var(--muted);text-decoration:none}
+.biz-meta-item a:hover{color:var(--accent)}
+.offers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:12px}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:7px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s}
+.cat-card:hover{transform:translateY(-3px)}
+.cat-cover{width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;background:var(--bg3)}
+.cat-cover img{width:100%;height:100%;object-fit:cover}
+.cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 60%)}
+.cat-info{position:absolute;bottom:0;left:0;right:0;padding:12px}
+.empty-sec{text-align:center;color:var(--muted);padding:40px;font-size:14px}
+.others-scroll{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.others-scroll::-webkit-scrollbar{display:none}
+.other-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:7px 14px;text-decoration:none;font-size:12px;color:var(--muted);transition:all .2s;white-space:nowrap}
+.other-chip:hover{color:var(--text);background:var(--bg3)}
+</style>
+{% endblock %}
+{% block content %}
+
+{% if branch.cover_image %}
+<div style="width:100%;height:180px;overflow:hidden;position:relative">
+  <img src="/static/uploads/logos/{{branch.cover_image}}" style="width:100%;height:100%;object-fit:cover">
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.35) 100%)"></div>
+</div>
+{% endif %}
+
+<section class="biz-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Inici</a> › <a href="/negoci/{{b.id}}">{{b.name}}</a> › {{branch.name}}
+    </div>
+    <div class="hero-row">
+      <div class="biz-logo-sm">
+        {% if branch.logo_image %}<img src="/static/uploads/logos/{{branch.logo_image}}" alt="">
+        {% elif b.logo_image %}<img src="/static/uploads/logos/{{b.logo_image}}" alt="">
+        {% else %}{{branch.logo_emoji or b.logo_emoji}}{% endif %}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">{{b.category}} · {{branch.parroquia or b.parroquia}}</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(18px,4vw,26px);color:var(--text)">{{branch.name}}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Part de <a href="/negoci/{{b.id}}" style="color:var(--accent)">{{b.name}}</a></div>
+        <div class="biz-meta-row">
+          {% if branch.location %}<div class="biz-meta-item">📍 {{branch.location}}</div>{% endif %}
+          {% if branch.phone %}<div class="biz-meta-item">📞 <a href="tel:{{branch.phone}}">{{branch.phone}}</a></div>{% endif %}
+          {% if branch.maps_url %}<div class="biz-meta-item"><a href="{{branch.maps_url}}" target="_blank">🗺️ Mapa</a></div>{% endif %}
+          {% set has_hours = branch.hours_mon or branch.hours_fri %}
+          {% if has_hours %}<div class="biz-meta-item"><a href="javascript:void(0)" onclick="openHours()">🕐 Horaris</a></div>{% endif %}
+        </div>
+        {% if branch.website or branch.shop_url or branch.delivery_url or branch.instagram %}
+        <div class="biz-meta-row" style="margin-top:6px">
+          {% if branch.website %}<div class="biz-meta-item"><a href="{{branch.website}}" target="_blank">🌐 Web</a></div>{% endif %}
+          {% if branch.shop_url %}<div class="biz-meta-item"><a href="{{branch.shop_url}}" target="_blank">🛒 Botiga</a></div>{% endif %}
+          {% if branch.delivery_url %}<div class="biz-meta-item"><a href="{{branch.delivery_url}}" target="_blank">🛵 Delivery</a></div>{% endif %}
+          {% if branch.instagram %}<div class="biz-meta-item"><a href="{{branch.instagram}}" target="_blank">📸 Instagram</a></div>{% endif %}
+        </div>
+        {% endif %}
+        {% if branch.description %}<div style="font-size:13px;color:var(--muted);margin-top:8px">{{branch.description}}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hours modal -->
+{% set has_hours = branch.hours_mon or branch.hours_tue or branch.hours_fri or branch.hours_sat %}
+{% if has_hours %}
+<div class="modal" id="hoursModal" onclick="if(event.target===this)closeHours()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">🕐 Horaris — {{branch.name}}</div>
+      <button class="modal-close" onclick="closeHours()">✕</button>
+    </div>
+    {% set days=[('Dilluns',branch.hours_mon),('Dimarts',branch.hours_tue),('Dimecres',branch.hours_wed),('Dijous',branch.hours_thu),('Divendres',branch.hours_fri),('Dissabte',branch.hours_sat),('Diumenge',branch.hours_sun)] %}
+    {% for d,h in days %}{% if h %}
+    <div class="hours-row"><span style="color:var(--muted)">{{d}}</span><span style="font-weight:500">{{h}}</span></div>
+    {% endif %}{% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="container" style="padding-bottom:60px">
+
+  <!-- Ofertes -->
+  {% if ofertes %}
+  <div style="margin-bottom:32px;margin-top:20px">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:14px">🏷️ Ofertes</div>
+    <div class="offers-grid">
+      {% for o in ofertes %}
+      {% set d = ((1-o.offer_price/o.original_price)*100)|int if o.original_price and o.original_price > 0 else 0 %}
+      <div class="offer-card">
+        <span style="font-size:28px;line-height:1">{{o.emoji}}</span>
+        <div style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;flex:1">{{o.name}}</div>
+        {% if o.description %}<div style="font-size:12px;color:var(--muted);font-style:italic">{{o.description}}</div>{% endif %}
+        {% if o.offer_price and o.offer_price > 0 %}
+        <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--accent)">{{"%.2f"|format(o.offer_price)}}€</span>
+          {% if o.original_price and o.original_price > 0 %}
+          <span style="font-size:11px;color:var(--muted);text-decoration:line-through">{{"%.2f"|format(o.original_price)}}€</span>
+          <span class="discount">−{{d}}%</span>
+          {% endif %}
+        </div>
+        {% endif %}
+        <div style="font-size:10px;color:var(--muted)">{{o.unit}}</div>
+        <div style="padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)">
+          Fins el <strong style="color:var(--accent)">{{o.valid_until}}</strong>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Catàlegs -->
+  {% if catalogues %}
+  <div>
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);margin-bottom:14px">📋 Catàlegs</div>
+    <div class="cat-grid">
+      {% for f in catalogues %}
+      <div class="cat-card" onclick="openCatModal('{{f.filename}}','{{f.filetype}}','{{branch.logo_emoji or b.logo_emoji}}','{{branch.name}}','{{f.title}}')">
+        <div class="cat-cover">
+          {% if f.filetype=='image' %}<img src="/static/uploads/folletos/{{f.filename}}" alt="">
+          {% else %}<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px">📄</div>{% endif %}
+          <div class="cat-overlay"></div>
+          <div class="cat-info">
+            <div style="font-size:11px;font-weight:600;color:#fff;margin-bottom:3px">{{f.title}}</div>
+            <div style="font-size:10px;background:rgba(166,112,0,.2);border:1px solid rgba(166,112,0,.3);color:#E8C547;border-radius:50px;padding:2px 8px;display:inline-block">Fins {{f.valid_until}}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if not ofertes and not catalogues %}
+  <div class="empty-sec" style="margin-top:20px">Cap contingut disponible en aquest moment.</div>
+  {% endif %}
+
+</div>
+
+<!-- Catalogue modal -->
+<div id="catModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;flex-direction:column" onclick="if(event.target===this)closeCatModal()">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="catModalLogo" style="font-size:20px"></div>
+      <div>
+        <div id="catModalBiz" style="font-weight:700;font-size:14px;color:#fff"></div>
+        <div id="catModalTitle" style="font-size:11px;color:rgba(255,255,255,.5)"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a id="catModalDownload" href="#" download target="_blank" class="btn btn-accent btn-sm">⬇ Descarregar</a>
+      <button onclick="closeCatModal()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px">✕</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:16px">
+    <img id="catModalImg" src="" style="max-width:100%;object-fit:contain;border-radius:8px;display:none">
+    <iframe id="catModalPdf" src="" style="width:100%;min-height:80vh;border:none;display:none"></iframe>
+  </div>
+</div>
+
+<!-- Other businesses -->
+<div style="border-top:1px solid var(--border);padding:28px 20px 52px">
+  <div class="container">
+    <div class="section-heading" style="margin-bottom:12px">Altres comerços</div>
+    <div class="others-scroll">
+      {% for ob in all_businesses %}{% if ob.id != b.id %}
+      <a href="/negoci/{{ob.id}}" class="other-chip">{{ob.logo_emoji}} {{ob.name}}</a>
+      {% endif %}{% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+function openHours(){ document.getElementById('hoursModal')?.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeHours(){ document.getElementById('hoursModal')?.classList.remove('open'); document.body.style.overflow=''; }
+function openCatModal(filename, filetype, logo, bizName, title) {
+  const modal = document.getElementById('catModal');
+  document.getElementById('catModalLogo').textContent = logo;
+  document.getElementById('catModalBiz').textContent  = bizName;
+  document.getElementById('catModalTitle').textContent = title;
+  const url = `/static/uploads/folletos/${filename}`;
+  document.getElementById('catModalDownload').href = url;
+  const img = document.getElementById('catModalImg');
+  const pdf = document.getElementById('catModalPdf');
+  if (filetype === 'image') { img.src=url; img.style.display=''; pdf.style.display='none'; }
+  else { pdf.src=url; pdf.style.display=''; img.style.display='none'; }
+  modal.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;flex-direction:column';
+  document.body.style.overflow='hidden';
+}
+function closeCatModal() {
+  document.getElementById('catModal').style.display='none';
+  document.getElementById('catModalImg').src='';
+  document.getElementById('catModalPdf').src='';
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape'){closeCatModal();closeHours();} });
+</script>
+{% endblock %}
