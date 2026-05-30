@@ -43,12 +43,17 @@
         </div>
       </div>
       <div class="row2">
-        <div class="field"><label>Preu original (€) *</label><input type="number" name="original_price" step="0.01" min="0.01" required placeholder="3.50" value="{% if oferta %}{{'%.2f'|format(oferta.original_price)}}{% endif %}"></div>
-        <div class="field"><label>Preu oferta (€) *</label><input type="number" name="offer_price" step="0.01" min="0.01" required placeholder="1.99" value="{% if oferta %}{{'%.2f'|format(oferta.offer_price)}}{% endif %}"></div>
+        <div class="field"><label>Preu original (€)</label><input type="number" name="original_price" step="0.01" min="0" placeholder="3.50" value="{% if oferta and oferta.original_price %}{{'%.2f'|format(oferta.original_price)}}{% endif %}"><div class="hint">Opcional — deixa en blanc si no vols mostrar preu</div></div>
+        <div class="field"><label>Preu oferta (€)</label><input type="number" name="offer_price" step="0.01" min="0" placeholder="1.99" value="{% if oferta and oferta.offer_price %}{{'%.2f'|format(oferta.offer_price)}}{% endif %}"></div>
       </div>
       <div class="row2">
         <div class="field"><label>Unitat</label><input type="text" name="unit" placeholder="el kg, la peça..." value="{% if oferta %}{{oferta.unit}}{% endif %}"></div>
         <div class="field"><label>Categoria</label><input type="text" name="category" placeholder="Lactis, Fruita..." value="{% if oferta %}{{oferta.category}}{% endif %}"></div>
+      </div>
+      <div class="field">
+        <label>Descripció de l'oferta (opcional)</label>
+        <textarea name="description" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;resize:vertical;min-height:80px" placeholder="Ex: 2x1 els dilluns i dimarts · Happy hour de 17h a 19h · Amb cada cervesa, patates fregides gratis · Promoció vàlida per a consumicions al local">{%if oferta%}{{oferta.description}}{%endif%}</textarea>
+        <div class="hint">Explica els detalls de l'oferta — condicions, horaris especials, regals, etc.</div>
       </div>
       <div class="field"><label>Foto (opcional)</label><input type="file" name="image" accept="image/*"></div>
       <div class="row2">
@@ -58,6 +63,27 @@
       <div class="field">
         <label class="checkbox-row"><input type="checkbox" name="featured" value="1" {% if oferta and oferta.featured %}checked{% endif %}><span>⭐ Mostrar com a destacat a la portada</span></label>
       </div>
+      <!-- Branch selector -->
+      {% if branches and branches|length > 0 %}
+      <div class="field">
+        <label>Sucursals on és vàlida</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" name="branch_all" value="1" id="branchAll" checked onchange="document.getElementById('branchList').style.display=this.checked?'none':'flex'" style="accent-color:var(--accent);width:15px;height:15px">
+            <strong>Totes les sucursals</strong>
+          </label>
+          <div id="branchList" style="display:none;padding-left:20px;flex-direction:column;gap:6px">
+            {% for br in branches %}
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:var(--muted)">
+              <input type="checkbox" name="branch_ids" value="{{br.id}}" style="accent-color:var(--accent);width:15px;height:15px">
+              {{br.name}}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <div class="submit-row">
         <button type="submit" class="submit-btn">{% if oferta %}Guardar →{% else %}Publicar →{% endif %}</button>
         <a href="/panel" class="btn btn-ghost">Cancel·lar</a>
