@@ -326,16 +326,19 @@ function renderBiz(allBiz) {
     grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">Cap comerç trobat. <a href="/registre" style="color:var(--accent)">Sigues el primer! →</a></div>`;
     return;
   }
-  grid.innerHTML = allBiz.map(b => `
-    <a href="/negoci/${b.id}" class="biz-card" style="--ba:${b.accent}">
+  grid.innerHTML = allBiz.map(b => {
+    const href = b.branch_id ? `/sucursal/${b.branch_id}` : `/negoci/${b.id}`;
+    const name = b.branch_name ? `${b.name} — ${b.branch_name}` : b.name;
+    return `<a href="${href}" class="biz-card" style="--ba:${b.accent}">
       <div class="biz-logo">${b.logo_image ? `<img src="/static/uploads/logos/${b.logo_image}" alt="">` : b.logo_emoji}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">${b.name}</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px">${name}</div>
         <div style="font-size:11px;color:var(--muted);margin-bottom:3px">${b.category}</div>
         <div style="font-size:11px;color:var(--muted)">📍 ${b.parroquia}</div>
         <div style="font-size:11px;color:var(--accent);margin-top:5px">Veure ofertes →</div>
       </div>
-    </a>`).join('');
+    </a>`;
+  }).join('');
 }
 
 // ── Render offers ─────────────────────────────────────────────────────────
