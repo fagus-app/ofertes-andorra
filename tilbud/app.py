@@ -26,7 +26,7 @@ SUPERADMIN_PASS = 'ofertesad2024'
 STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/your_link_here'
 TRIAL_DAYS      = 15
 WARNING_DAYS    = 7
-BRANCH_PRICE    = 12.0  # euros per extra branch per month
+BRANCH_PRICE    = 15.0  # euros per extra branch per month
 
 # Pricing tiers
 SUPERMARKET_TYPES = {'Supermercat'}
